@@ -113,6 +113,7 @@ class StateCache:
         self.recovery_attempts = 0
         self.recovery_max_attempts = 3
         self.recovery_dwell_sec = 0.0
+        self.lookaround_360: Dict[str, Any] = {}
 
         # 5. Visual Motion & VO Telemetry
         self.vo_telemetry: Dict[str, Any] = {
@@ -351,6 +352,7 @@ class StateCache:
                 "recovery_attempts": self.recovery_attempts,
                 "recovery_max_attempts": self.recovery_max_attempts,
                 "recovery_dwell_sec": round(self.recovery_dwell_sec, 1),
+                "lookaround_360": dict(self.lookaround_360),
                 "vo_telemetry": dict(self.vo_telemetry),
                 "robot_pose": dict(self.robot_pose),
                 "last_valid_pose": dict(self.last_valid_pose),

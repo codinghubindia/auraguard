@@ -433,6 +433,8 @@ class NaviguardDashboardNode(Node):
             self.cache.recovery_max_attempts = int(data.get('max_attempts', budget.get('max_attempts', 3)))
             self.cache.recovery_dwell_sec = float(data.get('dwell_sec', 0.0))
             self.cache.recovery_strategy = data.get('active_strategy', 'None')
+            if 'lookaround_360' in data:
+                self.cache.lookaround_360 = data['lookaround_360']
 
             if new_rec != prev_rec:
                 self.cache.add_event("RECOVERY", f"Recovery Transition: {prev_rec} -> {new_rec} (Strategy: {self.cache.recovery_strategy})")
