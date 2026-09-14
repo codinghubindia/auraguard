@@ -170,7 +170,8 @@ class RecoveryBudget:
 class RecoveryStateMachineConfig:
     safe_stop_dwell_sec: float = 0.50
     verification_dwell_sec: float = 1.00
-    action_timeout_sec: float = 10.0
+    action_timeout_sec: float = 15.0       # General maneuver timeout (backtrack, rotation)
+    lookaround_360_timeout_sec: float = 60.0  # Full 360° sweep at 0.25 rad/s takes ~25s; allow 60s
 
 
 class RecoveryStateMachine:
@@ -254,14 +255,21 @@ class RecoveryStateMachine:
         elif self.state in (RecoveryState.RECOVER, RecoveryState.LOOKAROUND_360_SCAN):
             if not action_in_progress:
                 self.transition_to(RecoveryState.VISUAL_REACQUISITION_OBSERVATION, stamp_sec)
-            elif dwell >= self.cfg.action_timeout_sec:
-                # Action timed out
-                if self.budget.attempt_count < self.budget.max_attempts:
-                    self.budget.finish_current_attempt(False, "ACTION_TIMED_OUT", 0.0, "ACTION_TIMED_OUT")
-                    self.transition_to(RecoveryState.SAFE_STOP, stamp_sec, "ACTION_TIMED_OUT")
-                else:
-                    self.budget.finish_current_attempt(False, "ACTION_TIMED_OUT", 0.0, "ACTION_TIMED_OUT_BUDGET_EXHAUSTED")
-                    self.transition_to(RecoveryState.FAILED_SAFE, stamp_sec, "ACTION_TIMED_OUT_BUDGET_EXHAUSTED")
+            else:
+                # Use extended timeout for 360° scan; standard timeout for other maneuvers
+                timeout = (
+                    self.cfg.lookaround_360_timeout_sec
+                    if self.state == RecoveryState.LOOKAROUND_360_SCAN
+                    else self.cfg.action_timeout_sec
+                )
+                if dwell >= timeout:
+                    # Action timed out
+                    if self.budget.attempt_count < self.budget.max_attempts:
+                        self.budget.finish_current_attempt(False, "ACTION_TIMED_OUT", 0.0, "ACTION_TIMED_OUT")
+                        self.transition_to(RecoveryState.SAFE_STOP, stamp_sec, "ACTION_TIMED_OUT")
+                    else:
+                        self.budget.finish_current_attempt(False, "ACTION_TIMED_OUT", 0.0, "ACTION_TIMED_OUT_BUDGET_EXHAUSTED")
+                        self.transition_to(RecoveryState.FAILED_SAFE, stamp_sec, "ACTION_TIMED_OUT_BUDGET_EXHAUSTED")
 
         elif self.state == RecoveryState.VISUAL_REACQUISITION_OBSERVATION:
             # Settle dwell: 0.50s with zero velocity to collect clean visual features

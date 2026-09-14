@@ -123,6 +123,8 @@ class NavigationNode(Node):
         self.cmd_ownership: str = "YIELDED"
         self.last_cmd_vx: float = 0.0
         self.last_cmd_wz: float = 0.0
+        # Guard to prevent re-triggering 360° recovery every tick while waiting for response
+        self._recovery_pending: bool = False
 
         # Environmental state explanations
         self.nav_reason: str = "Nominal path following"
@@ -196,7 +198,10 @@ class NavigationNode(Node):
             Trigger, '/navigation/cancel_goal', self._cancel_goal_callback
         )
 
-        # 8. Control Timer
+        # 8. Recovery trigger client — calls recovery_node to start 360° lookaround scan
+        self.fault_cli = self.create_client(Trigger, '/recovery/trigger_manual_recovery')
+
+        # 9. Control Timer
         timer_period = 1.0 / max(1.0, control_rate)
         self.timer = self.create_timer(timer_period, self._control_loop)
 
@@ -242,6 +247,7 @@ class NavigationNode(Node):
         if goal is not None:
             self.get_logger().info(f"New navigation goal received: ({goal.x:.2f}, {goal.y:.2f})")
             self.mission_mgr.start_mission(now_sec)
+            self._recovery_pending = False  # Reset for new mission
             if self.mission_mgr.state in (MissionState.IDLE, MissionState.GOAL_REACHED, MissionState.MISSION_FAILED):
                 self.mission_mgr.transition_to(MissionState.GOAL_SET, now_sec)
             elif self.mission_mgr.state == MissionState.NAVIGATING:
@@ -367,11 +373,19 @@ class NavigationNode(Node):
                 self._publish_telemetry(now_sec)
                 return
 
+            # Only attempt to plan if we are not already waiting for a recovery scan
+            if self._recovery_pending:
+                self.cmd_ownership = "YIELDED_TO_RECOVERY"
+                self.nav_reason = "Waiting for 360° recovery scan to complete before retrying plan"
+                self._publish_telemetry(now_sec)
+                return
+
             success = self._compute_and_set_path(now_sec)
             if success:
+                self._recovery_pending = False
                 self.mission_mgr.transition_to(MissionState.NAVIGATING, now_sec)
             else:
-                # 360-degree survey for open corridors and small passages
+                # Quick 2-D passage snapshot for telemetry
                 if self.robot_pose is not None and self.occ_grid.is_initialized:
                     rx, ry, ryaw = self.robot_pose
                     goal = self.goal_mgr.get_goal()
@@ -383,16 +397,18 @@ class NavigationNode(Node):
                         best_deg = lookaround_res.get("best_heading_deg", 0.0)
                         widest_m = lookaround_res.get("widest_corridor_m", 0.0)
                         self.nav_reason = (
-                            f"360° Survey: {len(passages)} passages identified "
+                            f"360° Survey: {len(passages)} passages found "
                             f"(best: {best_deg:+.1f}°, width {widest_m:.2f}m)"
                         )
 
-                # Retry mechanism: trigger 360 lookaround recovery if budget remains
-                if self.recovery_attempts_count < 3 and self.mission_mgr.replan_count < self.mission_mgr.max_replan_retries:
+                # Trigger 360° lookaround recovery — ONCE per block (guard prevents re-fire each tick)
+                if self.mission_mgr.replan_count < self.mission_mgr.max_replan_retries:
                     self.get_logger().warn(
-                        f"Initial plan blocked. Triggering 360° lookaround retry mechanism (attempt {self.recovery_attempts_count + 1}/3)..."
+                        "Initial plan blocked — triggering 360° lookaround recovery scan "
+                        f"(replan_count={self.mission_mgr.replan_count}/{self.mission_mgr.max_replan_retries})..."
                     )
-                    if hasattr(self, 'fault_cli') and self.fault_cli.service_is_ready():
+                    self._recovery_pending = True
+                    if self.fault_cli.service_is_ready():
                         self.fault_cli.call_async(Trigger.Request())
                     self.mission_mgr.transition_to(MissionState.RECOVERY_WAIT, now_sec, "PLAN_BLOCKED_WAIT_360_LOOKAROUND")
                     self.cmd_ownership = "YIELDED_TO_RECOVERY"
@@ -413,6 +429,7 @@ class NavigationNode(Node):
                     ox = rx + 0.60 * math.cos(ryaw)
                     oy = ry + 0.60 * math.sin(ryaw)
                     self.occ_grid.mark_blocked_region(ox, oy, radius_m=0.45)
+                self._recovery_pending = True  # Recovery already active (not started by us — just yield)
                 self.mission_mgr.transition_to(MissionState.RECOVERY_WAIT, now_sec, "YIELD_TO_RECOVERY")
                 self.cmd_ownership = "YIELDED_TO_RECOVERY"
                 self.nav_reason = "Recovery active: yielding control to recovery state machine"
@@ -512,7 +529,15 @@ class NavigationNode(Node):
         elif self.mission_mgr.state == MissionState.REPLANNING:
             self.cmd_ownership = "REPLANNING"
             self.nav_reason = "Computing alternate detour around detected blockage"
-            # 360-degree look-around evaluation for open corridors and small passages
+
+            # Skip replanning if already waiting for a recovery scan to finish
+            if self._recovery_pending:
+                self.cmd_ownership = "YIELDED_TO_RECOVERY"
+                self.nav_reason = "Waiting for 360° recovery scan before retrying replan"
+                self._publish_telemetry(now_sec)
+                return
+
+            # 360-degree look-around snapshot for telemetry
             if self.robot_pose is not None and self.occ_grid.is_initialized:
                 rx, ry, ryaw = self.robot_pose
                 goal = self.goal_mgr.get_goal()
@@ -524,19 +549,22 @@ class NavigationNode(Node):
                     best_deg = lookaround_res.get("best_heading_deg", 0.0)
                     widest_m = lookaround_res.get("widest_corridor_m", 0.0)
                     self.nav_reason = (
-                        f"360° Lookaround: {len(passages)} passages identified "
+                        f"360° Lookaround: {len(passages)} passages found "
                         f"(best: {best_deg:+.1f}°, width {widest_m:.2f}m)"
                     )
 
             success = self._compute_and_set_path(now_sec, replan_reason="OBSTACLE_OR_DEVIATION_REPLAN")
             if success:
+                self._recovery_pending = False
                 self.mission_mgr.transition_to(MissionState.NAVIGATING, now_sec)
             else:
-                if self.recovery_attempts_count < 3 and self.mission_mgr.replan_count < self.mission_mgr.max_replan_retries:
+                if self.mission_mgr.replan_count < self.mission_mgr.max_replan_retries:
                     self.get_logger().warn(
-                        f"Replan blocked. Triggering 360° lookaround retry mechanism (attempt {self.recovery_attempts_count + 1}/3)..."
+                        "Replan blocked — triggering 360° lookaround recovery scan "
+                        f"(replan_count={self.mission_mgr.replan_count}/{self.mission_mgr.max_replan_retries})..."
                     )
-                    if hasattr(self, 'fault_cli') and self.fault_cli.service_is_ready():
+                    self._recovery_pending = True
+                    if self.fault_cli.service_is_ready():
                         self.fault_cli.call_async(Trigger.Request())
                     self.mission_mgr.transition_to(MissionState.RECOVERY_WAIT, now_sec, "REPLAN_BLOCKED_WAIT_360_LOOKAROUND")
                     self.cmd_ownership = "YIELDED_TO_RECOVERY"
@@ -547,21 +575,30 @@ class NavigationNode(Node):
                     self.mission_mgr.record_planning_failure(now_sec, fail_code, context=ctx)
 
         elif self.mission_mgr.state == MissionState.RECOVERY_WAIT:
-            # Strictly do not publish /cmd_vel; yield to recovery
+            # Strictly do not publish /cmd_vel; yield to recovery node
             self.cmd_ownership = "YIELDED_TO_RECOVERY"
-            # Retry mechanism waits until recovery completes looking out 360 degrees for path
-            if "360" in self.recovery_state or "LOOKAROUND" in self.recovery_state:
+            rs = self.recovery_state
+            if "360" in rs or "LOOKAROUND" in rs:
                 self.nav_reason = "Retry mechanism: waiting for 360° panoramic path lookaround scan"
+            elif self._recovery_pending:
+                self.nav_reason = f"Recovery in progress: {rs} (waiting for 360° path scan to complete)"
             else:
-                self.nav_reason = f"Recovery in progress: {self.recovery_state} (waiting for 360° path scan)"
+                self.nav_reason = f"Recovery in progress: {rs}"
 
-            # If recovery returns to NORMAL and confidence is healthy, resume by replanning
-            if self.recovery_state == "NORMAL" and self.confidence_decision in ("CONTINUE", "VERIFY"):
-                self.get_logger().info("360° lookaround recovery completed. Re-planning path from current pose to original goal.")
+            # When recovery returns NORMAL *after* a scan was actually triggered, resume replanning.
+            # Guard with _recovery_pending to avoid spurious exit on first tick (recovery_state starts as "NORMAL").
+            if self._recovery_pending and rs == "NORMAL" and self.confidence_decision in ("CONTINUE", "VERIFY"):
+                self.get_logger().info(
+                    "360° lookaround recovery completed — clearing recovery guard and replanning."
+                )
+                self._recovery_pending = False
+                # Reset replan counter so the post-recovery plan attempt is not pre-failed
+                self.mission_mgr.replan_count = 0
                 self.mission_mgr.transition_to(MissionState.REPLANNING, now_sec, "RECOVERY_RESUME")
-            elif self.recovery_state == "FAILED_SAFE":
+            elif rs == "FAILED_SAFE":
                 ctx = self._build_context(now_sec)
                 self.mission_mgr.trigger_failure(FailureCode.RECOVERY_BUDGET_EXHAUSTED, now_sec, context=ctx)
+
 
         elif self.mission_mgr.state in (MissionState.GOAL_REACHED, MissionState.MISSION_FAILED):
             self.cmd_ownership = "TERMINAL_STOP"
@@ -570,6 +607,7 @@ class NavigationNode(Node):
                 self.nav_reason = f"FAILED: {rec.get('human_reason', 'No safe route')}" if rec else "Mission failed"
             else:
                 self.nav_reason = "Mission completed successfully"
+
 
         self._publish_telemetry(now_sec)
 
