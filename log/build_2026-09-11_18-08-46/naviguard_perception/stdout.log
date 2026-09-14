@@ -1,0 +1,15 @@
+running develop
+running egg_info
+writing naviguard_perception.egg-info/PKG-INFO
+writing dependency_links to naviguard_perception.egg-info/dependency_links.txt
+writing entry points to naviguard_perception.egg-info/entry_points.txt
+writing requirements to naviguard_perception.egg-info/requires.txt
+writing top-level names to naviguard_perception.egg-info/top_level.txt
+reading manifest file 'naviguard_perception.egg-info/SOURCES.txt'
+writing manifest file 'naviguard_perception.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/maxx/naviguard_ws/install/naviguard_perception/lib/python3.12/site-packages/naviguard-perception.egg-link (link to .)
+Installing naviguard_perception_node script to /home/maxx/naviguard_ws/install/naviguard_perception/lib/naviguard_perception
+
+Installed /home/maxx/naviguard_ws/build/naviguard_perception
+running symlink_data

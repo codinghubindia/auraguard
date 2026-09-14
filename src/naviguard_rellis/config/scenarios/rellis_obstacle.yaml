@@ -1,0 +1,11 @@
+# RELLIS Scenario: Obstacle Navigation (Fallen Logs / Trees)
+scenario_name: "rellis_obstacle_trail"
+description: "Evaluates local costmap hazard detection and A* obstacle replanning around fallen timber."
+sequence: "00000"
+start_pose: [0.0, 0.0, 0.0, 0.0]
+goal_pose: [18.0, 2.0, 0.0, 0.0]
+obstacles:
+  - type: "fallen_log"
+    position: [10.0, 0.0, 0.0]
+    dimension: [0.5, 3.0, 0.4]
+expected_replan_triggered: true

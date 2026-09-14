@@ -1,0 +1,9 @@
+source;share/naviguard_rellis/hook/pythonpath.ps1
+source;share/naviguard_rellis/hook/pythonpath.dsv
+source;share/naviguard_rellis/hook/pythonpath.sh
+source;share/naviguard_rellis/hook/ament_prefix_path.ps1
+source;share/naviguard_rellis/hook/ament_prefix_path.dsv
+source;share/naviguard_rellis/hook/ament_prefix_path.sh
+source;../../build/naviguard_rellis/share/naviguard_rellis/hook/pythonpath_develop.ps1
+source;../../build/naviguard_rellis/share/naviguard_rellis/hook/pythonpath_develop.dsv
+source;../../build/naviguard_rellis/share/naviguard_rellis/hook/pythonpath_develop.sh

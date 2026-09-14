@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAVIGUARD Ground Control Station — SIH 2026</title>
+  <style>
+    :root {
+      --bg-dark: #070a10;
+      --bg-card: #0d1424;
+      --bg-card-header: #131d33;
+      --border-subtle: #1c2b48;
+      --border-bright: #2d4575;
+      --text-main: #f1f5f9;
+      --text-muted: #8ba0bd;
+      --accent-cyan: #00d2ff;
+      --accent-green: #05f187;
+      --accent-amber: #ffb703;
+      --accent-red: #ff3366;
+      --accent-purple: #9d4edd;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Tactical Header */
+    header {
+      background: #05080e;
+      border-bottom: 2px solid var(--border-subtle);
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      z-index: 100;
+    }
+    .header-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .brand-title {
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 2.5px;
+      color: var(--accent-cyan);
+      text-shadow: 0 0 12px rgba(0, 210, 255, 0.45);
+    }
+    .brand-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.8px;
+    }
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      padding: 3px 9px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: #152033;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid var(--border-subtle);
+    }
+    .badge-green { background: rgba(5, 241, 135, 0.15); color: var(--accent-green); border-color: var(--accent-green); }
+    .badge-amber { background: rgba(255, 183, 3, 0.15); color: var(--accent-amber); border-color: var(--accent-amber); }
+    .badge-red { background: rgba(255, 51, 102, 0.18); color: var(--accent-red); border-color: var(--accent-red); }
+    .badge-cyan { background: rgba(0, 210, 255, 0.15); color: var(--accent-cyan); border-color: var(--accent-cyan); }
+
+    /* Main Split-Screen Layout */
+    .gcs-layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 58% 42%;
+      gap: 10px;
+      padding: 10px;
+      max-width: 100vw;
+    }
+    @media (max-width: 1200px) {
+      .gcs-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Cards & Panels */
+    .gcs-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    }
+    .gcs-card-header {
+      background: var(--bg-card-header);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      letter-spacing: 0.8px;
+    }
+    .gcs-card-body {
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Map Viewport */
+    .map-viewport-wrapper {
+      position: relative;
+      width: 100%;
+      height: 440px;
+      background: #17261a;
+      border: 1px solid #273e2c;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+    #mapCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Map HUD Overlays */
+    .map-hud-bar {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .map-hud-pill {
+      background: rgba(8, 13, 22, 0.88);
+      border: 1px solid var(--border-subtle);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-family: monospace;
+      color: #cbd5e1;
+      pointer-events: auto;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Mission Dispatch Control Deck */
+    .dispatch-deck {
+      background: #090e18;
+      border: 1px solid var(--border-bright);
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .target-status-box {
+      background: #10192b;
+      border: 1.5px solid var(--accent-cyan);
+      border-radius: 5px;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .target-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .target-coords {
+      font-size: 0.88rem;
+      font-weight: 800;
+      font-family: monospace;
+      color: var(--accent-green);
+    }
+    .target-metrics {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Action Buttons */
+    .btn {
+      padding: 7px 14px;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+    
+    .btn-dispatch {
+      background: var(--accent-green);
+      color: #03140b;
+      font-size: 0.85rem;
+      font-weight: 900;
+      padding: 9px 18px;
+      box-shadow: 0 0 14px rgba(5, 241, 135, 0.4);
+    }
+    .btn-dispatch:hover {
+      box-shadow: 0 0 20px rgba(5, 241, 135, 0.7);
+    }
+    .btn-stop {
+      background: var(--accent-red);
+      color: #fff;
+      font-weight: 800;
+    }
+    .btn-secondary {
+      background: #1e2c45;
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+    }
+    .btn-secondary:hover {
+      background: #283a5a;
+    }
+    .btn-sm {
+      padding: 3px 8px;
+      font-size: 0.68rem;
+    }
+    .btn-toggle {
+      background: #121c2d;
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 3px 7px;
+      border-radius: 3px;
+      font-size: 0.68rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-toggle.active {
+      background: var(--accent-cyan);
+      color: #041018;
+      font-weight: 800;
+      border-color: var(--accent-cyan);
+    }
+
+    /* Coordinate Inputs */
+    .coord-inputs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .coord-field {
+      display: flex;
+      align-items: center;
+      background: #121b2d;
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .coord-label {
+      padding: 4px 8px;
+      font-size: 0.70rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #17243b;
+    }
+    .coord-input {
+      width: 65px;
+      padding: 4px 6px;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-family: monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    .coord-input:focus {
+      outline: 1px solid var(--accent-cyan);
+    }
+    .step-btn {
+      padding: 4px 6px;
+      background: #1b2942;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .step-btn:hover { background: #2b3e60; color: #fff; }
+
+    /* Quick Target Presets */
+    .preset-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .preset-btn {
+      background: #141f33;
+      border: 1px dashed var(--border-bright);
+      color: #94a3b8;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.70rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-btn:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      background: #1a2842;
+    }
+
+    /* Video Deck */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+    .video-box {
+      position: relative;
+      width: 100%;
+      height: 155px;
+      background: #04060a;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .video-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .video-badge-title {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      background: rgba(6, 10, 18, 0.86);
+      border: 1px solid var(--border-subtle);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .video-badge-fps {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(6, 10, 18, 0.86);
+      border: 1px solid var(--border-subtle);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      pointer-events: none;
+    }
+
+    /* Telemetry & Metrics Table */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3px 12px;
+    }
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      padding: 1px 0;
+    }
+    .metric-label { color: var(--text-muted); }
+    .metric-val { font-weight: 700; color: #f1f5f9; font-family: monospace; }
+
+    /* Subsystems 12-Node Grid */
+    .subsystems-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px 10px;
+      max-height: 180px;
+      overflow-y: auto;
+      font-size: 0.68rem;
+    }
+    .subsys-node {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    /* Confidence Progress Bars */
+    .progress-bar-bg {
+      background: #141d2f;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 1px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent-green);
+      transition: width 0.25s ease;
+    }
+
+    /* Real-Time Event Log */
+    .event-log-container {
+      background: #05080e;
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      height: 110px;
+      overflow-y: auto;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 3px;
+      font-size: 0.68rem;
+      font-family: monospace;
+    }
+    .log-row {
+      display: flex;
+      gap: 6px;
+      line-height: 1.3;
+    }
+    .log-time { color: var(--text-muted); }
+    .log-tag { font-weight: 700; }
+    .log-msg { color: #e2e8f0; }
+  </style>
+</head>
+<body>
+
+  <!-- 1. TACTICAL HEADER -->
+  <header>
+    <div class="header-brand">
+      <span class="brand-title">NAVIGUARD</span>
+      <span class="brand-sub">AUTONOMOUS VISION UGV &bull; SIH 2026</span>
+    </div>
+
+    <div class="header-badges">
+      <span class="badge badge-green" id="badgeSystem">SYS: ONLINE</span>
+      <span class="badge" id="badgeMission">MISSION: IDLE</span>
+      <span class="badge badge-cyan" id="badgeConfidence">CONF: 1.00</span>
+      <span class="badge badge-green" id="badgeRecovery">RECOVERY: NORMAL</span>
+      <span class="badge badge-amber">RELLIS-INSPIRED SYNTHETIC ENVIRONMENT</span>
+      <span class="badge" id="badgePose" style="font-family: monospace;">X: +0.00m | Y: +0.00m</span>
+    </div>
+  </header>
+
+  <!-- 2. SPLIT-SCREEN GROUND CONTROL STATION -->
+  <div class="gcs-layout">
+
+    <!-- ================= LEFT COLUMN: MISSION PLANNING & INTERACTIVE MAP ================= -->
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+
+      <!-- Interactive Map Card -->
+      <div class="gcs-card">
+        <div class="gcs-card-header">
+          <span>INTERACTIVE MAP & LOCALIZATION</span>
+          <div style="display: flex; gap: 4px;">
+            <button class="btn-toggle active" id="layerBase" onclick="toggleLayer('base')">BASE</button>
+            <button class="btn-toggle active" id="layerSlam" onclick="toggleLayer('slam')">SLAM</button>
+            <button class="btn-toggle active" id="layerPath" onclick="toggleLayer('path')">PATH</button>
+            <button class="btn-toggle active" id="layerTraj" onclick="toggleLayer('traj')">TRAJ</button>
+            <button class="btn-toggle active" id="btnFollow" onclick="toggleFollowRobot()">FOLLOW: ON</button>
+            <button class="btn-toggle" onclick="zoomMap(1.2)">+ ZOOM</button>
+            <button class="btn-toggle" onclick="zoomMap(0.8)">- ZOOM</button>
+            <button class="btn-toggle" onclick="resetMapView()">↺ RESET</button>
+          </div>
+        </div>
+
+        <div class="map-viewport-wrapper" id="mapContainer">
+          <canvas id="mapCanvas"></canvas>
+
+          <!-- Top HUD Overlay -->
+          <div class="map-hud-bar">
+            <div class="map-hud-pill">
+              <span>FRAME: <b style="color: var(--accent-cyan);">map</b></span> |
+              <span>RES: <b>0.05m</b></span> |
+              <span>SIZE: <b>30×30m</b></span> |
+              <span>BASEMAP: <b id="hudBasemapStatus" style="color: var(--accent-green);">ONLINE</b></span>
+            </div>
+            <div class="map-hud-pill" id="mapHoverCoords" style="color: var(--accent-cyan);">
+              TARGET: CLICK ANYWHERE TO SET
+            </div>
+          </div>
+        </div>
+
+        <div style="padding: 6px 12px; background: #080d16; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-muted);">
+          <span>LEGEND: <b style="color: #00d2ff;">● UGV</b> | <b style="color: #05f187;">― Planned Path</b> | <b style="color: #f59e0b;">┈ Trajectory</b> | <b style="color: #ff3366;">⚑ Goal</b> | <b style="color: #38bdf8;">🎯 Target Crosshair</b></span>
+          <span>Click anywhere to target &bull; Double-click to instant-dispatch</span>
+        </div>
+      </div>
+
+      <!-- Unified Mission Dispatch Command Deck -->
+      <div class="dispatch-deck">
+
+        <!-- Target Status Display -->
+        <div class="target-status-box" id="targetStatusBox">
+          <div>
+            <div class="target-title">
+              <span>🎯 SELECTED DESTINATION</span>
+              <span id="targetValidationPill" class="badge badge-cyan" style="font-size: 0.65rem;">NO TARGET SELECTED</span>
+            </div>
+            <div class="target-coords" id="targetCoordsText">X: +0.00 m, Y: +0.00 m</div>
+          </div>
+
+          <div class="target-metrics">
+            <div>Distance: <b id="targetDistText" style="color: #f1f5f9;">0.00 m</b></div>
+            <div>Bearing: <b id="targetBearingText" style="color: #f1f5f9;">+0.0°</b></div>
+          </div>
+
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button class="btn btn-dispatch" id="btnDispatchGoal" onclick="dispatchCurrentGoal()" disabled>
+              🚀 DISPATCH GOAL TO UGV
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="clearTargetSelection()">
+              ✕ CLEAR
+            </button>
+            <button class="btn btn-stop btn-sm" onclick="cancelNavigationMission()">
+              🛑 STOP
+            </button>
+          </div>
+        </div>
+
+        <!-- Manual Coordinate Inputs & Step Adjustments -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div class="coord-inputs">
+            <span style="font-size: 0.70rem; font-weight: 700; color: var(--text-muted);">COORDINATES:</span>
+            
+            <div class="coord-field">
+              <span class="coord-label">X</span>
+              <button class="step-btn" onclick="stepCoord('x', -0.5)">-</button>
+              <input type="number" id="inputCoordX" class="coord-input" step="0.1" value="2.00">
+              <button class="step-btn" onclick="stepCoord('x', +0.5)">+</button>
+            </div>
+
+            <div class="coord-field">
+              <span class="coord-label">Y</span>
+              <button class="step-btn" onclick="stepCoord('y', -0.5)">-</button>
+              <input type="number" id="inputCoordY" class="coord-input" step="0.1" value="0.00">
+              <button class="step-btn" onclick="stepCoord('y', +0.5)">+</button>
+            </div>
+
+            <button class="btn btn-secondary btn-sm" onclick="applyManualCoordinates()">SET TARGET</button>
+          </div>
+
+          <!-- Quick Presets -->
+          <div class="preset-group">
+            <span style="font-size: 0.70rem; font-weight: 700; color: var(--text-muted);">PRESETS:</span>
+            <button class="preset-btn" onclick="quickPreset(2.0, 0.0, true)">⚡ FWD 2.0m</button>
+            <button class="preset-btn" onclick="quickPreset(5.0, 0.0, true)">⚡ FWD 5.0m</button>
+            <button class="preset-btn" onclick="quickPreset(6.0, 1.0, true)">⚡ TRAIL (6, 1)</button>
+            <button class="preset-btn" onclick="quickPreset(8.0, 2.5, true)">⚡ CLEARING (8, 2.5)</button>
+            <button class="preset-btn" onclick="quickPreset(0.0, 0.0, true)">⚡ HOME (0, 0)</button>
+          </div>
+        </div>
+
+        <!-- Navigation Metrics & Replan Diagnostics -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding-top: 6px; border-top: 1px solid var(--border-subtle);">
+          <div class="metric-grid">
+            <div class="metric-row"><span class="metric-label">Dist to Goal:</span><span class="metric-val" id="navDistGoal">0.00 m</span></div>
+            <div class="metric-row"><span class="metric-label">Cmd Velocity:</span><span class="metric-val" id="navCmdVel">0.00 m/s, 0.00 r/s</span></div>
+          </div>
+          <div class="metric-grid">
+            <div class="metric-row"><span class="metric-label">Replans:</span><span class="metric-val" id="navReplans">0</span></div>
+            <div class="metric-row"><span class="metric-label">Replan Reason:</span><span class="metric-val" id="navReplanReason" style="color: var(--accent-amber);">None</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Real-Time Operational Event Log -->
+      <div class="gcs-card">
+        <div class="gcs-card-header">
+          <span>OPERATIONAL MISSION & TELEMETRY LOG</span>
+          <span style="font-size: 0.68rem; color: var(--text-muted);">Autonomous Decision Stream</span>
+        </div>
+        <div class="event-log-container" id="eventLogContainer">
+          <!-- Populated in real-time -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= RIGHT COLUMN: MULTI-SPECTRAL VISION & HEALTH ================= -->
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+
+      <!-- 5-Stream Vision Deck Card -->
+      <div class="gcs-card">
+        <div class="gcs-card-header">
+          <span>MULTI-SPECTRAL AUTONOMOUS VISION STREAMS</span>
+          <div style="display: flex; gap: 4px;">
+            <button class="btn-toggle active" id="tabFeedsAll" onclick="setVisionView('all')">ALL 5 FEEDS</button>
+            <button class="btn-toggle" id="tabFeedsFocus" onclick="setVisionView('chase')">FOCUS CHASE</button>
+            <button class="btn-toggle" id="tabFeedsSeg" onclick="setVisionView('seg')">SEGMENTATION</button>
+          </div>
+        </div>
+
+        <div class="gcs-card-body">
+          <div class="video-grid" id="videoGridContainer">
+
+            <!-- Feed 1: Monocular Raw RGB -->
+            <div class="video-box" id="boxRaw">
+              <img id="camRaw" alt="Raw RGB Stream">
+              <div class="video-badge-title">RAW RGB (/camera/image_raw)</div>
+              <div class="video-badge-fps" id="fpsRaw">15 FPS</div>
+            </div>
+
+            <!-- Feed 2: Classical OpenCV Segmentation -->
+            <div class="video-box" id="boxSeg">
+              <img id="camSeg" alt="Classical Segmentation Stream">
+              <div class="video-badge-title" style="color: var(--accent-green);">SEGMENTATION (TRAVERSABILITY)</div>
+              <div class="video-badge-fps" id="fpsSeg">30 FPS</div>
+            </div>
+
+            <!-- Feed 3: Perception / Traversability Debug -->
+            <div class="video-box" id="boxPercept">
+              <img id="camPercept" alt="Perception Stream">
+              <div class="video-badge-title">PERCEPTION (CORRIDOR/EDGES)</div>
+              <div class="video-badge-fps" id="fpsPercept">15 FPS</div>
+            </div>
+
+            <!-- Feed 4: Visual Odometry Optical Flow -->
+            <div class="video-box" id="boxVO">
+              <img id="camVO" alt="VO HUD Stream">
+              <div class="video-badge-title">VISUAL ODOMETRY (OPTICAL FLOW)</div>
+              <div class="video-badge-fps" id="fpsVO">15 FPS</div>
+            </div>
+
+            <!-- Feed 5: Gazebo Harmonic Chase 3D View (Spans 2 columns if in grid) -->
+            <div class="video-box" id="boxChase" style="grid-column: span 2; height: 165px;">
+              <img id="camChase" alt="Third-Person Chase Stream">
+              <div class="video-badge-title" style="color: var(--accent-cyan);">CHASE 3D VIEW (GAZEBO HARMONIC)</div>
+              <div class="video-badge-fps" id="fpsChase">15 FPS</div>
+            </div>
+
+          </div>
+
+          <!-- Color Swatches for Classical Segmentation -->
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.65rem; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 4px;">
+            <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 8px; height: 8px; background: #228b22; border-radius: 2px;"></span> Trail</span>
+            <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 8px; height: 8px; background: #dc2626; border-radius: 2px;"></span> Obstacle</span>
+            <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 8px; height: 8px; background: #f59e0b; border-radius: 2px;"></span> Off-Corridor</span>
+            <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 8px; height: 8px; background: #38bdf8; border-radius: 2px;"></span> Sky</span>
+            <span style="display: inline-flex; align-items: center; gap: 3px;"><span style="width: 8px; height: 8px; background: #000000; border: 1px solid #555; border-radius: 2px;"></span> Mask</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Health Monitor (All 12 Nodes) -->
+      <div class="gcs-card">
+        <div class="gcs-card-header">
+          <span>SYSTEM HEALTH MONITOR</span>
+          <span class="badge badge-green" id="badgeHealthSummary">12 / 12 ONLINE</span>
+        </div>
+        <div class="gcs-card-body">
+          <div class="subsystems-grid" id="subsystemsGrid">
+            <!-- Populated dynamically with 12 subsystems -->
+          </div>
+          <div class="metric-row" style="margin-top: 2px; border-top: 1px solid var(--border-subtle); padding-top: 4px;">
+            <span class="metric-label">Heartbeat Rate:</span>
+            <span class="metric-val" id="lblHeartbeat">ACTIVE (1 Hz)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confidence Engine & Recovery Diagnostics -->
+      <div class="gcs-card">
+        <div class="gcs-card-header">
+          <span>CONFIDENCE ENGINE & RECOVERY STATE</span>
+          <span id="lblPrimaryReason" style="font-size: 0.68rem; color: var(--accent-amber);">NOMINAL</span>
+        </div>
+        <div class="gcs-card-body">
+          <!-- 6 Confidence Dimension Progress Bars -->
+          <div id="confidenceBarsContainer" style="display: flex; flex-direction: column; gap: 3px;">
+            <!-- Populated dynamically -->
+          </div>
+
+          <!-- Recovery Subsystem Details -->
+          <div style="margin-top: 4px; border-top: 1px solid var(--border-subtle); padding-top: 4px;">
+            <div class="metric-grid">
+              <div class="metric-row"><span class="metric-label">Recovery State:</span><span class="badge badge-green" id="lblRecoveryState">NORMAL</span></div>
+              <div class="metric-row"><span class="metric-label">Strategy:</span><span class="metric-val" id="lblRecoveryStrategy">None</span></div>
+              <div class="metric-row"><span class="metric-label">Attempts:</span><span class="metric-val" id="lblRecoveryAttempts">0 / 3</span></div>
+              <div class="metric-row"><span class="metric-label">Dwell Timer:</span><span class="metric-val" id="lblRecoveryDwell">0.0 s</span></div>
+            </div>
+            <!-- Fault Injection Testing Tools -->
+            <div style="margin-top: 6px; display: flex; gap: 6px; align-items: center;">
+              <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">FAULT TEST:</span>
+              <button class="btn btn-secondary btn-sm" onclick="triggerRecoveryFault()">Inject Fault</button>
+              <button class="btn btn-secondary btn-sm" onclick="resetRecoveryBudget()">Reset Budget</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    /* ==========================================================================
+       NAVIGUARD Ground Control Station Script — 2026
+       Authoritative Map, Multi-Spectral Streams & Goal Dispatch
+       ========================================================================== */
+
+    // 1. Core State & Metadata (Fully Hoisted at Script Top)
+    let mapMeta = {
+      width: 600,
+      height: 600,
+      resolution: 0.05,
+      origin_x: -15.0,
+      origin_y: -15.0,
+      has_data: false
+    };
+
+    let latestTelemetry = null;
+    let currentTarget = null; // { x, y, valid, reason }
+
+    // Layers Visibility
+    const layers = {
+      base: true,
+      slam: true,
+      path: true,
+      traj: true
+    };
+
+    // Canvas & Viewport State
+    const canvas = document.getElementById('mapCanvas');
+    const ctx = canvas.getContext('2d');
+    let viewZoom = 1.0;
+    let viewPanX = 0;
+    let viewPanY = 0;
+    let followRobot = true;
+
+    // Basemap & SLAM Images (Declared at top before any renderMap() call!)
+    const basemapImg = new Image();
+    let basemapLoaded = false;
+    basemapImg.src = '/api/basemap';
+    basemapImg.onload = () => { basemapLoaded = true; renderMap(); };
+
+    const slamImg = new Image();
+    let slamLoaded = false;
+
+    // Canvas Mouse Interaction State
+    let isMouseDown = false;
+    let isDragging = false;
+    let mouseDownX = 0;
+    let mouseDownY = 0;
+    const DRAG_THRESHOLD = 7;
+
+    /* --------------------------------------------------------------------------
+       Layer Toggle & Viewport Controls
+       -------------------------------------------------------------------------- */
+    function toggleLayer(name) {
+      if (layers.hasOwnProperty(name)) {
+        layers[name] = !layers[name];
+        const btn = document.getElementById('layer' + name.charAt(0).toUpperCase() + name.slice(1));
+        if (btn) btn.classList.toggle('active', layers[name]);
+        renderMap();
+      }
+    }
+
+    function zoomMap(factor) {
+      viewZoom = Math.min(6.0, Math.max(0.35, viewZoom * factor));
+      renderMap();
+    }
+
+    function resetMapView() {
+      viewZoom = 1.0;
+      viewPanX = 0;
+      viewPanY = 0;
+      followRobot = true;
+      const btn = document.getElementById('btnFollow');
+      if (btn) {
+        btn.classList.add('active');
+        btn.textContent = "FOLLOW: ON";
+      }
+      renderMap();
+    }
+
+    function toggleFollowRobot() {
+      followRobot = !followRobot;
+      const btn = document.getElementById('btnFollow');
+      if (btn) {
+        btn.classList.toggle('active', followRobot);
+        btn.textContent = followRobot ? "FOLLOW: ON" : "FOLLOW: OFF";
+      }
+      if (followRobot) renderMap();
+    }
+
+    function resizeCanvas() {
+      const container = document.getElementById('mapContainer');
+      if (container && canvas) {
+        canvas.width = container.clientWidth || 600;
+        canvas.height = container.clientHeight || 440;
+        renderMap();
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+       Coordinate Transforms: World (meters) <--> Canvas (pixels)
+       -------------------------------------------------------------------------- */
+    function worldToCanvas(wx, wy) {
+      const col = (wx - mapMeta.origin_x) / mapMeta.resolution;
+      const row = (wy - mapMeta.origin_y) / mapMeta.resolution;
+      const u = col * (canvas.width / mapMeta.width);
+      const v = (mapMeta.height - 1 - row) * (canvas.height / mapMeta.height);
+      return [u, v];
+    }
+
+    function canvasToWorld(u, v) {
+      const col = u * (mapMeta.width / canvas.width);
+      const row = (canvas.height - 1 - v) * (mapMeta.height / canvas.height);
+      const wx = mapMeta.origin_x + (col + 0.5) * mapMeta.resolution;
+      const wy = mapMeta.origin_y + (row + 0.5) * mapMeta.resolution;
+      return [wx, wy];
+    }
+
+    /* --------------------------------------------------------------------------
+       Canvas Mouse Event Handlers
+       -------------------------------------------------------------------------- */
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? 1.15 : 0.87;
+      zoomMap(factor);
+    }, { passive: false });
+
+    canvas.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      isMouseDown = true;
+      isDragging = false;
+      mouseDownX = e.clientX;
+      mouseDownY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isMouseDown) return;
+      const dx = e.clientX - mouseDownX;
+      const dy = e.clientY - mouseDownY;
+      if (Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+        isDragging = true;
+        followRobot = false;
+        const btn = document.getElementById('btnFollow');
+        if (btn) {
+          btn.classList.remove('active');
+          btn.textContent = "FOLLOW: OFF";
+        }
+        viewPanX += dx;
+        viewPanY += dy;
+        mouseDownX = e.clientX;
+        mouseDownY = e.clientY;
+        renderMap();
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      isMouseDown = false;
+      setTimeout(() => { isDragging = false; }, 50);
+    });
+
+    canvas.addEventListener('click', (e) => {
+      if (isDragging) return;
+      handleCanvasTargetSelection(e);
+    });
+
+    canvas.addEventListener('dblclick', (e) => {
+      handleCanvasTargetSelection(e);
+      setTimeout(() => {
+        dispatchCurrentGoal();
+      }, 100);
+    });
+
+    function handleCanvasTargetSelection(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clickPxX = (e.clientX - rect.left) * (canvas.width / rect.width);
+      const clickPxY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+      const baseU = (clickPxX - (canvas.width / 2 + viewPanX)) / viewZoom + canvas.width / 2;
+      const baseV = (clickPxY - (canvas.height / 2 + viewPanY)) / viewZoom + canvas.height / 2;
+
+      let [wx, wy] = canvasToWorld(baseU, baseV);
+      wx = Math.max(-14.5, Math.min(14.5, wx));
+      wy = Math.max(-14.5, Math.min(14.5, wy));
+
+      setTargetCandidate(wx, wy);
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (isMouseDown) return;
+      const rect = canvas.getBoundingClientRect();
+      const pxX = (e.clientX - rect.left) * (canvas.width / rect.width);
+      const pxY = (e.clientY - rect.top) * (canvas.height / rect.height);
+      const baseU = (pxX - (canvas.width / 2 + viewPanX)) / viewZoom + canvas.width / 2;
+      const baseV = (pxY - (canvas.height / 2 + viewPanY)) / viewZoom + canvas.height / 2;
+      const [wx, wy] = canvasToWorld(baseU, baseV);
+      const hoverEl = document.getElementById('mapHoverCoords');
+      if (hoverEl) {
+        const signX = wx >= 0 ? '+' : '';
+        const signY = wy >= 0 ? '+' : '';
+        hoverEl.textContent = `CURSOR: (${signX}${wx.toFixed(2)}m, ${signY}${wy.toFixed(2)}m)`;
+      }
+    });
+
+    /* --------------------------------------------------------------------------
+       Target Candidate Staging & Safety Validation
+       -------------------------------------------------------------------------- */
+    function setTargetCandidate(wx, wy) {
+      const xVal = parseFloat(wx.toFixed(2));
+      const yVal = parseFloat(wy.toFixed(2));
+
+      currentTarget = {
+        x: xVal,
+        y: yVal,
+        valid: true,
+        reason: 'Target within valid map boundaries.'
+      };
+
+      document.getElementById('inputCoordX').value = xVal.toFixed(2);
+      document.getElementById('inputCoordY').value = yVal.toFixed(2);
+
+      updateTargetUI();
+      renderMap();
+
+      const [u, v] = worldToCanvas(xVal, yVal);
+      fetch(`/api/validate_goal_click?u=${u}&v=${v}&cw=${canvas.width}&ch=${canvas.height}`)
+        .then(res => res.json())
+        .then(data => {
+          if (currentTarget && currentTarget.x === xVal && currentTarget.y === yVal) {
+            currentTarget.valid = data.valid;
+            currentTarget.reason = data.reason;
+            updateTargetUI();
+            renderMap();
+          }
+        })
+        .catch(err => {
+          console.warn("Validation note:", err);
+        });
+    }
+
+    function updateTargetUI() {
+      const pill = document.getElementById('targetValidationPill');
+      const coordsText = document.getElementById('targetCoordsText');
+      const distText = document.getElementById('targetDistText');
+      const bearingText = document.getElementById('targetBearingText');
+      const dispatchBtn = document.getElementById('btnDispatchGoal');
+
+      if (!currentTarget) {
+        pill.className = "badge";
+        pill.textContent = "NO TARGET SELECTED";
+        coordsText.textContent = "Click map to choose destination";
+        coordsText.style.color = "var(--text-muted)";
+        distText.textContent = "0.00 m";
+        bearingText.textContent = "+0.0°";
+        dispatchBtn.disabled = true;
+        return;
+      }
+
+      const signX = currentTarget.x >= 0 ? '+' : '';
+      const signY = currentTarget.y >= 0 ? '+' : '';
+      coordsText.textContent = `X: ${signX}${currentTarget.x.toFixed(2)} m, Y: ${signY}${currentTarget.y.toFixed(2)} m`;
+
+      let dist = 0.0;
+      let bearing = 0.0;
+      if (latestTelemetry && latestTelemetry.robot_pose) {
+        const rx = latestTelemetry.robot_pose.x;
+        const ry = latestTelemetry.robot_pose.y;
+        const rYaw = latestTelemetry.robot_pose.yaw;
+        const dx = currentTarget.x - rx;
+        const dy = currentTarget.y - ry;
+        dist = Math.hypot(dx, dy);
+        let ang = Math.atan2(dy, dx) - rYaw;
+        while (ang > Math.PI) ang -= 2 * Math.PI;
+        while (ang < -Math.PI) ang += 2 * Math.PI;
+        bearing = (ang * 180 / Math.PI);
+      }
+
+      distText.textContent = `${dist.toFixed(2)} m`;
+      bearingText.textContent = `${bearing >= 0 ? '+' : ''}${bearing.toFixed(1)}°`;
+
+      if (currentTarget.valid) {
+        pill.className = "badge badge-green";
+        pill.textContent = "✓ READY TO DISPATCH";
+        coordsText.style.color = "var(--accent-green)";
+        dispatchBtn.disabled = false;
+      } else {
+        pill.className = "badge badge-red";
+        pill.textContent = "⚠️ " + currentTarget.reason;
+        coordsText.style.color = "var(--accent-red)";
+        dispatchBtn.disabled = true;
+      }
+    }
+
+    function clearTargetSelection() {
+      currentTarget = null;
+      updateTargetUI();
+      renderMap();
+    }
+
+    function stepCoord(axis, delta) {
+      const el = document.getElementById(axis === 'x' ? 'inputCoordX' : 'inputCoordY');
+      let val = parseFloat(el.value) || 0.0;
+      val = Math.max(-14.5, Math.min(14.5, val + delta));
+      el.value = val.toFixed(2);
+      applyManualCoordinates();
+    }
+
+    function applyManualCoordinates() {
+      const x = parseFloat(document.getElementById('inputCoordX').value) || 0.0;
+      const y = parseFloat(document.getElementById('inputCoordY').value) || 0.0;
+      setTargetCandidate(x, y);
+    }
+
+    function quickPreset(x, y, autoDispatch = false) {
+      setTargetCandidate(x, y);
+      if (autoDispatch) {
+        setTimeout(() => {
+          dispatchCurrentGoal();
+        }, 120);
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+       Goal Dispatch API (Submits to /api/set_goal -> /goal_pose)
+       -------------------------------------------------------------------------- */
+    function dispatchCurrentGoal() {
+      if (!currentTarget) {
+        alert("Please click on the map to choose a destination first.");
+        return;
+      }
+
+      const payload = {
+        x: currentTarget.x,
+        y: currentTarget.y,
+        yaw: 0.0
+      };
+
+      console.log("[DISPATCH_GOAL]", payload);
+      const pill = document.getElementById('targetValidationPill');
+      pill.className = "badge badge-cyan";
+      pill.textContent = "TRANSMITTING TO UGV...";
+
+      fetch('/api/set_goal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log("[DISPATCH_RESPONSE]", data);
+        if (data.success) {
+          pill.className = "badge badge-green";
+          pill.textContent = "🚀 DISPATCHED TO UGV — ACTIVE";
+          appendLog("MISSION", `Operator dispatched target: X=${payload.x.toFixed(2)}m, Y=${payload.y.toFixed(2)}m`);
+        } else {
+          pill.className = "badge badge-red";
+          pill.textContent = `REJECTED: ${data.message}`;
+          appendLog("REJECT", data.message);
+        }
+      })
+      .catch(err => {
+        console.error("[DISPATCH_ERROR]", err);
+        pill.className = "badge badge-red";
+        pill.textContent = `NETWORK ERROR: ${err.message}`;
+      });
+    }
+
+    function cancelNavigationMission() {
+      fetch('/api/cancel_goal', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          appendLog("MISSION", "Operator triggered mission cancellation.");
+          clearTargetSelection();
+        });
+    }
+
+    function triggerRecoveryFault() {
+      fetch('/api/fault/trigger', { method: 'POST' })
+        .then(res => res.json())
+        .then(d => appendLog("FAULT", "Controlled test recovery fault injected."));
+    }
+
+    function resetRecoveryBudget() {
+      fetch('/api/fault/reset', { method: 'POST' })
+        .then(res => res.json())
+        .then(d => appendLog("RECOVERY", "Recovery attempt budget reset to nominal."));
+    }
+
+    /* --------------------------------------------------------------------------
+       Sequential Non-Blocking Camera Stream Loaders
+       -------------------------------------------------------------------------- */
+    const cameraStreams = [
+      { id: 'camRaw', type: 'raw', fpsEl: 'fpsRaw', rate: 15 },
+      { id: 'camSeg', type: 'segmentation', fpsEl: 'fpsSeg', rate: 30 },
+      { id: 'camPercept', type: 'perception', fpsEl: 'fpsPercept', rate: 15 },
+      { id: 'camVO', type: 'vo', fpsEl: 'fpsVO', rate: 15 },
+      { id: 'camChase', type: 'chase', fpsEl: 'fpsChase', rate: 15 },
+    ];
+
+    function initCameraStreams() {
+      cameraStreams.forEach(stream => {
+        const img = document.getElementById(stream.id);
+        if (!img) return;
+        let isFetching = false;
+
+        function loadNext() {
+          if (isFetching) return;
+          isFetching = true;
+          const nextImg = new Image();
+          nextImg.src = `/api/camera?type=${stream.type}&t=${Date.now()}`;
+          nextImg.onload = () => {
+            img.src = nextImg.src;
+            isFetching = false;
+            setTimeout(loadNext, 180);
+          };
+          nextImg.onerror = () => {
+            isFetching = false;
+            setTimeout(loadNext, 400);
+          };
+        }
+        loadNext();
+      });
+    }
+
+    function setVisionView(mode) {
+      document.getElementById('tabFeedsAll').classList.toggle('active', mode === 'all');
+      document.getElementById('tabFeedsFocus').classList.toggle('active', mode === 'chase');
+      document.getElementById('tabFeedsSeg').classList.toggle('active', mode === 'seg');
+
+      const boxes = ['boxRaw', 'boxSeg', 'boxPercept', 'boxVO', 'boxChase'];
+      if (mode === 'all') {
+        boxes.forEach(b => document.getElementById(b).style.display = '');
+        document.getElementById('boxChase').style.gridColumn = 'span 2';
+        document.getElementById('boxChase').style.height = '165px';
+      } else if (mode === 'chase') {
+        boxes.forEach(b => document.getElementById(b).style.display = 'none');
+        const c = document.getElementById('boxChase');
+        c.style.display = '';
+        c.style.gridColumn = 'span 2';
+        c.style.height = '340px';
+      } else if (mode === 'seg') {
+        boxes.forEach(b => document.getElementById(b).style.display = 'none');
+        const s = document.getElementById('boxSeg');
+        s.style.display = '';
+        s.style.gridColumn = 'span 2';
+        s.style.height = '340px';
+      }
+    }
+
+    function fetchSlamImage() {
+      const nextSlam = new Image();
+      nextSlam.src = `/api/map_image?t=${Date.now()}`;
+      nextSlam.onload = () => {
+        slamImg.src = nextSlam.src;
+        slamLoaded = true;
+      };
+    }
+
+    /* --------------------------------------------------------------------------
+       Telemetry Polling (10 Hz)
+       -------------------------------------------------------------------------- */
+    async function pollTelemetry() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        latestTelemetry = data;
+
+        if (data.map_meta) {
+          mapMeta = data.map_meta;
+        }
+
+        // Top Status Badges
+        updateBadge('badgeSystem', `SYS: ${data.system_status}`, data.system_status);
+        updateBadge('badgeMission', `MISSION: ${data.mission_state}`, data.mission_state);
+        updateBadge('badgeRecovery', `RECOVERY: ${data.recovery_state}`, data.recovery_state);
+        document.getElementById('badgeConfidence').textContent = `CONF: ${data.confidence_scores.overall.toFixed(2)}`;
+
+        const p = data.robot_pose;
+        const signX = p.x >= 0 ? '+' : '';
+        const signY = p.y >= 0 ? '+' : '';
+        document.getElementById('badgePose').textContent = `X: ${signX}${p.x.toFixed(2)}m | Y: ${signY}${p.y.toFixed(2)}m`;
+
+        // 12 Subsystems Health Grid
+        const gridEl = document.getElementById('subsystemsGrid');
+        gridEl.innerHTML = '';
+        let onlineCount = 0;
+        for (const [name, info] of Object.entries(data.subsystems)) {
+          const isOnline = info.status === 'ONLINE';
+          if (isOnline) onlineCount++;
+          const col = isOnline ? '#05f187' : (info.status === 'DEGRADED' ? '#ffb703' : '#ff3366');
+          gridEl.innerHTML += `
+            <div class="subsys-node">
+              <span class="metric-label">${name}</span>
+              <span class="metric-val" style="color: ${col};">[${info.status}] ${info.rate} ${info.unit}</span>
+            </div>`;
+        }
+        document.getElementById('badgeHealthSummary').textContent = `${onlineCount} / 12 ONLINE`;
+        document.getElementById('badgeHealthSummary').className = onlineCount >= 8 ? 'badge badge-green' : 'badge badge-amber';
+
+        // Confidence Bars
+        const confContainer = document.getElementById('confidenceBarsContainer');
+        confContainer.innerHTML = '';
+        const dims = [
+          ['Visual Motion', data.confidence_scores.visual],
+          ['Localization', data.confidence_scores.localization],
+          ['IMU State', data.confidence_scores.imu],
+          ['Wheel Odometry', data.confidence_scores.wheel],
+          ['Cross-Sensor Sync', data.confidence_scores.cross_sensor],
+          ['Map Consistency', data.confidence_scores.map]
+        ];
+        dims.forEach(([label, score]) => {
+          const col = score > 0.7 ? '#05f187' : (score > 0.4 ? '#ffb703' : '#ff3366');
+          confContainer.innerHTML += `
+            <div>
+              <div class="metric-row"><span class="metric-label">${label}</span><span class="metric-val">${score.toFixed(2)}</span></div>
+              <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${Math.round(score * 100)}%; background: ${col};"></div></div>
+            </div>`;
+        });
+        document.getElementById('lblPrimaryReason').textContent = data.confidence_primary_reason;
+
+        // Recovery Metrics
+        document.getElementById('lblRecoveryState').textContent = data.recovery_state;
+        document.getElementById('lblRecoveryState').className = data.recovery_state === 'NORMAL' ? 'badge badge-green' : 'badge badge-amber';
+        document.getElementById('lblRecoveryStrategy').textContent = data.recovery_strategy;
+        document.getElementById('lblRecoveryAttempts').textContent = `${data.recovery_attempts} / ${data.recovery_max_attempts}`;
+        document.getElementById('lblRecoveryDwell').textContent = `${data.recovery_dwell_sec.toFixed(1)} s`;
+
+        // Navigation Metrics
+        document.getElementById('navDistGoal').textContent = `${data.nav_stats.dist_to_goal_m.toFixed(2)} m`;
+        document.getElementById('navCmdVel').textContent = `${data.nav_stats.cmd_vx.toFixed(2)} m/s, ${data.nav_stats.cmd_wz.toFixed(2)} r/s`;
+        document.getElementById('navReplans').textContent = data.nav_stats.replan_count;
+        if (data.replan_diagnostics) {
+          document.getElementById('navReplanReason').textContent = data.replan_diagnostics.replan_reason || "None";
+        }
+
+        // Event Log
+        renderEvents(data.events);
+
+        // Map Render
+        renderMap();
+      } catch (err) {
+        console.error("Telemetry update error:", err);
+      }
+    }
+
+    function updateBadge(id, text, state) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+      el.className = 'badge ';
+      if (['ONLINE', 'NORMAL', 'CONTINUE', 'GOAL_REACHED'].includes(state)) el.className += 'badge-green';
+      else if (['DEGRADED', 'NAVIGATING', 'PLANNING', 'REPLANNING', 'VERIFY', 'RECOVER'].includes(state)) el.className += 'badge-amber';
+      else el.className += 'badge-red';
+    }
+
+    function appendLog(category, text) {
+      const now = new Date().toTimeString().split(' ')[0];
+      const logEl = document.getElementById('eventLogContainer');
+      if (!logEl) return;
+      let col = 'var(--accent-cyan)';
+      if (category === 'MISSION') col = 'var(--accent-green)';
+      else if (category === 'FAULT' || category === 'REJECT') col = 'var(--accent-red)';
+      else if (category === 'RECOVERY') col = 'var(--accent-amber)';
+
+      logEl.innerHTML = `
+        <div class="log-row">
+          <span class="log-time">${now}</span>
+          <span class="log-tag" style="color: ${col};">[${category}]</span>
+          <span class="log-msg">${text}</span>
+        </div>` + logEl.innerHTML;
+    }
+
+    function renderEvents(events) {
+      if (!events || events.length === 0) return;
+      const logEl = document.getElementById('eventLogContainer');
+      if (!logEl) return;
+      logEl.innerHTML = '';
+      events.forEach(e => {
+        let col = 'var(--accent-cyan)';
+        if (e.category === 'MISSION') col = 'var(--accent-green)';
+        else if (e.category === 'RECOVERY') col = 'var(--accent-amber)';
+        else if (e.category === 'REPLAN') col = 'var(--accent-red)';
+        logEl.innerHTML += `
+          <div class="log-row">
+            <span class="log-time">${e.time}</span>
+            <span class="log-tag" style="color: ${col};">[${e.category}]</span>
+            <span class="log-msg">${e.text}</span>
+          </div>`;
+      });
+    }
+
+    /* --------------------------------------------------------------------------
+       Procedural RELLIS Terrain Basemap
+       -------------------------------------------------------------------------- */
+    function drawProceduralBasemap() {
+      ctx.fillStyle = '#1e331c';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = '#2d4c2a';
+      ctx.lineWidth = 1;
+      ctx.font = '9px monospace';
+      ctx.fillStyle = '#5a8253';
+      for (let x = -15; x <= 15; x += 5) {
+        const [u1, v1] = worldToCanvas(x, -15);
+        const [u2, v2] = worldToCanvas(x, 15);
+        ctx.beginPath(); ctx.moveTo(u1, v1); ctx.lineTo(u2, v2); ctx.stroke();
+        ctx.fillText(`${x >= 0 ? '+' : ''}${x}m`, u1 + 2, canvas.height - 4);
+      }
+      for (let y = -15; y <= 15; y += 5) {
+        const [u1, v1] = worldToCanvas(-15, y);
+        const [u2, v2] = worldToCanvas(15, y);
+        ctx.beginPath(); ctx.moveTo(u1, v1); ctx.lineTo(u2, v2); ctx.stroke();
+        ctx.fillText(`${y >= 0 ? '+' : ''}${y}m`, 4, v1 - 2);
+      }
+
+      drawTrailSegment([[-1, 0], [4, 0], [11, 0]], 3.2);
+      drawTrailSegment([[11, 0], [14, 2.5], [17, 6]], 3.0);
+
+      const [mu1, mv1] = worldToCanvas(-4.0, 5.5);
+      const [mu2, mv2] = worldToCanvas(0.0, 2.5);
+      ctx.fillStyle = '#3a2d1d';
+      ctx.beginPath();
+      ctx.ellipse((mu1 + mu2) / 2, (mv1 + mv2) / 2, Math.abs(mu2 - mu1) / 2, Math.abs(mv2 - mv1) / 2, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      const trees = [[3.0, 2.8, 1.4], [5.5, -2.7, 1.5], [9.0, 3.5, 1.6], [-3.0, -3.5, 1.3], [12.0, -2.5, 1.5]];
+      trees.forEach(([tx, ty, tr]) => {
+        const [tu, tv] = worldToCanvas(tx, ty);
+        const [ru] = worldToCanvas(tx + tr, ty);
+        const rad = Math.abs(ru - tu);
+        ctx.fillStyle = '#16381a';
+        ctx.beginPath(); ctx.arc(tu, tv, rad, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#225026';
+        ctx.beginPath(); ctx.arc(tu - rad * 0.2, tv - rad * 0.2, rad * 0.6, 0, Math.PI * 2); ctx.fill();
+      });
+
+      const [su, sv] = worldToCanvas(0.0, 0.0);
+      ctx.strokeStyle = '#00d2ff';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(su, sv, 7, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = '#00d2ff';
+      ctx.font = 'bold 9px monospace';
+      ctx.fillText('START (0,0)', su + 10, sv + 3);
+    }
+
+    function drawTrailSegment(pts, widthM) {
+      if (pts.length < 2) return;
+      const [u0] = worldToCanvas(0, 0);
+      const [uW] = worldToCanvas(widthM, 0);
+      const pxWidth = Math.abs(uW - u0);
+
+      ctx.strokeStyle = '#6e563b';
+      ctx.lineWidth = pxWidth;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      pts.forEach(([x, y], idx) => {
+        const [u, v] = worldToCanvas(x, y);
+        if (idx === 0) ctx.moveTo(u, v);
+        else ctx.lineTo(u, v);
+      });
+      ctx.stroke();
+
+      ctx.strokeStyle = '#85694a';
+      ctx.lineWidth = pxWidth * 0.75;
+      ctx.stroke();
+    }
+
+    /* --------------------------------------------------------------------------
+       Authoritative Map Renderer
+       -------------------------------------------------------------------------- */
+    function renderMap() {
+      try {
+        if (!canvas || !ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.save();
+
+        if (followRobot && latestTelemetry && latestTelemetry.robot_pose) {
+          const p = latestTelemetry.robot_pose;
+          const [ru, rv] = worldToCanvas(p.x, p.y);
+          viewPanX = canvas.width / 2 - ru;
+          viewPanY = canvas.height / 2 - rv;
+        }
+
+        ctx.translate(canvas.width / 2 + viewPanX, canvas.height / 2 + viewPanY);
+        ctx.scale(viewZoom, viewZoom);
+        ctx.translate(-canvas.width / 2, -canvas.height / 2);
+
+        // 1. RELLIS Terrain Basemap
+        if (layers.base) {
+          if (basemapLoaded && basemapImg.width > 0) {
+            ctx.drawImage(basemapImg, 0, 0, canvas.width, canvas.height);
+          } else {
+            drawProceduralBasemap();
+          }
+        }
+
+        // 2. SLAM Occupancy Overlay
+        if (layers.slam && slamLoaded && slamImg.width > 0) {
+          ctx.save();
+          ctx.globalAlpha = 0.60;
+          ctx.drawImage(slamImg, 0, 0, canvas.width, canvas.height);
+          ctx.restore();
+        }
+
+        if (latestTelemetry) {
+          // 3. Past Trajectory (Yellow dashed)
+          if (layers.traj && latestTelemetry.trajectory && latestTelemetry.trajectory.length > 1) {
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 1.8;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            latestTelemetry.trajectory.forEach((pt, idx) => {
+              const [u, v] = worldToCanvas(pt.x, pt.y);
+              if (idx === 0) ctx.moveTo(u, v);
+              else ctx.lineTo(u, v);
+            });
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+
+          // 4. Global Planned Path (Solid Emerald Green)
+          if (layers.path && latestTelemetry.nav_path && latestTelemetry.nav_path.length > 1) {
+            ctx.strokeStyle = '#05f187';
+            ctx.lineWidth = 2.8;
+            ctx.beginPath();
+            latestTelemetry.nav_path.forEach((pt, idx) => {
+              const [u, v] = worldToCanvas(pt.x, pt.y);
+              if (idx === 0) ctx.moveTo(u, v);
+              else ctx.lineTo(u, v);
+            });
+            ctx.stroke();
+
+            ctx.fillStyle = '#05f187';
+            latestTelemetry.nav_path.forEach(pt => {
+              const [u, v] = worldToCanvas(pt.x, pt.y);
+              ctx.beginPath(); ctx.arc(u, v, 2.5, 0, Math.PI * 2); ctx.fill();
+            });
+          }
+
+          // 5. Active Navigation Goal Marker (Red flag)
+          if (latestTelemetry.active_goal) {
+            const [gu, gv] = worldToCanvas(latestTelemetry.active_goal.x, latestTelemetry.active_goal.y);
+            ctx.fillStyle = '#ff3366';
+            ctx.beginPath(); ctx.arc(gu, gv, 6.0, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
+          }
+
+          // 6. Interactive Target Reticle & Bearing Vector
+          if (currentTarget) {
+            const [tu, tv] = worldToCanvas(currentTarget.x, currentTarget.y);
+            const [ru, rv] = worldToCanvas(latestTelemetry.robot_pose.x, latestTelemetry.robot_pose.y);
+
+            ctx.strokeStyle = 'rgba(0, 210, 255, 0.4)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath(); ctx.moveTo(ru, rv); ctx.lineTo(tu, tv); ctx.stroke();
+            ctx.setLineDash([]);
+
+            const col = currentTarget.valid ? '#05f187' : '#ff3366';
+            ctx.strokeStyle = col;
+            ctx.lineWidth = 2.0;
+
+            ctx.beginPath();
+            ctx.moveTo(tu - 16, tv); ctx.lineTo(tu + 16, tv);
+            ctx.moveTo(tu, tv - 16); ctx.lineTo(tu + 16, tv);
+            ctx.stroke();
+
+            ctx.beginPath(); ctx.arc(tu, tv, 8, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(tu, tv, 16, 0, Math.PI * 2); ctx.stroke();
+
+            ctx.fillStyle = col;
+            ctx.font = 'bold 11px monospace';
+            const signX = currentTarget.x >= 0 ? '+' : '';
+            const signY = currentTarget.y >= 0 ? '+' : '';
+            ctx.fillText(`TARGET (${signX}${currentTarget.x.toFixed(2)}, ${signY}${currentTarget.y.toFixed(2)})`, tu + 18, tv - 10);
+          }
+
+          // 7. Robot Marker & Heading Vector
+          const p = latestTelemetry.robot_pose;
+          const [ru, rv] = worldToCanvas(p.x, p.y);
+
+          ctx.fillStyle = '#00d2ff';
+          ctx.beginPath(); ctx.arc(ru, rv, 6.5, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8; ctx.stroke();
+
+          const arrowLen = 16;
+          const headU = ru + arrowLen * Math.cos(-p.yaw);
+          const headV = rv + arrowLen * Math.sin(-p.yaw);
+          ctx.strokeStyle = '#00d2ff';
+          ctx.lineWidth = 2.8;
+          ctx.beginPath(); ctx.moveTo(ru, rv); ctx.lineTo(headU, headV); ctx.stroke();
+        }
+
+        ctx.restore();
+      } catch (e) {
+        console.error("renderMap execution error:", e);
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+       Application Initialization (Guaranteed Clean Order)
+       -------------------------------------------------------------------------- */
+    window.addEventListener('resize', resizeCanvas);
+    initCameraStreams();
+    setInterval(fetchSlamImage, 1000);
+    setInterval(pollTelemetry, 100);
+
+    // Initial Trigger
+    resizeCanvas();
+    pollTelemetry();
+  </script>
+</body>
+</html>

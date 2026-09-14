@@ -1,0 +1,16 @@
+naviguard_perception_node:
+  ros__parameters:
+    use_sim_time: true
+    image_topic: "/camera/image_raw"
+    camera_info_topic: "/camera/camera_info"
+    debug_image_topic: "/perception/debug_image"
+    display_mode: "overlay"
+    enable_clahe: true
+    clahe_clip_limit: 2.0
+    clahe_grid_size: 8
+    canny_low_threshold: 50
+    canny_high_threshold: 150
+    ground_roi_top_ratio: 0.60
+    ground_roi_bottom_ratio: 0.98
+    self_mask_height_ratio: 0.15
+    diag_publish_period_sec: 3.0

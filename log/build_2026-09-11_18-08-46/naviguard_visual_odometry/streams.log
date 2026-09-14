@@ -1,0 +1,17 @@
+[2.604s] Invoking command in '/home/maxx/naviguard_ws/build/naviguard_visual_odometry': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_visual_odometry/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_visual_odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_visual_odometry/build --no-deps symlink_data
+[2.939s] running develop
+[3.147s] running egg_info
+[3.168s] writing naviguard_visual_odometry.egg-info/PKG-INFO
+[3.169s] writing dependency_links to naviguard_visual_odometry.egg-info/dependency_links.txt
+[3.170s] writing entry points to naviguard_visual_odometry.egg-info/entry_points.txt
+[3.170s] writing requirements to naviguard_visual_odometry.egg-info/requires.txt
+[3.170s] writing top-level names to naviguard_visual_odometry.egg-info/top_level.txt
+[3.207s] reading manifest file 'naviguard_visual_odometry.egg-info/SOURCES.txt'
+[3.209s] writing manifest file 'naviguard_visual_odometry.egg-info/SOURCES.txt'
+[3.223s] running build_ext
+[3.223s] Creating /home/maxx/naviguard_ws/install/naviguard_visual_odometry/lib/python3.12/site-packages/naviguard-visual-odometry.egg-link (link to .)
+[3.224s] Installing visual_odometry_node script to /home/maxx/naviguard_ws/install/naviguard_visual_odometry/lib/naviguard_visual_odometry
+[3.225s] 
+[3.225s] Installed /home/maxx/naviguard_ws/build/naviguard_visual_odometry
+[3.225s] running symlink_data
+[3.328s] Invoked command in '/home/maxx/naviguard_ws/build/naviguard_visual_odometry' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_visual_odometry/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_visual_odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_visual_odometry/build --no-deps symlink_data

@@ -1,0 +1,28 @@
+[1.455s] Invoking command in '/home/maxx/naviguard_ws/build/naviguard_state_estimation': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_state_estimation/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_state_estimation/build --no-deps symlink_data
+[1.704s] running develop
+[1.862s] running egg_info
+[1.862s] creating naviguard_state_estimation.egg-info
+[1.872s] writing naviguard_state_estimation.egg-info/PKG-INFO
+[1.873s] writing dependency_links to naviguard_state_estimation.egg-info/dependency_links.txt
+[1.873s] writing entry points to naviguard_state_estimation.egg-info/entry_points.txt
+[1.873s] writing requirements to naviguard_state_estimation.egg-info/requires.txt
+[1.873s] writing top-level names to naviguard_state_estimation.egg-info/top_level.txt
+[1.873s] writing manifest file 'naviguard_state_estimation.egg-info/SOURCES.txt'
+[1.902s] reading manifest file 'naviguard_state_estimation.egg-info/SOURCES.txt'
+[1.903s] writing manifest file 'naviguard_state_estimation.egg-info/SOURCES.txt'
+[1.918s] running build_ext
+[1.918s] Creating /home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/python3.12/site-packages/naviguard-state-estimation.egg-link (link to .)
+[1.918s] Installing state_estimation_node script to /home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/naviguard_state_estimation
+[1.919s] 
+[1.919s] Installed /home/maxx/naviguard_ws/build/naviguard_state_estimation
+[1.920s] running symlink_data
+[1.920s] creating /home/maxx/naviguard_ws/install/naviguard_state_estimation/share/ament_index
+[1.920s] creating /home/maxx/naviguard_ws/install/naviguard_state_estimation/share/ament_index/resource_index
+[1.920s] creating /home/maxx/naviguard_ws/install/naviguard_state_estimation/share/ament_index/resource_index/packages
+[1.920s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_state_estimation/resource/naviguard_state_estimation -> /home/maxx/naviguard_ws/install/naviguard_state_estimation/share/ament_index/resource_index/packages
+[1.920s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_state_estimation/package.xml -> /home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation
+[1.920s] creating /home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/launch
+[1.921s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_state_estimation/launch/state_estimation.launch.py -> /home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/launch
+[1.921s] creating /home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/config
+[1.921s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_state_estimation/config/state_estimation_params.yaml -> /home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/config
+[1.973s] Invoked command in '/home/maxx/naviguard_ws/build/naviguard_state_estimation' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_state_estimation/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_state_estimation/build --no-deps symlink_data

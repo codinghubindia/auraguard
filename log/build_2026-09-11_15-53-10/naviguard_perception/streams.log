@@ -1,0 +1,28 @@
+[0.942s] Invoking command in '/home/maxx/naviguard_ws/build/naviguard_perception': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_perception/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_perception/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_perception/build --no-deps symlink_data
+[1.144s] running develop
+[1.250s] running egg_info
+[1.250s] creating naviguard_perception.egg-info
+[1.260s] writing naviguard_perception.egg-info/PKG-INFO
+[1.260s] writing dependency_links to naviguard_perception.egg-info/dependency_links.txt
+[1.260s] writing entry points to naviguard_perception.egg-info/entry_points.txt
+[1.260s] writing requirements to naviguard_perception.egg-info/requires.txt
+[1.260s] writing top-level names to naviguard_perception.egg-info/top_level.txt
+[1.260s] writing manifest file 'naviguard_perception.egg-info/SOURCES.txt'
+[1.280s] reading manifest file 'naviguard_perception.egg-info/SOURCES.txt'
+[1.281s] writing manifest file 'naviguard_perception.egg-info/SOURCES.txt'
+[1.292s] running build_ext
+[1.292s] Creating /home/maxx/naviguard_ws/install/naviguard_perception/lib/python3.12/site-packages/naviguard-perception.egg-link (link to .)
+[1.292s] Installing naviguard_perception_node script to /home/maxx/naviguard_ws/install/naviguard_perception/lib/naviguard_perception
+[1.293s] 
+[1.293s] Installed /home/maxx/naviguard_ws/build/naviguard_perception
+[1.293s] running symlink_data
+[1.293s] creating /home/maxx/naviguard_ws/install/naviguard_perception/share/ament_index
+[1.293s] creating /home/maxx/naviguard_ws/install/naviguard_perception/share/ament_index/resource_index
+[1.293s] creating /home/maxx/naviguard_ws/install/naviguard_perception/share/ament_index/resource_index/packages
+[1.293s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_perception/resource/naviguard_perception -> /home/maxx/naviguard_ws/install/naviguard_perception/share/ament_index/resource_index/packages
+[1.293s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_perception/package.xml -> /home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception
+[1.294s] creating /home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/launch
+[1.294s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_perception/launch/perception.launch.py -> /home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/launch
+[1.294s] creating /home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/config
+[1.294s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_perception/config/perception_params.yaml -> /home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/config
+[1.339s] Invoked command in '/home/maxx/naviguard_ws/build/naviguard_perception' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_perception/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_perception/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_perception/build --no-deps symlink_data

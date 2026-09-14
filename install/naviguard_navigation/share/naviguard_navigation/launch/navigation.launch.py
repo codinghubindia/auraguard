@@ -1,0 +1,1 @@
+/home/maxx/naviguard_ws/build/naviguard_navigation/launch/navigation.launch.py

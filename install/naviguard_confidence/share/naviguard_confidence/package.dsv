@@ -1,0 +1,9 @@
+source;share/naviguard_confidence/hook/pythonpath.ps1
+source;share/naviguard_confidence/hook/pythonpath.dsv
+source;share/naviguard_confidence/hook/pythonpath.sh
+source;share/naviguard_confidence/hook/ament_prefix_path.ps1
+source;share/naviguard_confidence/hook/ament_prefix_path.dsv
+source;share/naviguard_confidence/hook/ament_prefix_path.sh
+source;../../build/naviguard_confidence/share/naviguard_confidence/hook/pythonpath_develop.ps1
+source;../../build/naviguard_confidence/share/naviguard_confidence/hook/pythonpath_develop.dsv
+source;../../build/naviguard_confidence/share/naviguard_confidence/hook/pythonpath_develop.sh

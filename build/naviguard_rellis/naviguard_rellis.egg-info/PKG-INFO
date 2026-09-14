@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: naviguard-rellis
+Version: 0.1.0
+Summary: NAVIGUARD RELLIS-3D Dataset Replay, Realistic Off-Road Environment, and Evaluation Package
+Maintainer: NAVIGUARD Team
+Maintainer-email: maxx@naviguard.org
+License: Apache-2.0

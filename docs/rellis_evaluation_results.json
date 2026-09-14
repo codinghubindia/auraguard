@@ -1,0 +1,16 @@
+{
+  "sequence": "00000",
+  "gt_samples": 100,
+  "est_samples": 100,
+  "gt_trajectory_length_m": 19.87353814213629,
+  "est_trajectory_length_m": 20.369106746643837,
+  "ate_rmse_m": 0.06133495189376622,
+  "ate_mean_m": 0.05499202284217503,
+  "ate_max_m": 0.12224975841033343,
+  "ate_std_m": 0.027163463467244298,
+  "rpe_rmse_m": 0.07324896564369635,
+  "rpe_mean_m": 0.06591224125998657,
+  "final_position_error_m": 0.06341125722280928,
+  "tracking_continuity_pct": 100.0,
+  "average_confidence_score": 0.8777419294603334
+}

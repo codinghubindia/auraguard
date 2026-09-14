@@ -1,0 +1,32 @@
+[0.775s] Invoking command in '/home/maxx/naviguard_ws/build/naviguard_dashboard': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_dashboard/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_dashboard/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_dashboard/build --no-deps symlink_data
+[0.980s] running develop
+[1.082s] running egg_info
+[1.082s] creating naviguard_dashboard.egg-info
+[1.092s] writing naviguard_dashboard.egg-info/PKG-INFO
+[1.092s] writing dependency_links to naviguard_dashboard.egg-info/dependency_links.txt
+[1.092s] writing entry points to naviguard_dashboard.egg-info/entry_points.txt
+[1.092s] writing requirements to naviguard_dashboard.egg-info/requires.txt
+[1.092s] writing top-level names to naviguard_dashboard.egg-info/top_level.txt
+[1.092s] writing manifest file 'naviguard_dashboard.egg-info/SOURCES.txt'
+[1.114s] reading manifest file 'naviguard_dashboard.egg-info/SOURCES.txt'
+[1.115s] writing manifest file 'naviguard_dashboard.egg-info/SOURCES.txt'
+[1.137s] running build_ext
+[1.137s] Creating /home/maxx/naviguard_ws/install/naviguard_dashboard/lib/python3.12/site-packages/naviguard-dashboard.egg-link (link to .)
+[1.137s] Installing dashboard_node script to /home/maxx/naviguard_ws/install/naviguard_dashboard/lib/naviguard_dashboard
+[1.138s] 
+[1.138s] Installed /home/maxx/naviguard_ws/build/naviguard_dashboard
+[1.138s] running symlink_data
+[1.138s] creating /home/maxx/naviguard_ws/install/naviguard_dashboard/share
+[1.138s] creating /home/maxx/naviguard_ws/install/naviguard_dashboard/share/ament_index
+[1.138s] creating /home/maxx/naviguard_ws/install/naviguard_dashboard/share/ament_index/resource_index
+[1.138s] creating /home/maxx/naviguard_ws/install/naviguard_dashboard/share/ament_index/resource_index/packages
+[1.139s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_dashboard/resource/naviguard_dashboard -> /home/maxx/naviguard_ws/install/naviguard_dashboard/share/ament_index/resource_index/packages
+[1.139s] creating /home/maxx/naviguard_ws/install/naviguard_dashboard/share/naviguard_dashboard
+[1.139s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_dashboard/package.xml -> /home/maxx/naviguard_ws/install/naviguard_dashboard/share/naviguard_dashboard
+[1.139s] creating /home/maxx/naviguard_ws/install/naviguard_dashboard/share/naviguard_dashboard/launch
+[1.139s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_dashboard/launch/dashboard.launch.py -> /home/maxx/naviguard_ws/install/naviguard_dashboard/share/naviguard_dashboard/launch
+[1.139s] creating /home/maxx/naviguard_ws/install/naviguard_dashboard/share/naviguard_dashboard/config
+[1.140s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_dashboard/config/dashboard_params.yaml -> /home/maxx/naviguard_ws/install/naviguard_dashboard/share/naviguard_dashboard/config
+[1.140s] creating /home/maxx/naviguard_ws/install/naviguard_dashboard/share/naviguard_dashboard/static
+[1.140s] symbolically linking /home/maxx/naviguard_ws/build/naviguard_dashboard/naviguard_dashboard/static/index.html -> /home/maxx/naviguard_ws/install/naviguard_dashboard/share/naviguard_dashboard/static
+[1.164s] Invoked command in '/home/maxx/naviguard_ws/build/naviguard_dashboard' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_dashboard/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_dashboard/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_dashboard/build --no-deps symlink_data

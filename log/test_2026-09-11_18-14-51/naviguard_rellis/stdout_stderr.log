@@ -1,0 +1,19 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+cachedir: /home/maxx/naviguard_ws/build/naviguard_rellis/.pytest_cache
+rootdir: /home/maxx/naviguard_ws/src/naviguard_rellis
+plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+collecting ... 
+collected 22 items                                                             
+
+test/test_calibration_loader.py ...                                      [ 13%]
+test/test_dataset_validator.py ..                                        [ 22%]
+test/test_evaluation_metrics.py ....                                     [ 40%]
+test/test_ground_truth_guard.py ....                                     [ 59%]
+test/test_label_loader.py ...                                            [ 72%]
+test/test_pointcloud_loader.py ..                                        [ 81%]
+test/test_pose_loader.py ...                                             [ 95%]
+test/test_sequence_loader.py .                                           [100%]
+
+- generated xml file: /home/maxx/naviguard_ws/build/naviguard_rellis/pytest.xml -
+============================== 22 passed in 0.48s ==============================

@@ -1,0 +1,15 @@
+rellis_replay_node:
+  ros__parameters:
+    data_root: "~/datasets/rellis3d"
+    sequence: "00000"
+    replay_rate_hz: 10.0
+    loop: false
+    camera_frame_id: "camera_optical_link"
+    use_synthetic_fallback: true
+
+rellis_evaluator_node:
+  ros__parameters:
+    sequence: "00000"
+    metrics_output_file: "~/naviguard_ws/docs/rellis_evaluation_results.json"
+    publish_rate_hz: 1.0
+

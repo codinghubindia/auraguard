@@ -1,0 +1,16 @@
+{
+  "sequence": "00000",
+  "gt_samples": 41,
+  "est_samples": 0,
+  "gt_trajectory_length_m": 4.050096384480818,
+  "est_trajectory_length_m": 0.0,
+  "ate_rmse_m": 0.0,
+  "ate_mean_m": 0.0,
+  "ate_max_m": 0.0,
+  "ate_std_m": 0.0,
+  "rpe_rmse_m": 0.0,
+  "rpe_mean_m": 0.0,
+  "final_position_error_m": 0.0,
+  "tracking_continuity_pct": 100.0,
+  "average_confidence_score": 0.0
+}

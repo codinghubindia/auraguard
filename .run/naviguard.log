@@ -1,0 +1,911 @@
+[INFO] [launch]: All log files can be found below /home/maxx/.ros/log/2026-09-13-07-27-11-949823-Agni-15638
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [robot_state_publisher-1]: process started with pid [15660]
+[INFO] [gazebo-2]: process started with pid [15661]
+[INFO] [create-3]: process started with pid [15662]
+[INFO] [parameter_bridge-4]: process started with pid [15664]
+[INFO] [naviguard_perception_node-5]: process started with pid [15665]
+[INFO] [visual_odometry_node-6]: process started with pid [15666]
+[INFO] [sensor_sync_node-7]: process started with pid [15667]
+[INFO] [state_estimation_node-8]: process started with pid [15668]
+[INFO] [slam_node-9]: process started with pid [15669]
+[INFO] [confidence_node-10]: process started with pid [15671]
+[INFO] [recovery_node-11]: process started with pid [15673]
+[INFO] [navigation_node-12]: process started with pid [15674]
+[INFO] [dashboard_node-13]: process started with pid [15679]
+[robot_state_publisher-1] [WARN] [1789284432.230324044] [kdl_parser]: The root link base_link has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.
+[robot_state_publisher-1] [INFO] [1789284432.230515132] [robot_state_publisher]: Robot initialized
+[create-3] [INFO] [1789284432.273500621] [ros_gz_sim]: Requesting list of world names.
+[create-3] [INFO] [1789284435.453386540] [ros_gz_sim]: Waiting messages on topic [robot_description].
+[create-3] [INFO] [1789284435.475143304] [ros_gz_sim]: Entity creation successful.
+[sensor_sync_node-7] [INFO] [1789284435.544678757] [sensor_sync_node]: SensorSyncNode initialized:
+[sensor_sync_node-7]   Camera Image:    /camera/image_raw (Expected: 30.0 Hz)
+[sensor_sync_node-7]   Camera Info:     /camera/camera_info (Expected: 30.0 Hz)
+[sensor_sync_node-7]   IMU:             /imu (Expected: 100.0 Hz)
+[sensor_sync_node-7]   Odometry:        /odom (Expected: 50.0 Hz)
+[sensor_sync_node-7]   Sync Tolerance:  20.0 ms
+[sensor_sync_node-7]   Diagnostics:     /sensor_sync/diagnostics
+[confidence_node-10] [INFO] [1789284435.547793589] [confidence_node]: NaviguardConfidenceNode initialized at 10.0 Hz. Thresholds: CONTINUE>=0.75, VERIFY<0.65, RECOVER<0.35
+[navigation_node-12] [INFO] [1789284435.564716621] [navigation_node]: Navigation Node initialized: rate=10.0Hz, v_max=0.25m/s, w_max=0.35rad/s, R_inflate=0.5m
+[state_estimation_node-8] [INFO] [1789284435.575048577] [state_estimation_node]: StateEstimationNode started. Publishing at 20.0 Hz. publish_tf=False, odom_frame=odom, base_frame=base_link
+[recovery_node-11] [INFO] [1789284435.597676216] [recovery_node]: NaviguardRecoveryNode initialized at 10.0 Hz. Max attempts: 3, Safe stop dwell: 0.50s
+[naviguard_perception_node-5] [INFO] [1789284435.615358710] [naviguard_perception_node]: NAVIGUARD Perception Node initialized.
+[naviguard_perception_node-5]   Subscribing: /camera/image_raw (sensor_data QoS)
+[naviguard_perception_node-5]   Subscribing: /camera/camera_info (sensor_data QoS)
+[naviguard_perception_node-5]   Publishing:  /perception/debug_image
+[naviguard_perception_node-5]   Publishing:  /perception/segmentation
+[naviguard_perception_node-5]   Display Mode: overlay
+[INFO] [create-3]: process has finished cleanly [pid 15662]
+[visual_odometry_node-6] [INFO] [1789284435.694308001] [visual_odometry_node]: VisualOdometryNode initialized:
+[visual_odometry_node-6]   Subscribing image:       /camera/image_raw (Best-Effort)
+[visual_odometry_node-6]   Subscribing camera_info: /camera/camera_info (Best-Effort)
+[visual_odometry_node-6]   Subscribing odom:        /odom (Reliable)
+[visual_odometry_node-6]   Publishing debug image:  /visual_odometry/debug_image
+[visual_odometry_node-6]   Publishing telemetry:    /visual_odometry/telemetry
+[visual_odometry_node-6]   Max features:            200
+[visual_odometry_node-6]   FB error threshold:      1.0 px
+[visual_odometry_node-6]   Geom RANSAC thresh:      1.0 px
+[visual_odometry_node-6]   Scale Mode:              STRICT MONOCULAR UNIT-SCALE (UNKNOWN)
+[dashboard_node-13] [INFO] [1789284435.764333933] [dashboard_node]: NAVIGUARD Operator Dashboard running at http://0.0.0.0:8080 (Static: /home/maxx/naviguard_ws/install/naviguard_dashboard/share/naviguard_dashboard/static)
+[slam_node-9] [INFO] [1789284435.848398007] [slam_node]: NaviguardSlamNode started in mode='mapping'. map_frame=map, odom_frame=odom, publish_tf=True
+[parameter_bridge-4] [INFO] [1789284435.939155898] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1789284435.940976810] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/cmd_vel (geometry_msgs/msg/Twist) -> /cmd_vel (gz.msgs.Twist)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1789284435.943479908] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/odom (gz.msgs.Odometry) -> /odom (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1789284435.945192713] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/tf (gz.msgs.Pose_V) -> /tf (tf2_msgs/msg/TFMessage)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1789284435.947101338] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/joint_states (gz.msgs.Model) -> /joint_states (sensor_msgs/msg/JointState)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1789284435.949187247] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/imu (gz.msgs.IMU) -> /imu (sensor_msgs/msg/Imu)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1789284435.951754306] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/camera/image_raw (gz.msgs.Image) -> /camera/image_raw (sensor_msgs/msg/Image)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1789284435.953094047] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/camera/camera_info (gz.msgs.CameraInfo) -> /camera/camera_info (sensor_msgs/msg/CameraInfo)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1789284435.954712281] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/camera/chase_image (gz.msgs.Image) -> /camera/chase_image (sensor_msgs/msg/Image)] (Lazy 0)
+[gazebo-2] [1;33mWarning [parser_urdf.cc:1220][0m Attribute value string not set
+[gazebo-2] [1;33mWarning [parser_urdf.cc:1220][0m Attribute value string not set
+[gazebo-2] [1;33mWarning [parser_urdf.cc:1220][0m Attribute value string not set
+[gazebo-2] [1;33mWarning [parser_urdf.cc:1220][0m Attribute value string not set
+[gazebo-2] [1;33mWarning [parser_urdf.cc:1220][0m Attribute value string not set
+[gazebo-2] [1;33mWarning [parser_urdf.cc:1220][0m Attribute value string not set
+[gazebo-2] [1;33mWarning [parser_urdf.cc:1220][0m Attribute value string not set
+[slam_node-9] [INFO] [1789284437.492088569] [slam_node]: Camera intrinsics received: fx=381.4, fy=381.4, cx=320.0, cy=240.0
+[naviguard_perception_node-5] [INFO] [1789284437.492598053] [naviguard_perception_node]: Camera calibration received on naviguard/camera_link/naviguard_camera:
+[naviguard_perception_node-5]   Resolution: 640x480
+[naviguard_perception_node-5]   Intrinsics: fx=381.36, fy=381.36, cx=320.00, cy=240.00
+[confidence_node-10] [WARN] [1789284438.188708785] [confidence_node]: [NAVIGUARD TRANSITION] CONTINUE -> VERIFY | Reason: VO_NO_DATA | Conf: 0.75
+[visual_odometry_node-6] [INFO] [1789284438.609349770] [visual_odometry_node]: Camera intrinsics received: fx=381.36, fy=381.36, cx=320.00, cy=240.00 [640x480]
+[visual_odometry_node-6] [INFO] [1789284438.698249196] [visual_odometry_node]: [VO Frame #0001] Tracks:   0/ 61 | flow dx=+0.00 dy=+0.00 px | 0.0 FPS (18.6ms) | ref_odom vx=+0.00m/s wz=-0.00r/s | Geom: INSUFFICIENT_CORRESPONDENCES (0 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[confidence_node-10] [WARN] [1789284441.235121562] [confidence_node]: [NAVIGUARD TRANSITION] VERIFY -> CONTINUE | Reason: NOMINAL_OPERATION | Conf: 0.90
+[visual_odometry_node-6] [INFO] [1789284441.698199443] [visual_odometry_node]: [VO Frame #0035] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 12.3 FPS (7.2ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284442.775611120] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=63 | Processed=63 | Dropped=0 | Input: 11.6 FPS | Latency: 9.2 ms | Capacity: 108.9 FPS
+[visual_odometry_node-6] [INFO] [1789284444.740169492] [visual_odometry_node]: [VO Frame #0072] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 14.9 FPS (7.5ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[sensor_sync_node-7] [INFO] [1789284446.320525656] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   21.1 Hz (Period: 47.5±23.2ms, Mono: True, Gaps: 7)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=69.6ms, Max=468.0ms [ 70.6% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=48.7ms, Max=458.0ms [ 81.0% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.001 rad/s, Accel: 9.80 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284447.741714330] [visual_odometry_node]: [VO Frame #0116] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 17.5 FPS (5.6ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284447.924469842] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=138 | Processed=138 | Dropped=0 | Input: 15.4 FPS | Latency: 8.3 ms | Capacity: 120.0 FPS
+[visual_odometry_node-6] [INFO] [1789284450.800796939] [visual_odometry_node]: [VO Frame #0163] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 17.7 FPS (5.9ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284452.757930508] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=212 | Processed=212 | Dropped=0 | Input: 16.1 FPS | Latency: 7.6 ms | Capacity: 132.4 FPS
+[visual_odometry_node-6] [INFO] [1789284453.828439915] [visual_odometry_node]: [VO Frame #0211] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 17.4 FPS (4.8ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[sensor_sync_node-7] [INFO] [1789284454.342197304] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   25.6 Hz (Period: 39.0±16.4ms, Mono: True, Gaps: 10)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=76.5ms, Max=452.0ms [ 70.3% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=51.8ms, Max=476.0ms [ 81.0% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.82 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284456.840860283] [visual_odometry_node]: [VO Frame #0263] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 18.3 FPS (5.2ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284457.631841197] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=292 | Processed=292 | Dropped=0 | Input: 16.0 FPS | Latency: 8.0 ms | Capacity: 125.6 FPS
+[visual_odometry_node-6] [INFO] [1789284459.849777062] [visual_odometry_node]: [VO Frame #0310] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 18.9 FPS (9.4ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284462.475291104] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=373 | Processed=373 | Dropped=0 | Input: 17.9 FPS | Latency: 7.8 ms | Capacity: 128.1 FPS
+[sensor_sync_node-7] [INFO] [1789284462.480911927] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   27.0 Hz (Period: 37.0±14.3ms, Mono: True, Gaps: 13)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=83.6ms, Max=480.0ms [ 69.0% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=56.5ms, Max=480.0ms [ 80.3% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.001 rad/s, Accel: 9.79 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284462.883236114] [visual_odometry_node]: [VO Frame #0363] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 18.3 FPS (6.9ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[visual_odometry_node-6] [INFO] [1789284465.928074562] [visual_odometry_node]: [VO Frame #0414] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 17.6 FPS (4.2ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284467.415330668] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=451 | Processed=451 | Dropped=0 | Input: 15.0 FPS | Latency: 7.9 ms | Capacity: 126.3 FPS
+[visual_odometry_node-6] [INFO] [1789284471.718174751] [visual_odometry_node]: [VO Frame #0453] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 14.5 FPS (6.2ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[sensor_sync_node-7] [INFO] [1789284474.099346914] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   27.5 Hz (Period: 36.3±12.9ms, Mono: True, Gaps: 14)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=88.7ms, Max=486.0ms [ 65.9% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=53.4ms, Max=476.0ms [ 81.7% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.83 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284474.747863329] [visual_odometry_node]: [VO Frame #0502] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.3 FPS (4.5ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284475.731114652] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=531 | Processed=531 | Dropped=0 | Input: 15.1 FPS | Latency: 8.2 ms | Capacity: 122.1 FPS
+[visual_odometry_node-6] [INFO] [1789284477.825266889] [visual_odometry_node]: [VO Frame #0547] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 15.2 FPS (6.2ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[dashboard_node-13] ----------------------------------------
+[dashboard_node-13] Exception occurred during processing of request from ('127.0.0.1', 47906)
+[dashboard_node-13] Traceback (most recent call last):
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+[dashboard_node-13]     self.finish_request(request, client_address)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 362, in finish_request
+[dashboard_node-13]     self.RequestHandlerClass(request, client_address, self)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+[dashboard_node-13]     self.handle()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 436, in handle
+[dashboard_node-13]     self.handle_one_request()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+[dashboard_node-13]     method()
+[dashboard_node-13]   File "/home/maxx/naviguard_ws/build/naviguard_dashboard/naviguard_dashboard/web_server.py", line 75, in do_GET
+[dashboard_node-13]     self.wfile.write(jpeg_bytes)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 840, in write
+[dashboard_node-13]     self._sock.sendall(b)
+[dashboard_node-13] BrokenPipeError: [Errno 32] Broken pipe
+[dashboard_node-13] ----------------------------------------
+[dashboard_node-13] ----------------------------------------
+[dashboard_node-13] Exception occurred during processing of request from ('127.0.0.1', 48036)
+[dashboard_node-13] Traceback (most recent call last):
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+[dashboard_node-13]     self.finish_request(request, client_address)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 362, in finish_request
+[dashboard_node-13]     self.RequestHandlerClass(request, client_address, self)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+[dashboard_node-13]     self.handle()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 436, in handle
+[dashboard_node-13]     self.handle_one_request()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+[dashboard_node-13]     method()
+[dashboard_node-13]   File "/home/maxx/naviguard_ws/build/naviguard_dashboard/naviguard_dashboard/web_server.py", line 75, in do_GET
+[dashboard_node-13]     self.wfile.write(jpeg_bytes)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 840, in write
+[dashboard_node-13]     self._sock.sendall(b)
+[dashboard_node-13] BrokenPipeError: [Errno 32] Broken pipe
+[dashboard_node-13] ----------------------------------------
+[naviguard_perception_node-5] [INFO] [1789284480.727553877] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=607 | Processed=607 | Dropped=0 | Input: 15.9 FPS | Latency: 7.3 ms | Capacity: 137.4 FPS
+[visual_odometry_node-6] [INFO] [1789284480.866148812] [visual_odometry_node]: [VO Frame #0596] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 17.3 FPS (5.5ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[sensor_sync_node-7] [INFO] [1789284482.351650089] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   26.6 Hz (Period: 37.7±14.1ms, Mono: True, Gaps: 18)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=79.2ms, Max=470.0ms [ 70.7% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=55.4ms, Max=494.0ms [ 79.7% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.82 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284483.918069086] [visual_odometry_node]: [VO Frame #0645] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.1 FPS (6.8ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284485.650598788] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=689 | Processed=689 | Dropped=0 | Input: 16.4 FPS | Latency: 7.8 ms | Capacity: 128.2 FPS
+[visual_odometry_node-6] [INFO] [1789284486.936140618] [visual_odometry_node]: [VO Frame #0696] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 19.0 FPS (6.1ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[visual_odometry_node-6] [INFO] [1789284489.972172269] [visual_odometry_node]: [VO Frame #0745] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 18.8 FPS (4.3ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284490.574141874] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=772 | Processed=772 | Dropped=0 | Input: 17.8 FPS | Latency: 8.1 ms | Capacity: 123.8 FPS
+[sensor_sync_node-7] [INFO] [1789284490.580823183] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   27.8 Hz (Period: 36.0± 9.5ms, Mono: True, Gaps: 18)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=85.7ms, Max=498.0ms [ 66.7% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=55.6ms, Max=498.0ms [ 82.4% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.79 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284493.009709391] [visual_odometry_node]: [VO Frame #0792] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 17.0 FPS (4.3ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284495.475106069] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=847 | Processed=847 | Dropped=0 | Input: 15.6 FPS | Latency: 7.6 ms | Capacity: 131.2 FPS
+[visual_odometry_node-6] [INFO] [1789284496.049518514] [visual_odometry_node]: [VO Frame #0840] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 18.1 FPS (3.7ms) | ref_odom vx=+0.00m/s wz=-0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[sensor_sync_node-7] [INFO] [1789284498.778681202] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   26.1 Hz (Period: 38.3±12.2ms, Mono: True, Gaps: 19)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=86.5ms, Max=472.0ms [ 67.5% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=56.9ms, Max=494.0ms [ 79.1% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.79 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284499.075042059] [visual_odometry_node]: [VO Frame #0889] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.8 FPS (4.4ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284500.488776574] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=928 | Processed=928 | Dropped=0 | Input: 16.3 FPS | Latency: 7.6 ms | Capacity: 131.3 FPS
+[visual_odometry_node-6] [INFO] [1789284502.087790014] [visual_odometry_node]: [VO Frame #0936] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.9 FPS (6.1ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[visual_odometry_node-6] [INFO] [1789284506.510106317] [visual_odometry_node]: [VO Frame #0968] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 14.7 FPS (7.5ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284507.672057709] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1002 | Processed=1002 | Dropped=0 | Input: 14.6 FPS | Latency: 7.7 ms | Capacity: 130.1 FPS
+[sensor_sync_node-7] [INFO] [1789284509.392610223] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   25.0 Hz (Period: 40.0±15.9ms, Mono: True, Gaps: 22)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=80.8ms, Max=488.0ms [ 67.6% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=52.9ms, Max=478.0ms [ 80.6% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.80 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284509.551543796] [visual_odometry_node]: [VO Frame #1013] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.2 FPS (12.4ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[visual_odometry_node-6] [INFO] [1789284512.569776349] [visual_odometry_node]: [VO Frame #1056] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 15.4 FPS (6.1ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284512.989620951] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1077 | Processed=1077 | Dropped=0 | Input: 13.1 FPS | Latency: 9.6 ms | Capacity: 104.0 FPS
+[visual_odometry_node-6] [INFO] [1789284515.619322064] [visual_odometry_node]: [VO Frame #1106] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.2 FPS (5.1ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284517.977286939] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1153 | Processed=1153 | Dropped=0 | Input: 14.9 FPS | Latency: 7.8 ms | Capacity: 128.1 FPS
+[sensor_sync_node-7] [INFO] [1789284517.982675999] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   26.3 Hz (Period: 38.0±13.6ms, Mono: True, Gaps: 25)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=84.8ms, Max=472.0ms [ 69.4% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 7.0ms, Mean=65.9ms, Max=496.0ms [ 76.6% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.80 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284518.633411710] [visual_odometry_node]: [VO Frame #1149] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.5 FPS (5.5ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[visual_odometry_node-6] [INFO] [1789284521.674017776] [visual_odometry_node]: [VO Frame #1194] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 17.9 FPS (6.2ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284523.182897420] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1229 | Processed=1229 | Dropped=0 | Input: 15.7 FPS | Latency: 7.8 ms | Capacity: 128.3 FPS
+[visual_odometry_node-6] [INFO] [1789284524.696621886] [visual_odometry_node]: [VO Frame #1243] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 18.3 FPS (7.1ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[dashboard_node-13] ----------------------------------------
+[dashboard_node-13] Exception occurred during processing of request from ('127.0.0.1', 55328)
+[dashboard_node-13] Traceback (most recent call last):
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+[dashboard_node-13]     self.finish_request(request, client_address)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 362, in finish_request
+[dashboard_node-13]     self.RequestHandlerClass(request, client_address, self)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+[dashboard_node-13]     self.handle()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 436, in handle
+[dashboard_node-13]     self.handle_one_request()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+[dashboard_node-13]     method()
+[dashboard_node-13]   File "/home/maxx/naviguard_ws/build/naviguard_dashboard/naviguard_dashboard/web_server.py", line 75, in do_GET
+[dashboard_node-13]     self.wfile.write(jpeg_bytes)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 840, in write
+[dashboard_node-13]     self._sock.sendall(b)
+[dashboard_node-13] BrokenPipeError: [Errno 32] Broken pipe
+[dashboard_node-13] ----------------------------------------
+[sensor_sync_node-7] [INFO] [1789284526.754617738] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   28.6 Hz (Period: 35.0± 7.9ms, Mono: True, Gaps: 27)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=93.3ms, Max=490.0ms [ 66.7% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=43.2ms, Max=446.0ms [ 83.8% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.82 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284527.706260249] [visual_odometry_node]: [VO Frame #1289] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.5 FPS (6.0ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284528.413183642] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1309 | Processed=1309 | Dropped=0 | Input: 15.1 FPS | Latency: 7.6 ms | Capacity: 131.2 FPS
+[visual_odometry_node-6] [INFO] [1789284530.873253176] [visual_odometry_node]: [VO Frame #1331] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 14.0 FPS (5.1ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[dashboard_node-13] ----------------------------------------
+[dashboard_node-13] Exception occurred during processing of request from ('127.0.0.1', 42498)
+[dashboard_node-13] Traceback (most recent call last):
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+[dashboard_node-13]     self.finish_request(request, client_address)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 362, in finish_request
+[dashboard_node-13]     self.RequestHandlerClass(request, client_address, self)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+[dashboard_node-13]     self.handle()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 436, in handle
+[dashboard_node-13]     self.handle_one_request()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+[dashboard_node-13]     method()
+[dashboard_node-13]   File "/home/maxx/naviguard_ws/build/naviguard_dashboard/naviguard_dashboard/web_server.py", line 75, in do_GET
+[dashboard_node-13]     self.wfile.write(jpeg_bytes)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 840, in write
+[dashboard_node-13]     self._sock.sendall(b)
+[dashboard_node-13] BrokenPipeError: [Errno 32] Broken pipe
+[dashboard_node-13] ----------------------------------------
+[naviguard_perception_node-5] [INFO] [1789284533.594829453] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1384 | Processed=1384 | Dropped=0 | Input: 15.3 FPS | Latency: 7.4 ms | Capacity: 135.6 FPS
+[visual_odometry_node-6] [INFO] [1789284533.913961988] [visual_odometry_node]: [VO Frame #1379] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.7 FPS (4.2ms) | ref_odom vx=+0.00m/s wz=-0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[dashboard_node-13] ----------------------------------------
+[dashboard_node-13] Exception occurred during processing of request from ('127.0.0.1', 42714)
+[dashboard_node-13] Traceback (most recent call last):
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+[dashboard_node-13]     self.finish_request(request, client_address)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 362, in finish_request
+[dashboard_node-13]     self.RequestHandlerClass(request, client_address, self)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+[dashboard_node-13]     self.handle()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 436, in handle
+[dashboard_node-13]     self.handle_one_request()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+[dashboard_node-13]     method()
+[dashboard_node-13]   File "/home/maxx/naviguard_ws/build/naviguard_dashboard/naviguard_dashboard/web_server.py", line 75, in do_GET
+[dashboard_node-13]     self.wfile.write(jpeg_bytes)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 840, in write
+[dashboard_node-13]     self._sock.sendall(b)
+[dashboard_node-13] BrokenPipeError: [Errno 32] Broken pipe
+[dashboard_node-13] ----------------------------------------
+[sensor_sync_node-7] [INFO] [1789284535.460181855] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   24.6 Hz (Period: 40.7±15.5ms, Mono: True, Gaps: 29)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=81.9ms, Max=440.0ms [ 66.7% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=60.9ms, Max=496.0ms [ 77.8% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.79 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[dashboard_node-13] ----------------------------------------
+[dashboard_node-13] Exception occurred during processing of request from ('127.0.0.1', 42832)
+[dashboard_node-13] Traceback (most recent call last):
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+[dashboard_node-13]     self.finish_request(request, client_address)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 362, in finish_request
+[dashboard_node-13]     self.RequestHandlerClass(request, client_address, self)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+[dashboard_node-13]     self.handle()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 436, in handle
+[dashboard_node-13]     self.handle_one_request()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+[dashboard_node-13]     method()
+[dashboard_node-13]   File "/home/maxx/naviguard_ws/build/naviguard_dashboard/naviguard_dashboard/web_server.py", line 75, in do_GET
+[dashboard_node-13]     self.wfile.write(jpeg_bytes)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 840, in write
+[dashboard_node-13]     self._sock.sendall(b)
+[dashboard_node-13] BrokenPipeError: [Errno 32] Broken pipe
+[dashboard_node-13] ----------------------------------------
+[visual_odometry_node-6] [INFO] [1789284536.920413721] [visual_odometry_node]: [VO Frame #1416] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 13.5 FPS (6.6ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[dashboard_node-13] ----------------------------------------
+[dashboard_node-13] Exception occurred during processing of request from ('127.0.0.1', 39810)
+[dashboard_node-13] Traceback (most recent call last):
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+[dashboard_node-13]     self.finish_request(request, client_address)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 362, in finish_request
+[dashboard_node-13]     self.RequestHandlerClass(request, client_address, self)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+[dashboard_node-13]     self.handle()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 436, in handle
+[dashboard_node-13]     self.handle_one_request()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+[dashboard_node-13]     method()
+[dashboard_node-13]   File "/home/maxx/naviguard_ws/build/naviguard_dashboard/naviguard_dashboard/web_server.py", line 75, in do_GET
+[dashboard_node-13]     self.wfile.write(jpeg_bytes)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 840, in write
+[dashboard_node-13]     self._sock.sendall(b)
+[dashboard_node-13] BrokenPipeError: [Errno 32] Broken pipe
+[dashboard_node-13] ----------------------------------------
+[visual_odometry_node-6] [INFO] [1789284541.522730178] [visual_odometry_node]: [VO Frame #1442] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 13.0 FPS (8.4ms) | ref_odom vx=+0.00m/s wz=-0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284542.335874972] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1463 | Processed=1463 | Dropped=0 | Input: 13.7 FPS | Latency: 10.5 ms | Capacity: 94.8 FPS
+[visual_odometry_node-6] [INFO] [1789284544.543810388] [visual_odometry_node]: [VO Frame #1485] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 14.8 FPS (14.2ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[visual_odometry_node-6] [INFO] [1789284547.537416963] [visual_odometry_node]: [VO Frame #1526] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 15.1 FPS (4.2ms) | ref_odom vx=+0.00m/s wz=-0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284547.882986036] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1541 | Processed=1541 | Dropped=0 | Input: 13.9 FPS | Latency: 9.6 ms | Capacity: 104.6 FPS
+[sensor_sync_node-7] [INFO] [1789284547.883142333] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   26.3 Hz (Period: 38.0±11.9ms, Mono: True, Gaps: 31)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=90.6ms, Max=490.0ms [ 66.7% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=59.9ms, Max=480.0ms [ 79.4% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.78 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284550.578015006] [visual_odometry_node]: [VO Frame #1574] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.4 FPS (5.7ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284552.980579911] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1621 | Processed=1621 | Dropped=0 | Input: 14.8 FPS | Latency: 8.1 ms | Capacity: 123.0 FPS
+[visual_odometry_node-6] [INFO] [1789284553.606897270] [visual_odometry_node]: [VO Frame #1622] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 18.0 FPS (8.0ms) | ref_odom vx=+0.00m/s wz=-0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[sensor_sync_node-7] [INFO] [1789284556.245903528] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   26.3 Hz (Period: 38.0±11.9ms, Mono: True, Gaps: 31)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=89.9ms, Max=474.0ms [ 68.4% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=48.2ms, Max=464.0ms [ 81.5% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.79 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284556.653049554] [visual_odometry_node]: [VO Frame #1671] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.4 FPS (3.3ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[dashboard_node-13] ----------------------------------------
+[dashboard_node-13] Exception occurred during processing of request from ('127.0.0.1', 34572)
+[dashboard_node-13] Traceback (most recent call last):
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+[dashboard_node-13]     self.finish_request(request, client_address)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 362, in finish_request
+[dashboard_node-13]     self.RequestHandlerClass(request, client_address, self)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+[dashboard_node-13]     self.handle()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 436, in handle
+[dashboard_node-13]     self.handle_one_request()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+[dashboard_node-13]     method()
+[dashboard_node-13]   File "/home/maxx/naviguard_ws/build/naviguard_dashboard/naviguard_dashboard/web_server.py", line 75, in do_GET
+[dashboard_node-13]     self.wfile.write(jpeg_bytes)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 840, in write
+[dashboard_node-13]     self._sock.sendall(b)
+[dashboard_node-13] BrokenPipeError: [Errno 32] Broken pipe
+[dashboard_node-13] ----------------------------------------
+[naviguard_perception_node-5] [INFO] [1789284558.357083901] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1700 | Processed=1700 | Dropped=0 | Input: 12.8 FPS | Latency: 9.9 ms | Capacity: 100.6 FPS
+[visual_odometry_node-6] [INFO] [1789284559.702432351] [visual_odometry_node]: [VO Frame #1708] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 14.1 FPS (7.5ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[dashboard_node-13] ----------------------------------------
+[dashboard_node-13] Exception occurred during processing of request from ('127.0.0.1', 54770)
+[dashboard_node-13] Traceback (most recent call last):
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+[dashboard_node-13]     self.finish_request(request, client_address)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 362, in finish_request
+[dashboard_node-13]     self.RequestHandlerClass(request, client_address, self)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+[dashboard_node-13]     self.handle()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 436, in handle
+[dashboard_node-13]     self.handle_one_request()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+[dashboard_node-13]     method()
+[dashboard_node-13]   File "/home/maxx/naviguard_ws/build/naviguard_dashboard/naviguard_dashboard/web_server.py", line 75, in do_GET
+[dashboard_node-13]     self.wfile.write(jpeg_bytes)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 840, in write
+[dashboard_node-13]     self._sock.sendall(b)
+[dashboard_node-13] BrokenPipeError: [Errno 32] Broken pipe
+[dashboard_node-13] ----------------------------------------
+[visual_odometry_node-6] [INFO] [1789284562.738517002] [visual_odometry_node]: [VO Frame #1741] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 13.7 FPS (9.6ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284564.562058630] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1774 | Processed=1774 | Dropped=0 | Input: 12.2 FPS | Latency: 10.8 ms | Capacity: 92.3 FPS
+[visual_odometry_node-6] [INFO] [1789284565.798996859] [visual_odometry_node]: [VO Frame #1789] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 15.5 FPS (6.3ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[sensor_sync_node-7] [INFO] [1789284566.675847735] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   25.9 Hz (Period: 38.7±14.1ms, Mono: True, Gaps: 33)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=98.5ms, Max=492.0ms [ 65.0% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=52.3ms, Max=468.0ms [ 81.5% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.77 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284568.807578299] [visual_odometry_node]: [VO Frame #1826] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 17.7 FPS (5.6ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284570.287259959] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1852 | Processed=1852 | Dropped=0 | Input: 16.3 FPS | Latency: 8.1 ms | Capacity: 122.8 FPS
+[visual_odometry_node-6] [INFO] [1789284571.840015996] [visual_odometry_node]: [VO Frame #1873] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 17.3 FPS (5.7ms) | ref_odom vx=+0.00m/s wz=-0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[visual_odometry_node-6] [INFO] [1789284576.476349945] [visual_odometry_node]: [VO Frame #1898] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 13.0 FPS (5.6ms) | ref_odom vx=+0.00m/s wz=-0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284578.253777871] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=1929 | Processed=1929 | Dropped=0 | Input: 14.0 FPS | Latency: 9.6 ms | Capacity: 104.0 FPS
+[sensor_sync_node-7] [INFO] [1789284578.259479689] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   25.4 Hz (Period: 39.3±16.1ms, Mono: True, Gaps: 35)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=79.7ms, Max=476.0ms [ 73.0% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=66.5ms, Max=498.0ms [ 76.6% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.83 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284579.499379392] [visual_odometry_node]: [VO Frame #1941] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 14.5 FPS (14.7ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[visual_odometry_node-6] [INFO] [1789284582.538457038] [visual_odometry_node]: [VO Frame #1985] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 15.8 FPS (14.8ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284583.551468685] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=2009 | Processed=2009 | Dropped=0 | Input: 16.1 FPS | Latency: 7.1 ms | Capacity: 140.4 FPS
+[visual_odometry_node-6] [INFO] [1789284585.535955593] [visual_odometry_node]: [VO Frame #2033] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 15.1 FPS (6.8ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[sensor_sync_node-7] [INFO] [1789284587.038926604] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   26.8 Hz (Period: 37.3±11.2ms, Mono: True, Gaps: 36)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=79.3ms, Max=492.0ms [ 70.0% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=53.6ms, Max=482.0ms [ 80.6% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.83 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284588.560845340] [visual_odometry_node]: [VO Frame #2085] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 19.1 FPS (9.7ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284588.635758752] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=2089 | Processed=2089 | Dropped=0 | Input: 17.1 FPS | Latency: 7.3 ms | Capacity: 137.1 FPS
+[visual_odometry_node-6] [INFO] [1789284591.570217759] [visual_odometry_node]: [VO Frame #2128] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 14.9 FPS (4.2ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284593.837191959] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=2170 | Processed=2170 | Dropped=0 | Input: 16.3 FPS | Latency: 7.1 ms | Capacity: 140.7 FPS
+[visual_odometry_node-6] [INFO] [1789284594.580868484] [visual_odometry_node]: [VO Frame #2176] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 17.3 FPS (5.1ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[sensor_sync_node-7] [INFO] [1789284595.505756563] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   26.3 Hz (Period: 38.0±12.8ms, Mono: True, Gaps: 37)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=90.2ms, Max=476.0ms [ 65.8% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=57.7ms, Max=500.0ms [ 80.0% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.79 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284597.588738234] [visual_odometry_node]: [VO Frame #2220] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 18.0 FPS (4.7ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284598.908547386] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=2248 | Processed=2248 | Dropped=0 | Input: 17.4 FPS | Latency: 7.8 ms | Capacity: 128.8 FPS
+[visual_odometry_node-6] [INFO] [1789284600.630614180] [visual_odometry_node]: [VO Frame #2272] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 17.3 FPS (4.1ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[visual_odometry_node-6] [INFO] [1789284603.659407379] [visual_odometry_node]: [VO Frame #2319] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.9 FPS (11.5ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284604.248853830] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=2330 | Processed=2330 | Dropped=0 | Input: 15.4 FPS | Latency: 7.9 ms | Capacity: 126.1 FPS
+[sensor_sync_node-7] [INFO] [1789284604.253896361] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   28.0 Hz (Period: 35.7± 9.0ms, Mono: True, Gaps: 38)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=80.8ms, Max=460.0ms [ 68.3% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=52.2ms, Max=484.0ms [ 80.9% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.81 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284606.727621756] [visual_odometry_node]: [VO Frame #2368] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 18.4 FPS (10.2ms) | ref_odom vx=-0.00m/s wz=-0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[visual_odometry_node-6] [INFO] [1789284611.355976186] [visual_odometry_node]: [VO Frame #2397] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 15.5 FPS (7.3ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284612.222577356] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=2412 | Processed=2412 | Dropped=0 | Input: 14.5 FPS | Latency: 8.9 ms | Capacity: 112.5 FPS
+[visual_odometry_node-6] [INFO] [1789284614.367945906] [visual_odometry_node]: [VO Frame #2443] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 17.1 FPS (6.3ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[sensor_sync_node-7] [INFO] [1789284615.623970240] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   26.5 Hz (Period: 37.7±12.5ms, Mono: True, Gaps: 40)
+[sensor_sync_node-7]      - IMU (/imu):                   99.0 Hz (Period: 10.1± 1.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=86.9ms, Max=500.0ms [ 68.4% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=59.9ms, Max=500.0ms [ 78.5% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.82 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284617.377804485] [visual_odometry_node]: [VO Frame #2490] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.8 FPS (4.4ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284617.499746180] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=2493 | Processed=2493 | Dropped=0 | Input: 15.2 FPS | Latency: 8.7 ms | Capacity: 115.2 FPS
+[visual_odometry_node-6] [INFO] [1789284620.413770475] [visual_odometry_node]: [VO Frame #2540] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 15.1 FPS (9.7ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284622.547199222] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=2577 | Processed=2577 | Dropped=0 | Input: 16.3 FPS | Latency: 8.2 ms | Capacity: 122.6 FPS
+[visual_odometry_node-6] [INFO] [1789284623.424368343] [visual_odometry_node]: [VO Frame #2589] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.4 FPS (4.1ms) | ref_odom vx=-0.00m/s wz=-0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[sensor_sync_node-7] [INFO] [1789284624.453497441] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   27.3 Hz (Period: 36.7±11.4ms, Mono: True, Gaps: 41)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=91.8ms, Max=472.0ms [ 65.0% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=49.3ms, Max=472.0ms [ 81.8% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.82 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284626.466898180] [visual_odometry_node]: [VO Frame #2634] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 15.7 FPS (7.8ms) | ref_odom vx=+0.00m/s wz=-0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[dashboard_node-13] ----------------------------------------
+[dashboard_node-13] Exception occurred during processing of request from ('127.0.0.1', 41040)
+[dashboard_node-13] Traceback (most recent call last):
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+[dashboard_node-13]     self.finish_request(request, client_address)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 362, in finish_request
+[dashboard_node-13]     self.RequestHandlerClass(request, client_address, self)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+[dashboard_node-13]     self.handle()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 436, in handle
+[dashboard_node-13]     self.handle_one_request()
+[dashboard_node-13]   File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+[dashboard_node-13]     method()
+[dashboard_node-13]   File "/home/maxx/naviguard_ws/build/naviguard_dashboard/naviguard_dashboard/web_server.py", line 75, in do_GET
+[dashboard_node-13]     self.wfile.write(jpeg_bytes)
+[dashboard_node-13]   File "/usr/lib/python3.12/socketserver.py", line 840, in write
+[dashboard_node-13]     self._sock.sendall(b)
+[dashboard_node-13] BrokenPipeError: [Errno 32] Broken pipe
+[dashboard_node-13] ----------------------------------------
+[naviguard_perception_node-5] [INFO] [1789284627.775607428] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=2654 | Processed=2654 | Dropped=0 | Input: 14.8 FPS | Latency: 8.2 ms | Capacity: 122.7 FPS
+[visual_odometry_node-6] [INFO] [1789284629.475888030] [visual_odometry_node]: [VO Frame #2677] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 15.2 FPS (4.8ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[visual_odometry_node-6] [INFO] [1789284632.516255810] [visual_odometry_node]: [VO Frame #2719] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.0 FPS (8.6ms) | ref_odom vx=+0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284633.650331859] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=2732 | Processed=2732 | Dropped=0 | Input: 12.8 FPS | Latency: 10.2 ms | Capacity: 97.9 FPS
+[sensor_sync_node-7] [INFO] [1789284633.658196410] [sensor_sync_node]: 
+[sensor_sync_node-7] ==================== [NAVIGUARD PHASE 5A SENSOR SYNC REPORT] ====================
+[sensor_sync_node-7]   OVERALL STATUS: [WARNING]
+[sensor_sync_node-7]   1. SENSORS & RATES:
+[sensor_sync_node-7]      - Camera (/camera/image_raw):   26.1 Hz (Period: 38.3±12.2ms, Mono: True, Gaps: 42)
+[sensor_sync_node-7]      - IMU (/imu):                  100.0 Hz (Period: 10.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]      - Odometry (/odom):             50.0 Hz (Period: 20.0± 0.0ms, Mono: True, Gaps: 0)
+[sensor_sync_node-7]   2. CROSS-SENSOR SYNCHRONIZATION (Tolerance: 20.0ms):
+[sensor_sync_node-7]      - Camera <-> IMU:     Median= 4.0ms, Mean=75.9ms, Max=478.0ms [ 71.8% in tol]
+[sensor_sync_node-7]      - Camera <-> Odometry: Median= 6.0ms, Mean=57.8ms, Max=468.0ms [ 78.8% in tol]
+[sensor_sync_node-7]      - IMU <-> Odometry:    Median= 5.0ms, Mean= 5.0ms, Max=10.0ms [100.0% in tol]
+[sensor_sync_node-7]   3. TF & FRAME VALIDATION:
+[sensor_sync_node-7]      - Hierarchy Status:    [OK] (All required frames available: True)
+[sensor_sync_node-7]      - Optical Convention:  [VALID (REP-103)]
+[sensor_sync_node-7]   4. INTRINSIC & FIELD VALIDATIONS:
+[sensor_sync_node-7]      - Camera Calibration:  [OK] (fx=381.4, fy=381.4, cx=320.0, cy=240.0)
+[sensor_sync_node-7]      - IMU Validation:      [AVAILABLE] (Angular Vel: 0.000 rad/s, Accel: 9.79 m/s²)
+[sensor_sync_node-7]      - Odometry Validation: [OK] ('odom' -> 'base_link')
+[sensor_sync_node-7] ==================================================================================
+[visual_odometry_node-6] [INFO] [1789284635.546974171] [visual_odometry_node]: [VO Frame #2763] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 16.9 FPS (5.5ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[visual_odometry_node-6] [INFO] [1789284638.554460751] [visual_odometry_node]: [VO Frame #2803] Tracks:  75/ 75 | flow dx=+0.00 dy=+0.00 px | 15.8 FPS (6.9ms) | ref_odom vx=-0.00m/s wz=+0.00r/s | Geom: DEGENERATE_SMALL_BASELINE (75 inl) | yaw=+0.0deg | t=[+0.00, +0.00, +0.00] (scale: UNKNOWN)
+[naviguard_perception_node-5] [INFO] [1789284639.414748996] [naviguard_perception_node]: NAVIGUARD Perception Performance: Total=2816 | Processed=2816 | Dropped=0 | Input: 13.0 FPS | Latency: 10.6 ms | Capacity: 94.2 FPS
+[parameter_bridge-4] [INFO] [1789284640.303846792] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state_publisher-1] [INFO] [1789284640.305026007] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[naviguard_perception_node-5] [WARN] [1789284640.343990282] [naviguard_perception_node]: Failed to publish segmentation image: Failed to publish: publisher's context is invalid, at ./src/rcl/publisher.c:423
+[naviguard_perception_node-5] Failed to publish log message to rosout: publisher's context is invalid, at ./src/rcl/publisher.c:423
+[naviguard_perception_node-5] [WARN] [1789284640.349610463] [naviguard_perception_node]: Failed to publish debug image: Failed to publish: publisher's context is invalid, at ./src/rcl/publisher.c:423
+[naviguard_perception_node-5] Failed to publish log message to rosout: publisher's context is invalid, at ./src/rcl/publisher.c:423
+[recovery_node-11] Traceback (most recent call last):
+[recovery_node-11]   File "/home/maxx/naviguard_ws/build/naviguard_recovery/naviguard_recovery/recovery_node.py", line 490, in main
+[recovery_node-11]     rclpy.spin(node)
+[recovery_node-11]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 247, in spin
+[recovery_node-11]     executor.spin_once()
+[recovery_node-11]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 926, in spin_once
+[recovery_node-11]     self._spin_once_impl(timeout_sec)
+[recovery_node-11]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 907, in _spin_once_impl
+[recovery_node-11]     handler, entity, node = self.wait_for_ready_callbacks(
+[recovery_node-11]                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[recovery_node-11]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 877, in wait_for_ready_callbacks
+[recovery_node-11]     return next(self._cb_iter)
+[recovery_node-11]            ^^^^^^^^^^^^^^^^^^^
+[recovery_node-11]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 785, in _wait_for_ready_callbacks
+[recovery_node-11]     raise ExternalShutdownException()
+[recovery_node-11] rclpy.executors.ExternalShutdownException
+[recovery_node-11] 
+[recovery_node-11] During handling of the above exception, another exception occurred:
+[recovery_node-11] 
+[recovery_node-11] Traceback (most recent call last):
+[recovery_node-11]   File "/home/maxx/naviguard_ws/install/naviguard_recovery/lib/naviguard_recovery/recovery_node", line 33, in <module>
+[recovery_node-11]     sys.exit(load_entry_point('naviguard-recovery', 'console_scripts', 'recovery_node')())
+[recovery_node-11]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[recovery_node-11]   File "/home/maxx/naviguard_ws/build/naviguard_recovery/naviguard_recovery/recovery_node.py", line 496, in main
+[recovery_node-11]     node.cmd_vel_pub.publish(twist)
+[recovery_node-11]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/publisher.py", line 70, in publish
+[recovery_node-11]     self.__publisher.publish(msg)
+[recovery_node-11] rclpy._rclpy_pybind11.RCLError: Failed to publish: publisher's context is invalid, at ./src/rcl/publisher.c:423
+[INFO] [parameter_bridge-4]: process has finished cleanly [pid 15664]
+[INFO] [robot_state_publisher-1]: process has finished cleanly [pid 15660]
+[sensor_sync_node-7] Traceback (most recent call last):
+[sensor_sync_node-7]   File "/home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib/naviguard_sensor_sync/sensor_sync_node", line 33, in <module>
+[sensor_sync_node-7]     sys.exit(load_entry_point('naviguard-sensor-sync', 'console_scripts', 'sensor_sync_node')())
+[sensor_sync_node-7]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[sensor_sync_node-7]   File "/home/maxx/naviguard_ws/build/naviguard_sensor_sync/naviguard_sensor_sync/sensor_sync_node.py", line 421, in main
+[sensor_sync_node-7]     rclpy.spin(node)
+[sensor_sync_node-7]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 247, in spin
+[sensor_sync_node-7]     executor.spin_once()
+[sensor_sync_node-7]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 926, in spin_once
+[sensor_sync_node-7]     self._spin_once_impl(timeout_sec)
+[sensor_sync_node-7]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 907, in _spin_once_impl
+[sensor_sync_node-7]     handler, entity, node = self.wait_for_ready_callbacks(
+[sensor_sync_node-7]                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[sensor_sync_node-7]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 877, in wait_for_ready_callbacks
+[confidence_node-10] Traceback (most recent call last):
+[confidence_node-10]   File "/home/maxx/naviguard_ws/install/naviguard_confidence/lib/naviguard_confidence/confidence_node", line 33, in <module>
+[confidence_node-10]     sys.exit(load_entry_point('naviguard-confidence', 'console_scripts', 'confidence_node')())
+[confidence_node-10]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[confidence_node-10]   File "/home/maxx/naviguard_ws/build/naviguard_confidence/naviguard_confidence/confidence_node.py", line 484, in main
+[confidence_node-10]     rclpy.spin(node)
+[confidence_node-10]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 247, in spin
+[sensor_sync_node-7]     return next(self._cb_iter)
+[sensor_sync_node-7]            ^^^^^^^^^^^^^^^^^^^
+[sensor_sync_node-7]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 785, in _wait_for_ready_callbacks
+[confidence_node-10]     executor.spin_once()
+[confidence_node-10]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 926, in spin_once
+[confidence_node-10]     self._spin_once_impl(timeout_sec)
+[sensor_sync_node-7]     raise ExternalShutdownException()
+[sensor_sync_node-7] rclpy.executors.ExternalShutdownException
+[confidence_node-10]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 907, in _spin_once_impl
+[confidence_node-10]     handler, entity, node = self.wait_for_ready_callbacks(
+[confidence_node-10]                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[confidence_node-10]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 877, in wait_for_ready_callbacks
+[confidence_node-10]     return next(self._cb_iter)
+[confidence_node-10]            ^^^^^^^^^^^^^^^^^^^
+[confidence_node-10]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 785, in _wait_for_ready_callbacks
+[confidence_node-10]     raise ExternalShutdownException()
+[confidence_node-10] rclpy.executors.ExternalShutdownException
+[navigation_node-12] Traceback (most recent call last):
+[navigation_node-12]   File "/home/maxx/naviguard_ws/build/naviguard_navigation/naviguard_navigation/navigation_node.py", line 570, in main
+[navigation_node-12]     rclpy.spin(node)
+[navigation_node-12]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 247, in spin
+[navigation_node-12]     executor.spin_once()
+[navigation_node-12]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 926, in spin_once
+[state_estimation_node-8] Traceback (most recent call last):
+[state_estimation_node-8]   File "/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/naviguard_state_estimation/state_estimation_node", line 33, in <module>
+[navigation_node-12]     self._spin_once_impl(timeout_sec)
+[navigation_node-12]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 907, in _spin_once_impl
+[navigation_node-12]     handler, entity, node = self.wait_for_ready_callbacks(
+[navigation_node-12]                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[navigation_node-12]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 877, in wait_for_ready_callbacks
+[navigation_node-12]     return next(self._cb_iter)
+[state_estimation_node-8]     sys.exit(load_entry_point('naviguard-state-estimation', 'console_scripts', 'state_estimation_node')())
+[state_estimation_node-8]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[state_estimation_node-8]   File "/home/maxx/naviguard_ws/build/naviguard_state_estimation/naviguard_state_estimation/state_estimation_node.py", line 379, in main
+[navigation_node-12]            ^^^^^^^^^^^^^^^^^^^
+[navigation_node-12]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 757, in _wait_for_ready_callbacks
+[state_estimation_node-8]     rclpy.spin(node)
+[state_estimation_node-8]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 247, in spin
+[navigation_node-12]     wait_set = _rclpy.WaitSet(
+[navigation_node-12]                ^^^^^^^^^^^^^^^
+[navigation_node-12] rclpy._rclpy_pybind11.RCLError: failed to initialize wait set: the given context is not valid, either rcl_init() was not called or rcl_shutdown() was called., at ./src/rcl/wait.c:130
+[navigation_node-12] 
+[navigation_node-12] During handling of the above exception, another exception occurred:
+[navigation_node-12] 
+[navigation_node-12] Traceback (most recent call last):
+[navigation_node-12]   File "/home/maxx/naviguard_ws/install/naviguard_navigation/lib/naviguard_navigation/navigation_node", line 33, in <module>
+[navigation_node-12]     sys.exit(load_entry_point('naviguard-navigation', 'console_scripts', 'navigation_node')())
+[state_estimation_node-8]     executor.spin_once()
+[state_estimation_node-8]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 926, in spin_once
+[navigation_node-12]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[navigation_node-12]   File "/home/maxx/naviguard_ws/build/naviguard_navigation/naviguard_navigation/navigation_node.py", line 575, in main
+[navigation_node-12]     rclpy.shutdown()
+[navigation_node-12]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 134, in shutdown
+[navigation_node-12]     _shutdown(context=context)
+[navigation_node-12]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/utilities.py", line 82, in shutdown
+[navigation_node-12]     context.shutdown()
+[navigation_node-12]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py", line 129, in shutdown
+[state_estimation_node-8]     self._spin_once_impl(timeout_sec)
+[state_estimation_node-8]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 907, in _spin_once_impl
+[navigation_node-12]     self.__context.shutdown()
+[navigation_node-12] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:333
+[state_estimation_node-8]     handler, entity, node = self.wait_for_ready_callbacks(
+[state_estimation_node-8]                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[state_estimation_node-8]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 877, in wait_for_ready_callbacks
+[state_estimation_node-8]     return next(self._cb_iter)
+[state_estimation_node-8]            ^^^^^^^^^^^^^^^^^^^
+[state_estimation_node-8]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 785, in _wait_for_ready_callbacks
+[state_estimation_node-8]     raise ExternalShutdownException()
+[state_estimation_node-8] rclpy.executors.ExternalShutdownException
+[naviguard_perception_node-5] Traceback (most recent call last):
+[naviguard_perception_node-5]   File "/home/maxx/naviguard_ws/install/naviguard_perception/lib/naviguard_perception/naviguard_perception_node", line 33, in <module>
+[naviguard_perception_node-5]     sys.exit(load_entry_point('naviguard-perception', 'console_scripts', 'naviguard_perception_node')())
+[naviguard_perception_node-5]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[naviguard_perception_node-5]   File "/home/maxx/naviguard_ws/build/naviguard_perception/naviguard_perception/perception_node.py", line 285, in main
+[naviguard_perception_node-5]     rclpy.shutdown()
+[naviguard_perception_node-5]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 134, in shutdown
+[naviguard_perception_node-5]     _shutdown(context=context)
+[naviguard_perception_node-5]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/utilities.py", line 82, in shutdown
+[naviguard_perception_node-5]     context.shutdown()
+[naviguard_perception_node-5]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py", line 129, in shutdown
+[naviguard_perception_node-5]     self.__context.shutdown()
+[naviguard_perception_node-5] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:333
+[INFO] [visual_odometry_node-6]: process has finished cleanly [pid 15666]
+[INFO] [gazebo-2]: process has finished cleanly [pid 15661]
+[INFO] [slam_node-9]: process has finished cleanly [pid 15669]
+[ERROR] [recovery_node-11]: process has died [pid 15673, exit code 1, cmd '/home/maxx/naviguard_ws/install/naviguard_recovery/lib/naviguard_recovery/recovery_node --ros-args -r __node:=recovery_node --params-file /home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/config/perception_params.yaml --params-file /tmp/launch_params_hnbzodql'].
+[ERROR] [sensor_sync_node-7]: process has died [pid 15667, exit code 1, cmd '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib/naviguard_sensor_sync/sensor_sync_node --ros-args -r __node:=sensor_sync_node --params-file /home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/config/perception_params.yaml --params-file /tmp/launch_params_666d7i6f'].
+[ERROR] [navigation_node-12]: process has died [pid 15674, exit code 1, cmd '/home/maxx/naviguard_ws/install/naviguard_navigation/lib/naviguard_navigation/navigation_node --ros-args -r __node:=navigation_node --params-file /home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/config/perception_params.yaml --params-file /tmp/launch_params_3u8z4otq'].
+[ERROR] [state_estimation_node-8]: process has died [pid 15668, exit code 1, cmd '/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/naviguard_state_estimation/state_estimation_node --ros-args -r __node:=state_estimation_node --params-file /home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/config/perception_params.yaml --params-file /tmp/launch_params_57d0f4_y'].
+[INFO] [dashboard_node-13]: process has finished cleanly [pid 15679]
+[ERROR] [confidence_node-10]: process has died [pid 15671, exit code 1, cmd '/home/maxx/naviguard_ws/install/naviguard_confidence/lib/naviguard_confidence/confidence_node --ros-args -r __node:=confidence_node --params-file /home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/config/perception_params.yaml --params-file /tmp/launch_params_rrevlo6p'].
+[ERROR] [naviguard_perception_node-5]: process has died [pid 15665, exit code 1, cmd '/home/maxx/naviguard_ws/install/naviguard_perception/lib/naviguard_perception/naviguard_perception_node --ros-args -r __node:=naviguard_perception_node --params-file /home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/config/perception_params.yaml --params-file /tmp/launch_params_0tcj8f0r'].

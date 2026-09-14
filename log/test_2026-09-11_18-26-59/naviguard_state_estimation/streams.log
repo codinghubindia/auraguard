@@ -1,0 +1,18 @@
+[2.228s] Invoking command in '/home/maxx/naviguard_ws/src/naviguard_state_estimation': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_state_estimation:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_state_estimation/pytest.xml --junit-prefix=naviguard_state_estimation -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_state_estimation/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_state_estimation:/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest
+[2.554s] ============================= test session starts ==============================
+[2.554s] platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+[2.559s] cachedir: /home/maxx/naviguard_ws/build/naviguard_state_estimation/.pytest_cache
+[2.559s] rootdir: /home/maxx/naviguard_ws/src/naviguard_state_estimation
+[2.559s] plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+[2.979s] collecting ... 
+[2.979s] collected 20 items                                                             
+[2.980s] 
+[2.989s] test/test_estimator_and_consistency.py .....                             [ 25%]
+[2.994s] test/test_measurement_buffer.py .....                                    [ 50%]
+[3.093s] test/test_node_integration.py .                                          [ 55%]
+[3.098s] test/test_processors.py ....                                             [ 75%]
+[3.112s] test/test_visual_adapter_and_scale.py .....                              [100%]
+[3.112s] 
+[3.112s] - generated xml file: /home/maxx/naviguard_ws/build/naviguard_state_estimation/pytest.xml -
+[3.112s] ============================== 20 passed in 0.55s ==============================
+[3.361s] Invoked command in '/home/maxx/naviguard_ws/src/naviguard_state_estimation' returned '0': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_state_estimation:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_state_estimation/pytest.xml --junit-prefix=naviguard_state_estimation -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_state_estimation/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_state_estimation:/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest

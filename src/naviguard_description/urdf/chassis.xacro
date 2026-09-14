@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Chassis dimensions -->
+  <xacro:property name="chassis_length" value="0.50"/>
+  <xacro:property name="chassis_width" value="0.32"/>
+  <xacro:property name="chassis_height" value="0.16"/>
+  <xacro:property name="chassis_mass" value="15.0"/>
+
+  <!-- Base link (Root Frame) -->
+  <link name="base_link">
+    <!-- Main Chassis Inertial -->
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${chassis_mass}"/>
+      <inertia
+        ixx="${(1.0/12.0) * chassis_mass * (chassis_width*chassis_width + chassis_height*chassis_height)}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${(1.0/12.0) * chassis_mass * (chassis_length*chassis_length + chassis_height*chassis_height)}"
+        iyz="0.0"
+        izz="${(1.0/12.0) * chassis_mass * (chassis_length*chassis_length + chassis_width*chassis_width)}"/>
+    </inertial>
+
+    <!-- Main Chassis Collision -->
+    <collision name="chassis_collision">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+    </collision>
+
+    <!-- Main Chassis Visual -->
+    <visual name="chassis_body">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+      <material name="chassis_grey"/>
+    </visual>
+
+    <!-- Top Deck Accent Plate (Visual) -->
+    <visual name="top_plate_accent">
+      <origin xyz="0 0 ${chassis_height/2 + 0.005}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length * 0.85} ${chassis_width * 0.85} 0.01"/>
+      </geometry>
+      <material name="naviguard_orange"/>
+    </visual>
+
+    <!-- Front Bumper / Skid Guard (Visual) -->
+    <visual name="front_bumper">
+      <origin xyz="${chassis_length/2 + 0.015} 0 -0.02" rpy="0 0.35 0"/>
+      <geometry>
+        <box size="0.04 ${chassis_width * 0.95} 0.08"/>
+      </geometry>
+      <material name="sensor_mast_black"/>
+    </visual>
+
+    <!-- Rear Bumper (Visual) -->
+    <visual name="rear_bumper">
+      <origin xyz="${-chassis_length/2 - 0.015} 0 -0.02" rpy="0 -0.35 0"/>
+      <geometry>
+        <box size="0.04 ${chassis_width * 0.95} 0.08"/>
+      </geometry>
+      <material name="sensor_mast_black"/>
+    </visual>
+
+    <!-- Sensor Mast / Camera Mount (Visual) -->
+    <visual name="sensor_mount">
+      <origin xyz="0.20 0 0.11" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.06 0.10 0.06"/>
+      </geometry>
+      <material name="sensor_mast_black"/>
+    </visual>
+  </link>
+
+  <!-- Gazebo material styling for base_link -->
+  <gazebo reference="base_link">
+    <material>
+      <ambient>0.2 0.22 0.25 1.0</ambient>
+      <diffuse>0.2 0.22 0.25 1.0</diffuse>
+      <specular>0.3 0.3 0.3 1.0</specular>
+    </material>
+  </gazebo>
+
+  <!-- base_footprint Link (Ground contact projection) -->
+  <link name="base_footprint">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.001"/>
+      <inertia ixx="1e-6" ixy="0.0" ixz="0.0" iyy="1e-6" iyz="0.0" izz="1e-6"/>
+    </inertial>
+  </link>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_footprint"/>
+    <origin xyz="0 0 -0.12" rpy="0 0 0"/>
+  </joint>
+
+  <gazebo reference="base_footprint_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+</robot>

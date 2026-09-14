@@ -1,0 +1,17 @@
+[2.542s] Invoking command in '/home/maxx/naviguard_ws/build/naviguard_slam': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_slam/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_slam/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_slam/build --no-deps symlink_data
+[2.920s] running develop
+[3.161s] running egg_info
+[3.178s] writing naviguard_slam.egg-info/PKG-INFO
+[3.178s] writing dependency_links to naviguard_slam.egg-info/dependency_links.txt
+[3.178s] writing entry points to naviguard_slam.egg-info/entry_points.txt
+[3.179s] writing requirements to naviguard_slam.egg-info/requires.txt
+[3.179s] writing top-level names to naviguard_slam.egg-info/top_level.txt
+[3.230s] reading manifest file 'naviguard_slam.egg-info/SOURCES.txt'
+[3.231s] writing manifest file 'naviguard_slam.egg-info/SOURCES.txt'
+[3.253s] running build_ext
+[3.254s] Creating /home/maxx/naviguard_ws/install/naviguard_slam/lib/python3.12/site-packages/naviguard-slam.egg-link (link to .)
+[3.255s] Installing slam_node script to /home/maxx/naviguard_ws/install/naviguard_slam/lib/naviguard_slam
+[3.255s] 
+[3.255s] Installed /home/maxx/naviguard_ws/build/naviguard_slam
+[3.255s] running symlink_data
+[3.385s] Invoked command in '/home/maxx/naviguard_ws/build/naviguard_slam' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_slam/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_slam/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_slam/build --no-deps symlink_data

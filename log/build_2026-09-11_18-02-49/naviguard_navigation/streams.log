@@ -1,0 +1,17 @@
+[0.779s] Invoking command in '/home/maxx/naviguard_ws/build/naviguard_navigation': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_navigation/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_navigation/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_navigation/build --no-deps symlink_data
+[0.991s] running develop
+[1.110s] running egg_info
+[1.121s] writing naviguard_navigation.egg-info/PKG-INFO
+[1.121s] writing dependency_links to naviguard_navigation.egg-info/dependency_links.txt
+[1.122s] writing entry points to naviguard_navigation.egg-info/entry_points.txt
+[1.122s] writing requirements to naviguard_navigation.egg-info/requires.txt
+[1.122s] writing top-level names to naviguard_navigation.egg-info/top_level.txt
+[1.142s] reading manifest file 'naviguard_navigation.egg-info/SOURCES.txt'
+[1.143s] writing manifest file 'naviguard_navigation.egg-info/SOURCES.txt'
+[1.153s] running build_ext
+[1.154s] Creating /home/maxx/naviguard_ws/install/naviguard_navigation/lib/python3.12/site-packages/naviguard-navigation.egg-link (link to .)
+[1.154s] Installing navigation_node script to /home/maxx/naviguard_ws/install/naviguard_navigation/lib/naviguard_navigation
+[1.154s] 
+[1.154s] Installed /home/maxx/naviguard_ws/build/naviguard_navigation
+[1.154s] running symlink_data
+[1.182s] Invoked command in '/home/maxx/naviguard_ws/build/naviguard_navigation' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_navigation/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_navigation/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_navigation/build --no-deps symlink_data

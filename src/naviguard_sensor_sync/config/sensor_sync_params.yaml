@@ -1,0 +1,29 @@
+/**:
+  ros__parameters:
+    # Topic Configuration
+    camera_image_topic: "/camera/image_raw"
+    camera_info_topic: "/camera/camera_info"
+    imu_topic: "/imu"
+    odom_topic: "/odom"
+    diagnostics_topic: "/sensor_sync/diagnostics"
+
+    # Synchronization Tolerances (milliseconds)
+    sync_tolerance_ms: 20.0
+
+    # Expected Publishing Rates (Hz)
+    expected_camera_rate: 30.0
+    expected_imu_rate: 100.0
+    expected_odom_rate: 50.0
+    rate_tolerance_pct: 35.0
+
+    # Timestamp Analysis Parameters
+    gap_threshold_factor: 2.5
+    window_size: 100
+
+    # Diagnostic & Terminal Reporting Rates
+    diag_publish_rate_hz: 2.0
+    report_interval_sec: 5.0
+
+    # Optional CSV Data Logging
+    csv_logging_enabled: false
+    csv_output_path: "/tmp/sensor_sync_log.csv"

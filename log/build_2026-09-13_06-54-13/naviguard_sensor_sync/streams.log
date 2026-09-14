@@ -1,0 +1,17 @@
+[2.858s] Invoking command in '/home/maxx/naviguard_ws/build/naviguard_sensor_sync': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_sensor_sync/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_sensor_sync/build --no-deps symlink_data
+[3.261s] running develop
+[3.456s] running egg_info
+[3.474s] writing naviguard_sensor_sync.egg-info/PKG-INFO
+[3.474s] writing dependency_links to naviguard_sensor_sync.egg-info/dependency_links.txt
+[3.474s] writing entry points to naviguard_sensor_sync.egg-info/entry_points.txt
+[3.474s] writing requirements to naviguard_sensor_sync.egg-info/requires.txt
+[3.474s] writing top-level names to naviguard_sensor_sync.egg-info/top_level.txt
+[3.518s] reading manifest file 'naviguard_sensor_sync.egg-info/SOURCES.txt'
+[3.520s] writing manifest file 'naviguard_sensor_sync.egg-info/SOURCES.txt'
+[3.544s] running build_ext
+[3.544s] Creating /home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib/python3.12/site-packages/naviguard-sensor-sync.egg-link (link to .)
+[3.545s] Installing sensor_sync_node script to /home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib/naviguard_sensor_sync
+[3.545s] 
+[3.545s] Installed /home/maxx/naviguard_ws/build/naviguard_sensor_sync
+[3.545s] running symlink_data
+[3.659s] Invoked command in '/home/maxx/naviguard_ws/build/naviguard_sensor_sync' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_sensor_sync/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_sensor_sync/build --no-deps symlink_data

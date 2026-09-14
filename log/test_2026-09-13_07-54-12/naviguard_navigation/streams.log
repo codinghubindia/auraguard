@@ -1,0 +1,22 @@
+[0.245s] Invoking command in '/home/maxx/naviguard_ws/src/naviguard_navigation': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_navigation:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_navigation/pytest.xml --junit-prefix=naviguard_navigation -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_navigation/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_navigation:/home/maxx/naviguard_ws/install/naviguard_navigation/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest
+[0.538s] ============================= test session starts ==============================
+[0.538s] platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+[0.542s] cachedir: /home/maxx/naviguard_ws/build/naviguard_navigation/.pytest_cache
+[0.543s] rootdir: /home/maxx/naviguard_ws/src/naviguard_navigation
+[0.543s] plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+[0.954s] collecting ... 
+[0.954s] collected 33 items                                                             
+[0.955s] 
+[1.094s] test/test_global_planner_astar.py ....                                   [ 12%]
+[1.097s] test/test_goal_checker.py ..                                             [ 18%]
+[1.099s] test/test_mission_manager.py ...                                         [ 27%]
+[1.405s] test/test_navigation_integration.py ...                                  [ 36%]
+[1.555s] test/test_navigation_scenarios.py ...........                            [ 69%]
+[1.563s] test/test_occupancy_grid.py ....                                         [ 81%]
+[1.567s] test/test_path_smoother.py ..                                            [ 87%]
+[1.569s] test/test_replanner.py ..                                                [ 93%]
+[1.572s] test/test_waypoint_generator.py ..                                       [100%]
+[1.572s] 
+[1.573s] - generated xml file: /home/maxx/naviguard_ws/build/naviguard_navigation/pytest.xml -
+[1.573s] ============================== 33 passed in 1.03s ==============================
+[2.683s] Invoked command in '/home/maxx/naviguard_ws/src/naviguard_navigation' returned '0': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_navigation:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_navigation/pytest.xml --junit-prefix=naviguard_navigation -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_navigation/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_navigation:/home/maxx/naviguard_ws/install/naviguard_navigation/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest

@@ -1,0 +1,9 @@
+-- run_test.py: invoking following command in '/home/maxx/naviguard_ws/src/naviguard_description':
+ - /opt/ros/jazzy/bin/ament_lint_cmake --xunit-file /home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/lint_cmake.xunit.xml
+
+
+No problems found
+
+
+-- run_test.py: return code 0
+-- run_test.py: verify result file '/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/lint_cmake.xunit.xml'

@@ -1,0 +1,22 @@
+[0.590s] Invoking command in '/home/maxx/naviguard_ws/src/naviguard_rellis': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_rellis:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_rellis/pytest.xml --junit-prefix=naviguard_rellis -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_rellis/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_rellis:/home/maxx/naviguard_ws/install/naviguard_rellis/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest
+[2.035s] ============================= test session starts ==============================
+[2.036s] platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+[2.036s] cachedir: /home/maxx/naviguard_ws/build/naviguard_rellis/.pytest_cache
+[2.036s] rootdir: /home/maxx/naviguard_ws/src/naviguard_rellis
+[2.037s] plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+[2.037s] collecting ... 
+[2.037s] collected 25 items                                                             
+[2.037s] 
+[2.038s] test/test_calibration_loader.py ...                                      [ 12%]
+[2.038s] test/test_dataset_validator.py ..                                        [ 20%]
+[2.039s] test/test_evaluation_metrics.py ....                                     [ 36%]
+[2.039s] test/test_ground_truth_guard.py ....                                     [ 52%]
+[2.040s] test/test_label_loader.py ...                                            [ 64%]
+[2.041s] test/test_pointcloud_loader.py ..                                        [ 72%]
+[2.041s] test/test_pose_loader.py ...                                             [ 84%]
+[2.041s] test/test_sequence_loader.py .                                           [ 88%]
+[2.041s] test/test_terrain_and_world_builder.py ...                               [100%]
+[2.042s] 
+[2.042s] - generated xml file: /home/maxx/naviguard_ws/build/naviguard_rellis/pytest.xml -
+[2.042s] ============================== 25 passed in 0.27s ==============================
+[2.066s] Invoked command in '/home/maxx/naviguard_ws/src/naviguard_rellis' returned '0': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_rellis:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_rellis/pytest.xml --junit-prefix=naviguard_rellis -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_rellis/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_rellis:/home/maxx/naviguard_ws/install/naviguard_rellis/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest

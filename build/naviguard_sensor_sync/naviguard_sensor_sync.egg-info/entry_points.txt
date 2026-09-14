@@ -1,0 +1,2 @@
+[console_scripts]
+sensor_sync_node = naviguard_sensor_sync.sensor_sync_node:main

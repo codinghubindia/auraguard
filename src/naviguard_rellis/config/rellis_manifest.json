@@ -1,0 +1,36 @@
+{
+  "dataset_name": "RELLIS-3D Outdoor Off-Road Dataset",
+  "dataset_version": "v1.0 (Texas A&M / TAMU)",
+  "sequence_id": "00000",
+  "source_path": "~/datasets/rellis3d",
+  "dataset_status": "NOT_INSTALLED_LOCALLY",
+  "files_used": [],
+  "file_sizes": {},
+  "calibration_source": "TAMU RELLIS-3D Camera Matrix & Distortion Model (synthetic calibration fallback in calibration_loader.py)",
+  "pose_source": "KITTI-format 3x4 ground-truth poses (synthetic SE(3) trajectory fallback in pose_loader.py)",
+  "pointcloud_source": "Ouster OS1-64 LiDAR Point Cloud (algorithmic terrain elevation builder in terrain_builder.py)",
+  "semantic_source": "RELLIS 34-class ontology (label_loader.py parser with binary traversability mapping)",
+  "terrain_generation_method": "Programmatic elevation grid & DEM binning with slope angle limits (<22 deg) and surface friction modeling (Trail mu=0.85, Grass mu=0.60, Mud mu=0.22)",
+  "mesh_generation_method": "Gazebo Harmonic SDF 1.8/1.9 world generation (src/naviguard_description/worlds/rellis_outdoor_world.sdf)",
+  "coordinate_transform": {
+    "rellis_frame": "camera_optical_link / ouster_lidar",
+    "local_world_frame": "world / odom",
+    "map_frame": "map",
+    "origin": [
+      -15.0,
+      -15.0
+    ],
+    "resolution": 0.05,
+    "width": 600,
+    "height": 600,
+    "scale": 1.0,
+    "rotation_offset_deg": 0.0,
+    "axis_convention": "ROS REP-103 standard (X-forward, Y-left, Z-up)"
+  },
+  "approximation_notes": {
+    "status": "RELLIS-INSPIRED SYNTHETIC ENVIRONMENT",
+    "physical_dataset_present": false,
+    "justification": "The official >100GB RELLIS-3D raw dataset archive is not installed on this workstation. Code loaders for real RELLIS data (calibration, poses, PCD, semantic labels) are complete and unit tested with synthetic fixtures. Gazebo simulation runs rellis_outdoor_world.sdf with physically realistic trail geometries, mud slip zones, fallen log obstacles, and rock cairns matching RELLIS characteristics.",
+    "dashboard_label": "RELLIS-INSPIRED SYNTHETIC ENVIRONMENT"
+  }
+}

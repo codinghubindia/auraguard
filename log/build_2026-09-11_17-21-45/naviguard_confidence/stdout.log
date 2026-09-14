@@ -1,0 +1,26 @@
+running develop
+running egg_info
+creating naviguard_confidence.egg-info
+writing naviguard_confidence.egg-info/PKG-INFO
+writing dependency_links to naviguard_confidence.egg-info/dependency_links.txt
+writing entry points to naviguard_confidence.egg-info/entry_points.txt
+writing requirements to naviguard_confidence.egg-info/requires.txt
+writing top-level names to naviguard_confidence.egg-info/top_level.txt
+writing manifest file 'naviguard_confidence.egg-info/SOURCES.txt'
+reading manifest file 'naviguard_confidence.egg-info/SOURCES.txt'
+writing manifest file 'naviguard_confidence.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/maxx/naviguard_ws/install/naviguard_confidence/lib/python3.12/site-packages/naviguard-confidence.egg-link (link to .)
+Installing confidence_node script to /home/maxx/naviguard_ws/install/naviguard_confidence/lib/naviguard_confidence
+
+Installed /home/maxx/naviguard_ws/build/naviguard_confidence
+running symlink_data
+creating /home/maxx/naviguard_ws/install/naviguard_confidence/share/ament_index
+creating /home/maxx/naviguard_ws/install/naviguard_confidence/share/ament_index/resource_index
+creating /home/maxx/naviguard_ws/install/naviguard_confidence/share/ament_index/resource_index/packages
+symbolically linking /home/maxx/naviguard_ws/build/naviguard_confidence/resource/naviguard_confidence -> /home/maxx/naviguard_ws/install/naviguard_confidence/share/ament_index/resource_index/packages
+symbolically linking /home/maxx/naviguard_ws/build/naviguard_confidence/package.xml -> /home/maxx/naviguard_ws/install/naviguard_confidence/share/naviguard_confidence
+creating /home/maxx/naviguard_ws/install/naviguard_confidence/share/naviguard_confidence/launch
+symbolically linking /home/maxx/naviguard_ws/build/naviguard_confidence/launch/confidence.launch.py -> /home/maxx/naviguard_ws/install/naviguard_confidence/share/naviguard_confidence/launch
+creating /home/maxx/naviguard_ws/install/naviguard_confidence/share/naviguard_confidence/config
+symbolically linking /home/maxx/naviguard_ws/build/naviguard_confidence/config/confidence_params.yaml -> /home/maxx/naviguard_ws/install/naviguard_confidence/share/naviguard_confidence/config

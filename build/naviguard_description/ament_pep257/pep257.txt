@@ -1,0 +1,10 @@
+-- run_test.py: invoking following command in '/home/maxx/naviguard_ws/src/naviguard_description':
+ - /opt/ros/jazzy/bin/ament_pep257 --xunit-file /home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/pep257.xunit.xml
+
+checking ./launch/naviguard_demo.launch.py
+checking ./launch/naviguard_sim.launch.py
+No problems found
+
+
+-- run_test.py: return code 0
+-- run_test.py: verify result file '/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/pep257.xunit.xml'

@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ==================== RGB CAMERA SENSOR ==================== -->
+  <xacro:property name="camera_mass" value="0.2"/>
+
+  <!-- camera_link (forward-facing on chassis mast) -->
+  <link name="camera_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${camera_mass}"/>
+      <inertia
+        ixx="${(1.0/12.0) * camera_mass * (0.12*0.12 + 0.04*0.04)}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${(1.0/12.0) * camera_mass * (0.04*0.04 + 0.04*0.04)}"
+        iyz="0.0"
+        izz="${(1.0/12.0) * camera_mass * (0.04*0.04 + 0.12*0.12)}"/>
+    </inertial>
+
+    <collision name="camera_collision">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.04 0.12 0.04"/>
+      </geometry>
+    </collision>
+
+    <!-- Camera Body -->
+    <visual name="camera_body">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.04 0.12 0.04"/>
+      </geometry>
+      <material name="camera_blue"/>
+    </visual>
+
+    <!-- Primary Lens (Visual) -->
+    <visual name="camera_lens">
+      <origin xyz="0.025 0 0" rpy="0 ${pi/2} 0"/>
+      <geometry>
+        <cylinder radius="0.015" length="0.012"/>
+      </geometry>
+      <material name="lens_glass"/>
+    </visual>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0.22 0.0 0.14" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Gazebo Camera Sensor Plugin -->
+  <gazebo reference="camera_link">
+    <material>
+      <ambient>0.05 0.25 0.65 1.0</ambient>
+      <diffuse>0.05 0.25 0.65 1.0</diffuse>
+      <specular>0.5 0.5 0.5 1.0</specular>
+    </material>
+    <sensor name="naviguard_camera" type="camera">
+      <camera>
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.05</near>
+          <far>100.0</far>
+        </clip>
+      </camera>
+      <always_on>1</always_on>
+      <update_rate>30</update_rate>
+      <visualize>true</visualize>
+      <topic>/camera/image_raw</topic>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="camera_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <!-- Standard ROS camera optical frame (Z-forward, X-right, Y-down) -->
+  <link name="camera_optical_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.001"/>
+      <inertia ixx="1e-6" ixy="0.0" ixz="0.0" iyy="1e-6" iyz="0.0" izz="1e-6"/>
+    </inertial>
+  </link>
+
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_optical_link"/>
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+  </joint>
+
+  <gazebo reference="camera_optical_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+
+  <!-- ==================== IMU SENSOR ==================== -->
+  <xacro:property name="imu_mass" value="0.05"/>
+
+  <!-- imu_link (near center of gravity inside chassis) -->
+  <link name="imu_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${imu_mass}"/>
+      <inertia
+        ixx="1e-5" ixy="0.0" ixz="0.0"
+        iyy="1e-5" iyz="0.0"
+        izz="1e-5"/>
+    </inertial>
+
+    <collision name="imu_collision">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.03 0.01"/>
+      </geometry>
+    </collision>
+
+    <visual name="imu_visual">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.03 0.01"/>
+      </geometry>
+      <material name="imu_gold"/>
+    </visual>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0.0 0.0 0.02" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Gazebo IMU Sensor Plugin -->
+  <gazebo reference="imu_link">
+    <material>
+      <ambient>0.85 0.75 0.2 1.0</ambient>
+      <diffuse>0.85 0.75 0.2 1.0</diffuse>
+      <specular>0.4 0.4 0.4 1.0</specular>
+    </material>
+    <sensor name="naviguard_imu" type="imu">
+      <always_on>1</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <topic>/imu</topic>
+      <imu>
+        <angular_velocity>
+          <x><noise type="gaussian"><mean>0.0</mean><stddev>2e-4</stddev></noise></x>
+          <y><noise type="gaussian"><mean>0.0</mean><stddev>2e-4</stddev></noise></y>
+          <z><noise type="gaussian"><mean>0.0</mean><stddev>2e-4</stddev></noise></z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x><noise type="gaussian"><mean>0.0</mean><stddev>1.7e-2</stddev></noise></x>
+          <y><noise type="gaussian"><mean>0.0</mean><stddev>1.7e-2</stddev></noise></y>
+          <z><noise type="gaussian"><mean>0.0</mean><stddev>1.7e-2</stddev></noise></z>
+        </linear_acceleration>
+      </imu>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="imu_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <!-- ==================== CHASE CAMERA SENSOR ==================== -->
+  <link name="chase_camera_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.001"/>
+      <inertia ixx="1e-6" ixy="0.0" ixz="0.0" iyy="1e-6" iyz="0.0" izz="1e-6"/>
+    </inertial>
+  </link>
+
+  <joint name="chase_camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="chase_camera_link"/>
+    <origin xyz="-2.2 0.0 1.4" rpy="0 0.35 0"/>
+  </joint>
+
+  <gazebo reference="chase_camera_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="chase_camera_link">
+    <sensor name="naviguard_chase_camera" type="camera">
+      <camera>
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.05</near>
+          <far>100.0</far>
+        </clip>
+      </camera>
+      <always_on>1</always_on>
+      <update_rate>15</update_rate>
+      <visualize>false</visualize>
+      <topic>/camera/chase_image</topic>
+    </sensor>
+  </gazebo>
+
+</robot>
+

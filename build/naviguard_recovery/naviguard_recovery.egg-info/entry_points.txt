@@ -1,0 +1,4 @@
+[console_scripts]
+demo_motion_node = naviguard_recovery.demo_motion_node:main
+naviguard_demo_motion = naviguard_recovery.demo_motion_node:main
+recovery_node = naviguard_recovery.recovery_node:main

@@ -1,0 +1,19 @@
+confidence_node:
+  ros__parameters:
+    rate_hz: 10.0
+    base_frame: "base_link"
+    map_frame: "map"
+    log_csv_path: ""
+    log_json_path: ""
+
+    # State Machine Thresholds
+    continue_threshold: 0.75
+    verify_threshold: 0.65
+    recover_threshold: 0.35
+    recover_to_verify_threshold: 0.50
+
+    # Debounce / Persistence Windows (seconds)
+    verify_debounce_sec: 0.30
+    recover_debounce_sec: 0.80
+    recover_clear_sec: 1.50
+    continue_clear_sec: 1.00

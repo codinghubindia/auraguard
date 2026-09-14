@@ -1,0 +1,21 @@
+[1.611s] Invoking command in '/home/maxx/naviguard_ws/src/naviguard_slam': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_slam:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_slam/pytest.xml --junit-prefix=naviguard_slam -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_slam/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_slam:/home/maxx/naviguard_ws/install/naviguard_slam/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest
+[2.394s] ============================= test session starts ==============================
+[2.396s] platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+[2.427s] cachedir: /home/maxx/naviguard_ws/build/naviguard_slam/.pytest_cache
+[2.427s] rootdir: /home/maxx/naviguard_ws/src/naviguard_slam
+[2.428s] plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+[3.828s] collecting ... 
+[3.838s] collecting 0 items                                                             
+[3.838s] collected 17 items                                                             
+[3.839s] 
+[3.854s] test/test_keyframe_and_landmarks.py ...                                  [ 17%]
+[4.115s] test/test_map_save_load.py .                                             [ 23%]
+[4.118s] test/test_occupancy_grid.py ....                                         [ 47%]
+[4.136s] test/test_place_recognition.py ..                                        [ 58%]
+[4.145s] test/test_pose_graph_optimizer.py ..                                     [ 70%]
+[4.343s] test/test_slam_node_lifecycle.py ...                                     [ 88%]
+[4.352s] test/test_tracking_failure_and_diagnostics.py ..                         [100%]
+[4.352s] 
+[4.352s] - generated xml file: /home/maxx/naviguard_ws/build/naviguard_slam/pytest.xml --
+[4.352s] ============================== 17 passed in 1.96s ==============================
+[4.696s] Invoked command in '/home/maxx/naviguard_ws/src/naviguard_slam' returned '0': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_slam:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_slam/pytest.xml --junit-prefix=naviguard_slam -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_slam/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_slam:/home/maxx/naviguard_ws/install/naviguard_slam/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest

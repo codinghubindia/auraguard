@@ -1,0 +1,48 @@
+{
+  "MAPPING_TEST": {
+    "duration_sec": 40.06027364730835,
+    "keyframes_created": 14,
+    "landmarks_triangulated": 17,
+    "loop_closures_detected": 0,
+    "tracking_state": "TRACKING_LOST",
+    "ate_rmse_m": 1.8112673814196723,
+    "ate_mean_m": 1.3167222379545993,
+    "final_pos_error_m": 3.2548086210410276,
+    "final_yaw_error_deg": 148.01372166321158,
+    "occupancy_map_cells": 360000,
+    "free_cells_cleared": 1051,
+    "obstacles_mapped": 6
+  },
+  "MAP_SAVE": {
+    "success": true,
+    "service_message": "Map successfully saved to /home/maxx/naviguard_ws/src/naviguard_slam/maps/naviguard_slam_map.json, /home/maxx/naviguard_ws/src/naviguard_slam/maps/naviguard_slam_map.yaml, and /home/maxx/naviguard_ws/src/naviguard_slam/maps/naviguard_slam_map.pgm",
+    "save_duration_sec": 0.022432804107666016,
+    "json_map_file": "/home/maxx/naviguard_ws/src/naviguard_slam/maps/naviguard_slam_map.json",
+    "json_size_kb": 323.375,
+    "yaml_map_file": "/home/maxx/naviguard_ws/src/naviguard_slam/maps/naviguard_slam_map.yaml",
+    "pgm_map_file": "/home/maxx/naviguard_ws/src/naviguard_slam/maps/naviguard_slam_map.pgm",
+    "pgm_size_kb": 351.5771484375
+  },
+  "LOCALIZATION_TEST": {
+    "mode_confirmed": "LOCALIZATION",
+    "tracking_state": "TRACKING_LOST",
+    "features_matched": 0,
+    "loc_ate_rmse_m": 1.4165346710420423,
+    "loc_final_pos_err_m": 0.8979237443790636,
+    "loc_final_yaw_err_deg": 39.36995314600573,
+    "success": false
+  },
+  "FAILURE_TEST": {
+    "failure_detected": true,
+    "failure_reason": "INSUFFICIENT_FEATURES_0",
+    "final_tracking_state": "TRACKING_LOST",
+    "sensor_health_warning": "INSUFFICIENT_FEATURES_0"
+  },
+  "PERFORMANCE": {
+    "slam_update_rate_hz": 10.0,
+    "slam_cpu_percent": 0.0,
+    "slam_memory_mb": 214.48046875,
+    "map_save_duration_sec": 0.022432804107666016,
+    "mapping_total_time_sec": 40.06027364730835
+  }
+}

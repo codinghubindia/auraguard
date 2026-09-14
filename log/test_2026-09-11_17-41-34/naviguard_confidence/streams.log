@@ -1,0 +1,18 @@
+[0.482s] Invoking command in '/home/maxx/naviguard_ws/src/naviguard_confidence': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_confidence:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_confidence/pytest.xml --junit-prefix=naviguard_confidence -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_confidence/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_confidence:/home/maxx/naviguard_ws/install/naviguard_confidence/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest
+[0.772s] ============================= test session starts ==============================
+[0.772s] platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+[0.776s] cachedir: /home/maxx/naviguard_ws/build/naviguard_confidence/.pytest_cache
+[0.776s] rootdir: /home/maxx/naviguard_ws/src/naviguard_confidence
+[0.776s] plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+[1.257s] collecting ... 
+[1.257s] collected 20 items                                                             
+[1.258s] 
+[1.264s] test/test_confidence_dimensions.py ...                                   [ 15%]
+[1.414s] test/test_confidence_node_lifecycle.py ..                                [ 25%]
+[1.420s] test/test_decision_state_machine.py ......                               [ 55%]
+[1.424s] test/test_event_logger.py .                                              [ 60%]
+[1.434s] test/test_sensor_monitors.py ........                                    [100%]
+[1.434s] 
+[1.434s] - generated xml file: /home/maxx/naviguard_ws/build/naviguard_confidence/pytest.xml -
+[1.435s] ============================== 20 passed in 0.66s ==============================
+[1.660s] Invoked command in '/home/maxx/naviguard_ws/src/naviguard_confidence' returned '0': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_confidence:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_confidence/pytest.xml --junit-prefix=naviguard_confidence -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_confidence/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_confidence:/home/maxx/naviguard_ws/install/naviguard_confidence/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest

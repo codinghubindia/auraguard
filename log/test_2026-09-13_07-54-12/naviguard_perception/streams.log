@@ -1,0 +1,16 @@
+[0.858s] Invoking command in '/home/maxx/naviguard_ws/src/naviguard_perception': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_perception:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_perception/pytest.xml --junit-prefix=naviguard_perception -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_perception/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_perception:/home/maxx/naviguard_ws/install/naviguard_perception/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest
+[2.665s] ============================= test session starts ==============================
+[2.666s] platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+[2.666s] cachedir: /home/maxx/naviguard_ws/build/naviguard_perception/.pytest_cache
+[2.667s] rootdir: /home/maxx/naviguard_ws/src/naviguard_perception
+[2.667s] plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+[2.667s] collecting ... 
+[2.667s] collecting 0 items                                                             
+[2.668s] collected 11 items                                                             
+[2.668s] 
+[2.668s] test/test_image_processor.py .......                                     [ 63%]
+[2.668s] test/test_node_lifecycle.py ....                                         [100%]
+[2.669s] 
+[2.669s] - generated xml file: /home/maxx/naviguard_ws/build/naviguard_perception/pytest.xml -
+[2.669s] ============================== 11 passed in 1.21s ==============================
+[2.789s] Invoked command in '/home/maxx/naviguard_ws/src/naviguard_perception' returned '0': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_perception:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_perception/pytest.xml --junit-prefix=naviguard_perception -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_perception/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_perception:/home/maxx/naviguard_ws/install/naviguard_perception/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest

@@ -1,0 +1,12 @@
+# RELLIS Scenario: Mud Hazard & Confidence-Aware Recovery
+scenario_name: "rellis_mud_recovery"
+description: "Evaluates visual degradation in mud/slippery terrain triggering VERIFY and RECOVER state machines."
+sequence: "00000"
+start_pose: [0.0, 0.0, 0.0, 0.0]
+goal_pose: [25.0, 0.0, 0.0, 0.0]
+mud_region:
+  min_x: 12.0
+  max_x: 17.0
+  min_y: -2.0
+  max_y: 2.0
+expected_recovery_triggered: true

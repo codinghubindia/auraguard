@@ -1,0 +1,9 @@
+source;share/naviguard_perception/hook/pythonpath.ps1
+source;share/naviguard_perception/hook/pythonpath.dsv
+source;share/naviguard_perception/hook/pythonpath.sh
+source;share/naviguard_perception/hook/ament_prefix_path.ps1
+source;share/naviguard_perception/hook/ament_prefix_path.dsv
+source;share/naviguard_perception/hook/ament_prefix_path.sh
+source;../../build/naviguard_perception/share/naviguard_perception/hook/pythonpath_develop.ps1
+source;../../build/naviguard_perception/share/naviguard_perception/hook/pythonpath_develop.dsv
+source;../../build/naviguard_perception/share/naviguard_perception/hook/pythonpath_develop.sh

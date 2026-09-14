@@ -1,0 +1,21 @@
+slam_node:
+  ros__parameters:
+    mode: "mapping"                      # "mapping" or "localization"
+    map_file: "/home/maxx/naviguard_ws/src/naviguard_slam/maps/naviguard_slam_map.json"
+    map_resolution: 0.05                 # 5 cm grid resolution
+    map_width_m: 30.0                    # 30m x 30m coverage
+    map_height_m: 30.0
+    keyframe_min_dist_m: 0.35            # Keyframe displacement threshold
+    keyframe_min_rot_rad: 0.25           # Keyframe rotation threshold (~14 deg)
+    max_features: 300                    # ORB feature count
+    loop_closure_min_inliers: 15         # Minimum geometric inliers for loop closure
+    loop_closure_search_radius_m: 3.5    # Spatial search radius for loop candidates
+    tracking_loss_feature_threshold: 10  # Gating threshold for tracking failure detection
+    publish_tf: true                     # Authoritative publisher of map -> odom transform
+    map_frame: "map"
+    odom_frame: "odom"
+    base_frame: "base_link"
+    log_trajectory_csv: ""
+    publish_rate_hz: 10.0
+    min_obstacle_height_m: 0.08          # Rejects flat ground textures/shadows (Z < 0.08m)
+    max_obstacle_height_m: 1.80          # Ground obstacle ceiling

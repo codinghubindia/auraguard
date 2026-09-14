@@ -1,0 +1,17 @@
+[2.790s] Invoking command in '/home/maxx/naviguard_ws/build/naviguard_confidence': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_confidence/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_confidence/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_confidence/build --no-deps symlink_data
+[3.153s] running develop
+[3.352s] running egg_info
+[3.371s] writing naviguard_confidence.egg-info/PKG-INFO
+[3.372s] writing dependency_links to naviguard_confidence.egg-info/dependency_links.txt
+[3.372s] writing entry points to naviguard_confidence.egg-info/entry_points.txt
+[3.372s] writing requirements to naviguard_confidence.egg-info/requires.txt
+[3.372s] writing top-level names to naviguard_confidence.egg-info/top_level.txt
+[3.415s] reading manifest file 'naviguard_confidence.egg-info/SOURCES.txt'
+[3.416s] writing manifest file 'naviguard_confidence.egg-info/SOURCES.txt'
+[3.442s] running build_ext
+[3.442s] Creating /home/maxx/naviguard_ws/install/naviguard_confidence/lib/python3.12/site-packages/naviguard-confidence.egg-link (link to .)
+[3.442s] Installing confidence_node script to /home/maxx/naviguard_ws/install/naviguard_confidence/lib/naviguard_confidence
+[3.442s] 
+[3.442s] Installed /home/maxx/naviguard_ws/build/naviguard_confidence
+[3.442s] running symlink_data
+[3.554s] Invoked command in '/home/maxx/naviguard_ws/build/naviguard_confidence' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_confidence/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_confidence/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_confidence/build --no-deps symlink_data

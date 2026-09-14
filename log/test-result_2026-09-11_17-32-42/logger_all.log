@@ -1,0 +1,16 @@
+[0.157s] DEBUG:colcon:Command line arguments: ['/home/maxx/.local/bin/colcon', 'test-result', '--verbose']
+[0.157s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='test-result', test_result_base='build', all=False, result_files_only=False, verbose=True, delete=False, delete_yes=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x71293d685f10>, verb_extension=<colcon_test_result.verb.test_result.TestResultVerb object at 0x71293d684b90>, main=<bound method TestResultVerb.main of <colcon_test_result.verb.test_result.TestResultVerb object at 0x71293d684b90>>)
+[0.159s] Level 1:colcon.colcon_test_result.test_result:get_test_results(ctest)
+[0.163s] Level 1:colcon.colcon_test_result.test_result:get_test_results(xunit)
+[0.163s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/naviguard_confidence/package.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.164s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/naviguard_description/Testing/20260911-1644/Test.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.164s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/naviguard_description/Testing/20260911-1645/Test.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.164s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/naviguard_description/Testing/20260911-1700/Test.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.164s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/naviguard_description/Testing/20260911-1722/Test.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.164s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/naviguard_description/Testing/20260911-1732/Test.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.165s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/naviguard_perception/package.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.165s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/naviguard_recovery/package.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.165s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/naviguard_sensor_sync/package.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.165s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/naviguard_slam/package.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.166s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/naviguard_state_estimation/package.xml': the root tag is neither 'testsuite' nor 'testsuites'
+[0.166s] DEBUG:colcon.colcon_test_result.test_result.xunit:Skipping 'build/naviguard_visual_odometry/package.xml': the root tag is neither 'testsuite' nor 'testsuites'

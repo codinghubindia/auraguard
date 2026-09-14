@@ -1,0 +1,37 @@
+/**:
+  ros__parameters:
+    # Topic Configuration
+    image_topic: "/camera/image_raw"
+    camera_info_topic: "/camera/camera_info"
+    odom_topic: "/odom"
+    debug_image_topic: "/visual_odometry/debug_image"
+    telemetry_topic: "/visual_odometry/telemetry"
+
+    # Feature Detection (Shi-Tomasi)
+    max_features: 200
+    quality_level: 0.01
+    min_distance: 12.0
+    block_size: 3
+    use_harris: false
+    self_mask_height_ratio: 0.15
+
+    # Optical Flow Tracking (Lucas-Kanade Pyramidal)
+    lk_win_size: 21
+    lk_max_level: 3
+    lk_max_iters: 30
+    lk_eps: 0.01
+
+    # Bidirectional Verification & Filtering
+    fb_err_threshold: 1.0
+    min_features_threshold: 70
+    outlier_mad_k: 3.5
+    max_displacement_px: 80.0
+
+    # Geometric Motion Estimation (Essential Matrix & Pose Recovery)
+    geom_ransac_threshold: 1.0
+    geom_ransac_prob: 0.999
+    geom_min_inliers: 15
+    geom_min_baseline_disp_px: 0.6
+
+    # Diagnostic & Logging Period (seconds)
+    diag_period_sec: 3.0

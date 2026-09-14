@@ -1,0 +1,10 @@
+recovery_node:
+  ros__parameters:
+    rate_hz: 10.0
+    safe_stop_dwell_sec: 0.50
+    verification_dwell_sec: 1.00
+    max_attempts: 3
+    max_total_duration_sec: 45.0
+    max_backtrack_dist_m: 3.0
+    max_rotation_deg: 180.0
+    log_events_json: ""

@@ -1,0 +1,2 @@
+[console_scripts]
+slam_node = naviguard_slam.slam_node:main

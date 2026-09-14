@@ -1,0 +1,4 @@
+source;share/naviguard_description/local_setup.bash
+source;share/naviguard_description/local_setup.dsv
+source;share/naviguard_description/local_setup.sh
+source;share/naviguard_description/local_setup.zsh

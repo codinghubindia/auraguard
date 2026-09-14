@@ -1,0 +1,88 @@
+[0.059s] Invoking command in '/home/maxx/naviguard_ws/build/naviguard_description': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_description:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_description:${CMAKE_PREFIX_PATH} /usr/bin/ctest -C Release -D ExperimentalTest --no-compress-output -V --force-new-ctest-process
+[0.074s] UpdateCTestConfiguration  from :/home/maxx/naviguard_ws/build/naviguard_description/CTestConfiguration.ini
+[0.074s] Parse Config file:/home/maxx/naviguard_ws/build/naviguard_description/CTestConfiguration.ini
+[0.074s]    Site: Agni
+[0.074s]    Build name: (empty)
+[0.074s]  Add coverage exclude regular expressions.
+[0.075s] Create new tag: 20260911-1814 - Experimental
+[0.075s] UpdateCTestConfiguration  from :/home/maxx/naviguard_ws/build/naviguard_description/CTestConfiguration.ini
+[0.075s] Parse Config file:/home/maxx/naviguard_ws/build/naviguard_description/CTestConfiguration.ini
+[0.075s] Test project /home/maxx/naviguard_ws/build/naviguard_description
+[0.076s] Constructing a list of tests
+[0.076s] Done constructing a list of tests
+[0.076s] Updating test list for fixtures
+[0.076s] Added 0 tests to meet fixture requirements
+[0.076s] Checking test dependency graph...
+[0.077s] Checking test dependency graph end
+[0.077s] test 1
+[0.077s]     Start 1: flake8
+[0.077s] 
+[0.077s] 1: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/flake8.xunit.xml" "--package-name" "naviguard_description" "--output-file" "/home/maxx/naviguard_ws/build/naviguard_description/ament_flake8/flake8.txt" "--command" "/opt/ros/jazzy/bin/ament_flake8" "--xunit-file" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/flake8.xunit.xml"
+[0.077s] 1: Working Directory: /home/maxx/naviguard_ws/src/naviguard_description
+[0.077s] 1: Test timeout computed to be: 60
+[0.146s] 1: -- run_test.py: invoking following command in '/home/maxx/naviguard_ws/src/naviguard_description':
+[0.146s] 1:  - /opt/ros/jazzy/bin/ament_flake8 --xunit-file /home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/flake8.xunit.xml
+[0.364s] 1: 
+[0.365s] 1: 2 files checked
+[0.365s] 1: No problems found
+[0.365s] 1: 
+[0.365s] 1: Checked files:
+[0.365s] 1: 
+[0.365s] 1: * ./launch/naviguard_sim.launch.py
+[0.365s] 1: * ./launch/naviguard_demo.launch.py
+[0.414s] 1: -- run_test.py: return code 0
+[0.415s] 1: -- run_test.py: verify result file '/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/flake8.xunit.xml'
+[0.426s] 1/4 Test #1: flake8 ...........................   Passed    0.35 sec
+[0.426s] test 2
+[0.427s]     Start 2: lint_cmake
+[0.427s] 
+[0.427s] 2: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/lint_cmake.xunit.xml" "--package-name" "naviguard_description" "--output-file" "/home/maxx/naviguard_ws/build/naviguard_description/ament_lint_cmake/lint_cmake.txt" "--command" "/opt/ros/jazzy/bin/ament_lint_cmake" "--xunit-file" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/lint_cmake.xunit.xml"
+[0.427s] 2: Working Directory: /home/maxx/naviguard_ws/src/naviguard_description
+[0.427s] 2: Test timeout computed to be: 60
+[0.498s] 2: -- run_test.py: invoking following command in '/home/maxx/naviguard_ws/src/naviguard_description':
+[0.498s] 2:  - /opt/ros/jazzy/bin/ament_lint_cmake --xunit-file /home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/lint_cmake.xunit.xml
+[0.576s] 2: 
+[0.576s] 2: No problems found
+[0.588s] 2: -- run_test.py: return code 0
+[0.588s] 2: -- run_test.py: verify result file '/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/lint_cmake.xunit.xml'
+[0.606s] 2/4 Test #2: lint_cmake .......................   Passed    0.18 sec
+[0.606s] test 3
+[0.606s]     Start 3: pep257
+[0.607s] 
+[0.607s] 3: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/pep257.xunit.xml" "--package-name" "naviguard_description" "--output-file" "/home/maxx/naviguard_ws/build/naviguard_description/ament_pep257/pep257.txt" "--command" "/opt/ros/jazzy/bin/ament_pep257" "--xunit-file" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/pep257.xunit.xml"
+[0.607s] 3: Working Directory: /home/maxx/naviguard_ws/src/naviguard_description
+[0.607s] 3: Test timeout computed to be: 60
+[0.688s] 3: -- run_test.py: invoking following command in '/home/maxx/naviguard_ws/src/naviguard_description':
+[0.688s] 3:  - /opt/ros/jazzy/bin/ament_pep257 --xunit-file /home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/pep257.xunit.xml
+[0.838s] 3: checking ./launch/naviguard_demo.launch.py
+[0.838s] 3: checking ./launch/naviguard_sim.launch.py
+[0.838s] 3: No problems found
+[0.869s] 3: -- run_test.py: return code 0
+[0.870s] 3: -- run_test.py: verify result file '/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/pep257.xunit.xml'
+[0.882s] 3/4 Test #3: pep257 ...........................   Passed    0.28 sec
+[0.883s] test 4
+[0.883s]     Start 4: xmllint
+[0.883s] 
+[0.883s] 4: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/xmllint.xunit.xml" "--package-name" "naviguard_description" "--output-file" "/home/maxx/naviguard_ws/build/naviguard_description/ament_xmllint/xmllint.txt" "--command" "/opt/ros/jazzy/bin/ament_xmllint" "--xunit-file" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/xmllint.xunit.xml"
+[0.883s] 4: Working Directory: /home/maxx/naviguard_ws/src/naviguard_description
+[0.883s] 4: Test timeout computed to be: 60
+[0.963s] 4: -- run_test.py: invoking following command in '/home/maxx/naviguard_ws/src/naviguard_description':
+[0.963s] 4:  - /opt/ros/jazzy/bin/ament_xmllint --xunit-file /home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/xmllint.xunit.xml
+[2.301s] 4: File 'package.xml' is valid
+[2.301s] 4: 
+[2.301s] 4: No problems found
+[2.347s] 4: -- run_test.py: return code 0
+[2.350s] 4: -- run_test.py: verify result file '/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/xmllint.xunit.xml'
+[2.395s] 4/4 Test #4: xmllint ..........................   Passed    1.51 sec
+[2.396s] 
+[2.396s] 100% tests passed, 0 tests failed out of 4
+[2.396s] 
+[2.396s] Label Time Summary:
+[2.396s] flake8        =   0.35 sec*proc (1 test)
+[2.396s] lint_cmake    =   0.18 sec*proc (1 test)
+[2.396s] linter        =   2.32 sec*proc (4 tests)
+[2.396s] pep257        =   0.28 sec*proc (1 test)
+[2.396s] xmllint       =   1.51 sec*proc (1 test)
+[2.397s] 
+[2.397s] Total Test time (real) =   2.32 sec
+[2.435s] Invoked command in '/home/maxx/naviguard_ws/build/naviguard_description' returned '0': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_description:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_description:${CMAKE_PREFIX_PATH} /usr/bin/ctest -C Release -D ExperimentalTest --no-compress-output -V --force-new-ctest-process

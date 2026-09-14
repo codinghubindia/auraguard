@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: naviguard-slam
+Version: 0.1.0
+Summary: Visual-Inertial Keyframe Graph-SLAM and Metric Localization foundation for NAVIGUARD UGV
+Maintainer: maxx
+Maintainer-email: maxx@todo.todo
+License: Apache-2.0

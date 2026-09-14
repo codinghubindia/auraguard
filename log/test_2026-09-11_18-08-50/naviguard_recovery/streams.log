@@ -1,0 +1,22 @@
+[1.339s] Invoking command in '/home/maxx/naviguard_ws/src/naviguard_recovery': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_recovery:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_recovery/pytest.xml --junit-prefix=naviguard_recovery -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_recovery/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_recovery:/home/maxx/naviguard_ws/install/naviguard_recovery/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest
+[1.994s] ============================= test session starts ==============================
+[1.994s] platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+[1.994s] cachedir: /home/maxx/naviguard_ws/build/naviguard_recovery/.pytest_cache
+[1.994s] rootdir: /home/maxx/naviguard_ws/src/naviguard_recovery
+[1.994s] plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+[2.259s] collecting ... 
+[2.264s] collecting 0 items                                                             
+[2.264s] collected 19 items                                                             
+[2.264s] 
+[2.365s] test/test_demo_motion_node.py ..                                         [ 10%]
+[2.366s] test/test_recovery_budget.py .                                           [ 15%]
+[2.368s] test/test_recovery_controller.py ...                                     [ 31%]
+[2.483s] test/test_recovery_node_lifecycle.py ...                                 [ 47%]
+[2.492s] test/test_recovery_planner.py ..                                         [ 57%]
+[2.493s] test/test_recovery_state_machine.py ....                                 [ 78%]
+[2.494s] test/test_relocalization_manager.py ..                                   [ 89%]
+[2.497s] test/test_trusted_state_manager.py ..                                    [100%]
+[2.498s] 
+[2.498s] - generated xml file: /home/maxx/naviguard_ws/build/naviguard_recovery/pytest.xml -
+[2.498s] ============================== 19 passed in 0.77s ==============================
+[2.693s] Invoked command in '/home/maxx/naviguard_ws/src/naviguard_recovery' returned '0': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_recovery:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_recovery/pytest.xml --junit-prefix=naviguard_recovery -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_recovery/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_recovery:/home/maxx/naviguard_ws/install/naviguard_recovery/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest

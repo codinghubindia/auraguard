@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: naviguard-sensor-sync
+Version: 0.1.0
+Summary: Sensor timestamp synchronization, rate monitoring, and frame calibration validation for NAVIGUARD UGV
+Maintainer: maxx
+Maintainer-email: maxx@todo.todo
+License: Apache-2.0

@@ -1,0 +1,18 @@
+[0.421s] Invoking command in '/home/maxx/naviguard_ws/src/naviguard_sensor_sync': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_sensor_sync:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_sensor_sync/pytest.xml --junit-prefix=naviguard_sensor_sync -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_sensor_sync/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_sensor_sync:/home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest
+[0.809s] ============================= test session starts ==============================
+[0.809s] platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+[0.809s] cachedir: /home/maxx/naviguard_ws/build/naviguard_sensor_sync/.pytest_cache
+[0.809s] rootdir: /home/maxx/naviguard_ws/src/naviguard_sensor_sync
+[0.809s] plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+[1.092s] collecting ... 
+[1.092s] collected 19 items                                                             
+[1.092s] 
+[1.097s] test/test_frame_validator.py .                                           [  5%]
+[1.851s] test/test_node_lifecycle.py ..                                           [ 15%]
+[1.856s] test/test_sensor_validators.py .......                                   [ 52%]
+[1.859s] test/test_sync_analyzer.py ....                                          [ 73%]
+[1.865s] test/test_timestamp_monitor.py .....                                     [100%]
+[1.865s] 
+[1.865s] - generated xml file: /home/maxx/naviguard_ws/build/naviguard_sensor_sync/pytest.xml -
+[1.865s] ============================== 19 passed in 1.19s ==============================
+[2.071s] Invoked command in '/home/maxx/naviguard_ws/src/naviguard_sensor_sync' returned '0': AMENT_PREFIX_PATH=/home/maxx/naviguard_ws/install/naviguard_sensor_sync:${AMENT_PREFIX_PATH} PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_sensor_sync/pytest.xml --junit-prefix=naviguard_sensor_sync -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_sensor_sync/.pytest_cache PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_sensor_sync:/home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -m pytest

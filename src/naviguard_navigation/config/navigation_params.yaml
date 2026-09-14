@@ -1,0 +1,27 @@
+navigation_node:
+  ros__parameters:
+    use_sim_time: true
+    control_rate_hz: 10.0
+    map_frame: "map"
+
+    # Footprint & Costmap Parameters
+    inflation_radius_m: 0.50          # 0.35m circumscribed robot radius + 0.15m safety buffer
+    proximity_radius_m: 1.0           # Proximity decay distance for safe obstacle clearance
+    allow_unknown: true               # Allow exploration into unknown space with penalty
+    unknown_cost_penalty: 5.0         # Additive traversal penalty for unknown cells
+
+    # Path Following & Pure Pursuit
+    max_linear_velocity: 0.25         # m/s
+    min_linear_velocity: 0.05         # m/s
+    max_angular_velocity: 0.35        # rad/s
+    lookahead_distance_m: 0.40        # Lookahead tracking horizon (meters)
+
+    # Goal Reached Tolerances
+    xy_goal_tolerance_m: 0.25         # Position error tolerance (meters)
+    yaw_goal_tolerance_rad: 0.30      # Orientation error tolerance (~17 degrees)
+    required_dwell_sec: 1.0           # Minimum continuous settlement dwell time
+
+    # Replanning & Robustness
+    max_replan_retries: 5             # Maximum planning retry attempts before MISSION_FAILED
+    min_replan_interval_sec: 1.0      # Debounce interval between successive replans
+    max_path_deviation_m: 0.60        # Cross-track error threshold triggering replanning

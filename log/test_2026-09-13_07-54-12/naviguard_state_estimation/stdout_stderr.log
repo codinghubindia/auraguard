@@ -1,0 +1,16 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+cachedir: /home/maxx/naviguard_ws/build/naviguard_state_estimation/.pytest_cache
+rootdir: /home/maxx/naviguard_ws/src/naviguard_state_estimation
+plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+collecting ... 
+collected 20 items                                                             
+
+test/test_estimator_and_consistency.py .....                             [ 25%]
+test/test_measurement_buffer.py .....                                    [ 50%]
+test/test_node_integration.py .                                          [ 55%]
+test/test_processors.py ....                                             [ 75%]
+test/test_visual_adapter_and_scale.py .....                              [100%]
+
+- generated xml file: /home/maxx/naviguard_ws/build/naviguard_state_estimation/pytest.xml -
+============================== 20 passed in 0.58s ==============================

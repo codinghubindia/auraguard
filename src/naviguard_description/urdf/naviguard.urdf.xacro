@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<robot name="naviguard" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ==================== INCLUDES ==================== -->
+  <xacro:include filename="materials.xacro"/>
+  <xacro:include filename="chassis.xacro"/>
+  <xacro:include filename="wheel.xacro"/>
+  <xacro:include filename="sensors.xacro"/>
+  <xacro:include filename="gazebo_control.xacro"/>
+
+  <!-- ==================== WHEEL INSTANTIATION ==================== -->
+  <!-- Wheelbase: 0.30 m (+/- 0.15 m from center) -->
+  <!-- Track width: 0.42 m (+/- 0.21 m from center) -->
+  <!-- Wheel vertical offset: -0.02 m relative to base_link -->
+
+  <!-- Front Left Wheel -->
+  <xacro:naviguard_wheel
+    prefix="left_front"
+    x_offset="0.15"
+    y_offset="0.21"
+    z_offset="-0.02"/>
+
+  <!-- Front Right Wheel -->
+  <xacro:naviguard_wheel
+    prefix="right_front"
+    x_offset="0.15"
+    y_offset="-0.21"
+    z_offset="-0.02"/>
+
+  <!-- Rear Left Wheel -->
+  <xacro:naviguard_wheel
+    prefix="left_rear"
+    x_offset="-0.15"
+    y_offset="0.21"
+    z_offset="-0.02"/>
+
+  <!-- Rear Right Wheel -->
+  <xacro:naviguard_wheel
+    prefix="right_rear"
+    x_offset="-0.15"
+    y_offset="-0.21"
+    z_offset="-0.02"/>
+
+</robot>

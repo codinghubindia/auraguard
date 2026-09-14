@@ -1,0 +1,14 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+cachedir: /home/maxx/naviguard_ws/build/naviguard_perception/.pytest_cache
+rootdir: /home/maxx/naviguard_ws/src/naviguard_perception
+plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+collecting ... 
+collecting 0 items                                                             
+collected 9 items                                                              
+
+test/test_image_processor.py .....                                       [ 55%]
+test/test_node_lifecycle.py ....                                         [100%]
+
+- generated xml file: /home/maxx/naviguard_ws/build/naviguard_perception/pytest.xml -
+============================== 9 passed in 0.86s ===============================

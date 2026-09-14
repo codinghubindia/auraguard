@@ -1,0 +1,16 @@
+[2.207s] Invoking command in '/home/maxx/naviguard_ws/src/naviguard_visual_odometry': PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_visual_odometry/pytest.xml --junit-prefix=naviguard_visual_odometry -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_visual_odometry/.pytest_cache PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 -m pytest
+[2.542s] ============================= test session starts ==============================
+[2.542s] platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+[2.546s] cachedir: /home/maxx/naviguard_ws/build/naviguard_visual_odometry/.pytest_cache
+[2.546s] rootdir: /home/maxx/naviguard_ws/src/naviguard_visual_odometry
+[2.546s] plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+[2.977s] collecting ... 
+[2.977s] collected 16 items                                                             
+[2.977s] 
+[3.036s] test/test_feature_tracker.py ........                                    [ 50%]
+[3.041s] test/test_geometric_estimator.py ....                                    [ 75%]
+[3.235s] test/test_node_lifecycle.py ....                                         [100%]
+[3.235s] 
+[3.235s] - generated xml file: /home/maxx/naviguard_ws/build/naviguard_visual_odometry/pytest.xml -
+[3.235s] ============================== 16 passed in 0.69s ==============================
+[3.426s] Invoked command in '/home/maxx/naviguard_ws/src/naviguard_visual_odometry' returned '0': PYTEST_ADDOPTS=--tb=short --junit-xml=/home/maxx/naviguard_ws/build/naviguard_visual_odometry/pytest.xml --junit-prefix=naviguard_visual_odometry -o cache_dir=/home/maxx/naviguard_ws/build/naviguard_visual_odometry/.pytest_cache PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 -m pytest

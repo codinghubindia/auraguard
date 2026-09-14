@@ -1,0 +1,360 @@
+[0.151s] DEBUG:colcon:Command line arguments: ['/home/maxx/.local/bin/colcon', 'build', '--symlink-install']
+[0.151s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=True, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=12, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x7b875585f020>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7b875585e7e0>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7b875585e7e0>>)
+[0.178s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.178s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.178s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.178s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.178s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.178s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.178s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/maxx/naviguard_ws'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.196s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.196s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.196s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.196s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.196s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.196s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.196s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.196s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.196s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_description) by extensions ['ignore', 'ignore_ament_install']
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_description) by extension 'ignore'
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_description) by extension 'ignore_ament_install'
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_description) by extensions ['colcon_pkg']
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_description) by extension 'colcon_pkg'
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_description) by extensions ['colcon_meta']
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_description) by extension 'colcon_meta'
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_description) by extensions ['ros']
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_description) by extension 'ros'
+[0.202s] DEBUG:colcon.colcon_core.package_identification:Package 'src/naviguard_description' with type 'ros.ament_cmake' and name 'naviguard_description'
+[0.202s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_perception) by extensions ['ignore', 'ignore_ament_install']
+[0.203s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_perception) by extension 'ignore'
+[0.203s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_perception) by extension 'ignore_ament_install'
+[0.203s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_perception) by extensions ['colcon_pkg']
+[0.203s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_perception) by extension 'colcon_pkg'
+[0.203s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_perception) by extensions ['colcon_meta']
+[0.203s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_perception) by extension 'colcon_meta'
+[0.203s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_perception) by extensions ['ros']
+[0.203s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_perception) by extension 'ros'
+[0.203s] DEBUG:colcon.colcon_core.package_identification:Package 'src/naviguard_perception' with type 'ros.ament_python' and name 'naviguard_perception'
+[0.203s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_sensor_sync) by extensions ['ignore', 'ignore_ament_install']
+[0.203s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_sensor_sync) by extension 'ignore'
+[0.204s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_sensor_sync) by extension 'ignore_ament_install'
+[0.204s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_sensor_sync) by extensions ['colcon_pkg']
+[0.204s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_sensor_sync) by extension 'colcon_pkg'
+[0.204s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_sensor_sync) by extensions ['colcon_meta']
+[0.204s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_sensor_sync) by extension 'colcon_meta'
+[0.204s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_sensor_sync) by extensions ['ros']
+[0.204s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_sensor_sync) by extension 'ros'
+[0.204s] DEBUG:colcon.colcon_core.package_identification:Package 'src/naviguard_sensor_sync' with type 'ros.ament_python' and name 'naviguard_sensor_sync'
+[0.204s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_state_estimation) by extensions ['ignore', 'ignore_ament_install']
+[0.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_state_estimation) by extension 'ignore'
+[0.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_state_estimation) by extension 'ignore_ament_install'
+[0.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_state_estimation) by extensions ['colcon_pkg']
+[0.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_state_estimation) by extension 'colcon_pkg'
+[0.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_state_estimation) by extensions ['colcon_meta']
+[0.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_state_estimation) by extension 'colcon_meta'
+[0.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_state_estimation) by extensions ['ros']
+[0.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_state_estimation) by extension 'ros'
+[0.205s] DEBUG:colcon.colcon_core.package_identification:Package 'src/naviguard_state_estimation' with type 'ros.ament_python' and name 'naviguard_state_estimation'
+[0.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_visual_odometry) by extensions ['ignore', 'ignore_ament_install']
+[0.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_visual_odometry) by extension 'ignore'
+[0.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_visual_odometry) by extension 'ignore_ament_install'
+[0.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_visual_odometry) by extensions ['colcon_pkg']
+[0.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_visual_odometry) by extension 'colcon_pkg'
+[0.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_visual_odometry) by extensions ['colcon_meta']
+[0.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_visual_odometry) by extension 'colcon_meta'
+[0.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_visual_odometry) by extensions ['ros']
+[0.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/naviguard_visual_odometry) by extension 'ros'
+[0.206s] DEBUG:colcon.colcon_core.package_identification:Package 'src/naviguard_visual_odometry' with type 'ros.ament_python' and name 'naviguard_visual_odometry'
+[0.206s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.206s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.206s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.206s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.206s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.222s] Level 5:colcon.colcon_core.verb:set package 'naviguard_description' build argument 'cmake_args' from command line to 'None'
+[0.222s] Level 5:colcon.colcon_core.verb:set package 'naviguard_description' build argument 'cmake_target' from command line to 'None'
+[0.222s] Level 5:colcon.colcon_core.verb:set package 'naviguard_description' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.222s] Level 5:colcon.colcon_core.verb:set package 'naviguard_description' build argument 'cmake_clean_cache' from command line to 'False'
+[0.222s] Level 5:colcon.colcon_core.verb:set package 'naviguard_description' build argument 'cmake_clean_first' from command line to 'False'
+[0.222s] Level 5:colcon.colcon_core.verb:set package 'naviguard_description' build argument 'cmake_force_configure' from command line to 'False'
+[0.222s] Level 5:colcon.colcon_core.verb:set package 'naviguard_description' build argument 'ament_cmake_args' from command line to 'None'
+[0.222s] Level 5:colcon.colcon_core.verb:set package 'naviguard_description' build argument 'catkin_cmake_args' from command line to 'None'
+[0.222s] Level 5:colcon.colcon_core.verb:set package 'naviguard_description' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.222s] DEBUG:colcon.colcon_core.verb:Building package 'naviguard_description' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/maxx/naviguard_ws/build/naviguard_description', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/maxx/naviguard_ws/install/naviguard_description', 'merge_install': False, 'path': '/home/maxx/naviguard_ws/src/naviguard_description', 'symlink_install': True, 'test_result_base': None}
+[0.222s] Level 5:colcon.colcon_core.verb:set package 'naviguard_perception' build argument 'cmake_args' from command line to 'None'
+[0.222s] Level 5:colcon.colcon_core.verb:set package 'naviguard_perception' build argument 'cmake_target' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_perception' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_perception' build argument 'cmake_clean_cache' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_perception' build argument 'cmake_clean_first' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_perception' build argument 'cmake_force_configure' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_perception' build argument 'ament_cmake_args' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_perception' build argument 'catkin_cmake_args' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_perception' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.223s] DEBUG:colcon.colcon_core.verb:Building package 'naviguard_perception' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/maxx/naviguard_ws/build/naviguard_perception', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/maxx/naviguard_ws/install/naviguard_perception', 'merge_install': False, 'path': '/home/maxx/naviguard_ws/src/naviguard_perception', 'symlink_install': True, 'test_result_base': None}
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_sensor_sync' build argument 'cmake_args' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_sensor_sync' build argument 'cmake_target' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_sensor_sync' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_sensor_sync' build argument 'cmake_clean_cache' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_sensor_sync' build argument 'cmake_clean_first' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_sensor_sync' build argument 'cmake_force_configure' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_sensor_sync' build argument 'ament_cmake_args' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_sensor_sync' build argument 'catkin_cmake_args' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_sensor_sync' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.223s] DEBUG:colcon.colcon_core.verb:Building package 'naviguard_sensor_sync' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/maxx/naviguard_ws/build/naviguard_sensor_sync', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/maxx/naviguard_ws/install/naviguard_sensor_sync', 'merge_install': False, 'path': '/home/maxx/naviguard_ws/src/naviguard_sensor_sync', 'symlink_install': True, 'test_result_base': None}
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_state_estimation' build argument 'cmake_args' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_state_estimation' build argument 'cmake_target' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_state_estimation' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_state_estimation' build argument 'cmake_clean_cache' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_state_estimation' build argument 'cmake_clean_first' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_state_estimation' build argument 'cmake_force_configure' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_state_estimation' build argument 'ament_cmake_args' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_state_estimation' build argument 'catkin_cmake_args' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_state_estimation' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.223s] DEBUG:colcon.colcon_core.verb:Building package 'naviguard_state_estimation' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/maxx/naviguard_ws/build/naviguard_state_estimation', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/maxx/naviguard_ws/install/naviguard_state_estimation', 'merge_install': False, 'path': '/home/maxx/naviguard_ws/src/naviguard_state_estimation', 'symlink_install': True, 'test_result_base': None}
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_visual_odometry' build argument 'cmake_args' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_visual_odometry' build argument 'cmake_target' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_visual_odometry' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_visual_odometry' build argument 'cmake_clean_cache' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_visual_odometry' build argument 'cmake_clean_first' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_visual_odometry' build argument 'cmake_force_configure' from command line to 'False'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_visual_odometry' build argument 'ament_cmake_args' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_visual_odometry' build argument 'catkin_cmake_args' from command line to 'None'
+[0.223s] Level 5:colcon.colcon_core.verb:set package 'naviguard_visual_odometry' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.223s] DEBUG:colcon.colcon_core.verb:Building package 'naviguard_visual_odometry' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/maxx/naviguard_ws/build/naviguard_visual_odometry', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/maxx/naviguard_ws/install/naviguard_visual_odometry', 'merge_install': False, 'path': '/home/maxx/naviguard_ws/src/naviguard_visual_odometry', 'symlink_install': True, 'test_result_base': None}
+[0.223s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.224s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.225s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/maxx/naviguard_ws/src/naviguard_description' with build type 'ament_cmake'
+[0.225s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/maxx/naviguard_ws/src/naviguard_description'
+[0.227s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.227s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.227s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.232s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/maxx/naviguard_ws/src/naviguard_perception' with build type 'ament_python'
+[0.232s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_perception', 'ament_prefix_path')
+[0.232s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/hook/ament_prefix_path.ps1'
+[0.234s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/hook/ament_prefix_path.dsv'
+[0.235s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/hook/ament_prefix_path.sh'
+[0.237s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.237s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.240s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/maxx/naviguard_ws/src/naviguard_sensor_sync' with build type 'ament_python'
+[0.240s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_sensor_sync', 'ament_prefix_path')
+[0.240s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/share/naviguard_sensor_sync/hook/ament_prefix_path.ps1'
+[0.241s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/share/naviguard_sensor_sync/hook/ament_prefix_path.dsv'
+[0.241s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/share/naviguard_sensor_sync/hook/ament_prefix_path.sh'
+[0.242s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.242s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.244s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/maxx/naviguard_ws/src/naviguard_state_estimation' with build type 'ament_python'
+[0.245s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_state_estimation', 'ament_prefix_path')
+[0.245s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/hook/ament_prefix_path.ps1'
+[0.246s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/hook/ament_prefix_path.dsv'
+[0.247s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/hook/ament_prefix_path.sh'
+[0.247s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.247s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.249s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/maxx/naviguard_ws/src/naviguard_visual_odometry' with build type 'ament_python'
+[0.250s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_visual_odometry', 'ament_prefix_path')
+[0.250s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/share/naviguard_visual_odometry/hook/ament_prefix_path.ps1'
+[0.250s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/share/naviguard_visual_odometry/hook/ament_prefix_path.dsv'
+[0.251s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/share/naviguard_visual_odometry/hook/ament_prefix_path.sh'
+[0.251s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.251s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.258s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/maxx/naviguard_ws/build/naviguard_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/maxx/naviguard_ws/build/naviguard_description -- -j12 -l12
+[0.410s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/maxx/naviguard_ws/src/naviguard_perception'
+[0.410s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.410s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.553s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/maxx/naviguard_ws/src/naviguard_sensor_sync'
+[0.553s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.553s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.702s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/maxx/naviguard_ws/src/naviguard_state_estimation'
+[0.702s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.702s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.861s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/maxx/naviguard_ws/src/naviguard_visual_odometry'
+[0.861s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.861s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.867s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/maxx/naviguard_ws/build/naviguard_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/maxx/naviguard_ws/build/naviguard_description -- -j12 -l12
+[0.875s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/maxx/naviguard_ws/build/naviguard_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/maxx/naviguard_ws/build/naviguard_description
+[0.895s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(naviguard_description)
+[0.896s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/maxx/naviguard_ws/build/naviguard_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/maxx/naviguard_ws/build/naviguard_description
+[0.898s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_description' for CMake module files
+[0.899s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_description' for CMake config files
+[0.899s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_description', 'cmake_prefix_path')
+[0.900s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/hook/cmake_prefix_path.ps1'
+[0.900s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/hook/cmake_prefix_path.dsv'
+[0.901s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/hook/cmake_prefix_path.sh'
+[0.901s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_description/bin'
+[0.902s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_description/lib/pkgconfig/naviguard_description.pc'
+[0.902s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_description/lib/python3.12/site-packages'
+[0.902s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_description/bin'
+[0.903s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/package.ps1'
+[0.904s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/package.dsv'
+[0.904s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/package.sh'
+[0.905s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/package.bash'
+[0.906s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/package.zsh'
+[0.907s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/maxx/naviguard_ws/install/naviguard_description/share/colcon-core/packages/naviguard_description)
+[0.907s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(naviguard_description)
+[0.907s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_description' for CMake module files
+[0.908s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_description' for CMake config files
+[0.908s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_description', 'cmake_prefix_path')
+[0.909s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/hook/cmake_prefix_path.ps1'
+[0.909s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/hook/cmake_prefix_path.dsv'
+[0.909s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/hook/cmake_prefix_path.sh'
+[0.910s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_description/bin'
+[0.910s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_description/lib/pkgconfig/naviguard_description.pc'
+[0.910s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_description/lib/python3.12/site-packages'
+[0.911s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_description/bin'
+[0.911s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/package.ps1'
+[0.912s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/package.dsv'
+[0.912s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/package.sh'
+[0.913s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/package.bash'
+[0.913s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/package.zsh'
+[0.913s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/maxx/naviguard_ws/install/naviguard_description/share/colcon-core/packages/naviguard_description)
+[1.389s] DEBUG:colcon.colcon_core.task.python.build:Available setuptools commands: clean, bdist_dumb, alias, compile_catalog, upload, build_ext, bdist_rpm, register, symlink_data, rotate, setopt, build_py, install_headers, build_scripts, install_data, test, bdist, bdist_egg, update_catalog, easy_install, install_egg_info, upload_docs, install, install_scripts, build_clib, bdist_wheel, extract_messages, init_catalog, editable_wheel, develop, sdist, saveopts, egg_info, dist_info, build, check, install_lib
+[1.393s] DEBUG:colcon.colcon_core.task.python.build:Available setuptools commands: clean, bdist_dumb, alias, compile_catalog, upload, build_ext, bdist_rpm, register, symlink_data, rotate, setopt, build_py, install_headers, build_scripts, install_data, test, bdist, bdist_egg, update_catalog, easy_install, install_egg_info, upload_docs, install, install_scripts, build_clib, bdist_wheel, extract_messages, init_catalog, editable_wheel, develop, sdist, saveopts, egg_info, dist_info, build, check, install_lib
+[1.411s] DEBUG:colcon.colcon_core.task.python.build:Available setuptools commands: clean, bdist_dumb, alias, compile_catalog, upload, build_ext, bdist_rpm, register, symlink_data, rotate, setopt, build_py, install_headers, build_scripts, install_data, test, bdist, bdist_egg, update_catalog, easy_install, install_egg_info, upload_docs, install, install_scripts, build_clib, bdist_wheel, extract_messages, init_catalog, editable_wheel, develop, sdist, saveopts, egg_info, dist_info, build, check, install_lib
+[1.422s] DEBUG:colcon.colcon_core.task.python.build:Available setuptools commands: clean, bdist_dumb, alias, compile_catalog, upload, build_ext, bdist_rpm, register, symlink_data, rotate, setopt, build_py, install_headers, build_scripts, install_data, test, bdist, bdist_egg, update_catalog, easy_install, install_egg_info, upload_docs, install, install_scripts, build_clib, bdist_wheel, extract_messages, init_catalog, editable_wheel, develop, sdist, saveopts, egg_info, dist_info, build, check, install_lib
+[1.679s] DEBUG:colcon.colcon_core.task.python.build:Available setuptools 'develop' options: --optimize, --multi-version, --exclude-scripts, --user, --no-deps, --site-dirs, --uninstall, --no-find-links, --always-copy, --install-layout, --record, --install-dir, --no-user-cfg, --verbose, --find-links, --dry-run, --upgrade, --allow-hosts, --egg-path, --version, --quiet, --build-directory, --editable, --local-snapshots-ok, --script-dir, --prefix, --index-url, --zip-ok, --always-unzip, --force-installation-into-system-dir, --help
+[1.681s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/maxx/naviguard_ws/build/naviguard_perception': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_perception/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_perception/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_perception/build --no-deps symlink_data
+[1.697s] DEBUG:colcon.colcon_core.task.python.build:Available setuptools 'develop' options: --optimize, --multi-version, --exclude-scripts, --user, --no-deps, --site-dirs, --uninstall, --no-find-links, --always-copy, --install-layout, --record, --install-dir, --no-user-cfg, --verbose, --find-links, --dry-run, --upgrade, --allow-hosts, --egg-path, --version, --quiet, --build-directory, --editable, --local-snapshots-ok, --script-dir, --prefix, --index-url, --zip-ok, --always-unzip, --force-installation-into-system-dir, --help
+[1.700s] DEBUG:colcon.colcon_core.task.python.build:Available setuptools 'develop' options: --optimize, --multi-version, --exclude-scripts, --user, --no-deps, --site-dirs, --uninstall, --no-find-links, --always-copy, --install-layout, --record, --install-dir, --no-user-cfg, --verbose, --find-links, --dry-run, --upgrade, --allow-hosts, --egg-path, --version, --quiet, --build-directory, --editable, --local-snapshots-ok, --script-dir, --prefix, --index-url, --zip-ok, --always-unzip, --force-installation-into-system-dir, --help
+[1.701s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/maxx/naviguard_ws/build/naviguard_state_estimation': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_state_estimation/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_state_estimation/build --no-deps symlink_data
+[1.703s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/maxx/naviguard_ws/build/naviguard_sensor_sync': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_sensor_sync/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_sensor_sync/build --no-deps symlink_data
+[1.704s] DEBUG:colcon.colcon_core.task.python.build:Available setuptools 'develop' options: --optimize, --multi-version, --exclude-scripts, --user, --no-deps, --site-dirs, --uninstall, --no-find-links, --always-copy, --install-layout, --record, --install-dir, --no-user-cfg, --verbose, --find-links, --dry-run, --upgrade, --allow-hosts, --egg-path, --version, --quiet, --build-directory, --editable, --local-snapshots-ok, --script-dir, --prefix, --index-url, --zip-ok, --always-unzip, --force-installation-into-system-dir, --help
+[1.706s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/maxx/naviguard_ws/build/naviguard_visual_odometry': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_visual_odometry/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_visual_odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_visual_odometry/build --no-deps symlink_data
+[2.170s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_perception', 'pythonpath_develop')
+[2.170s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/build/naviguard_perception/share/naviguard_perception/hook/pythonpath_develop.ps1'
+[2.171s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/maxx/naviguard_ws/build/naviguard_perception' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_perception/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_perception/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_perception/build --no-deps symlink_data
+[2.172s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/build/naviguard_perception/share/naviguard_perception/hook/pythonpath_develop.dsv'
+[2.172s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/build/naviguard_perception/share/naviguard_perception/hook/pythonpath_develop.sh'
+[2.173s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_perception' for CMake module files
+[2.173s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_perception' for CMake config files
+[2.173s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_perception/lib'
+[2.173s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_perception/bin'
+[2.173s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_perception/lib/pkgconfig/naviguard_perception.pc'
+[2.174s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_perception/lib/python3.12/site-packages'
+[2.174s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_perception', 'pythonpath')
+[2.174s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/hook/pythonpath.ps1'
+[2.174s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/hook/pythonpath.dsv'
+[2.174s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/hook/pythonpath.sh'
+[2.175s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_perception/bin'
+[2.175s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(naviguard_perception)
+[2.175s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/package.ps1'
+[2.175s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/package.dsv'
+[2.176s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/package.sh'
+[2.176s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/package.bash'
+[2.176s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_perception/share/naviguard_perception/package.zsh'
+[2.177s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/maxx/naviguard_ws/install/naviguard_perception/share/colcon-core/packages/naviguard_perception)
+[2.189s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_sensor_sync', 'pythonpath_develop')
+[2.189s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/build/naviguard_sensor_sync/share/naviguard_sensor_sync/hook/pythonpath_develop.ps1'
+[2.190s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/maxx/naviguard_ws/build/naviguard_sensor_sync' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_sensor_sync/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_sensor_sync/build --no-deps symlink_data
+[2.191s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/build/naviguard_sensor_sync/share/naviguard_sensor_sync/hook/pythonpath_develop.dsv'
+[2.191s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/build/naviguard_sensor_sync/share/naviguard_sensor_sync/hook/pythonpath_develop.sh'
+[2.192s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_sensor_sync' for CMake module files
+[2.192s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_sensor_sync' for CMake config files
+[2.193s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib'
+[2.193s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/bin'
+[2.193s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib/pkgconfig/naviguard_sensor_sync.pc'
+[2.194s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/lib/python3.12/site-packages'
+[2.194s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_sensor_sync', 'pythonpath')
+[2.194s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/share/naviguard_sensor_sync/hook/pythonpath.ps1'
+[2.195s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/share/naviguard_sensor_sync/hook/pythonpath.dsv'
+[2.196s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/share/naviguard_sensor_sync/hook/pythonpath.sh'
+[2.197s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/bin'
+[2.197s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(naviguard_sensor_sync)
+[2.197s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/share/naviguard_sensor_sync/package.ps1'
+[2.198s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/share/naviguard_sensor_sync/package.dsv'
+[2.198s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/share/naviguard_sensor_sync/package.sh'
+[2.199s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/share/naviguard_sensor_sync/package.bash'
+[2.199s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_sensor_sync/share/naviguard_sensor_sync/package.zsh'
+[2.199s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/maxx/naviguard_ws/install/naviguard_sensor_sync/share/colcon-core/packages/naviguard_sensor_sync)
+[2.218s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_state_estimation', 'pythonpath_develop')
+[2.218s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/build/naviguard_state_estimation/share/naviguard_state_estimation/hook/pythonpath_develop.ps1'
+[2.219s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/maxx/naviguard_ws/build/naviguard_state_estimation' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_state_estimation/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_state_estimation/build --no-deps symlink_data
+[2.220s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/build/naviguard_state_estimation/share/naviguard_state_estimation/hook/pythonpath_develop.dsv'
+[2.220s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/build/naviguard_state_estimation/share/naviguard_state_estimation/hook/pythonpath_develop.sh'
+[2.221s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_state_estimation' for CMake module files
+[2.221s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_state_estimation' for CMake config files
+[2.221s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib'
+[2.221s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_state_estimation/bin'
+[2.221s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/pkgconfig/naviguard_state_estimation.pc'
+[2.221s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/python3.12/site-packages'
+[2.221s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_state_estimation', 'pythonpath')
+[2.222s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/hook/pythonpath.ps1'
+[2.222s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/hook/pythonpath.dsv'
+[2.222s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/hook/pythonpath.sh'
+[2.223s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_state_estimation/bin'
+[2.223s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(naviguard_state_estimation)
+[2.223s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/package.ps1'
+[2.223s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/package.dsv'
+[2.224s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/package.sh'
+[2.224s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/package.bash'
+[2.224s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_state_estimation/share/naviguard_state_estimation/package.zsh'
+[2.224s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/maxx/naviguard_ws/install/naviguard_state_estimation/share/colcon-core/packages/naviguard_state_estimation)
+[2.287s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_visual_odometry', 'pythonpath_develop')
+[2.287s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/maxx/naviguard_ws/build/naviguard_visual_odometry' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_visual_odometry/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_visual_odometry/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_visual_odometry/build --no-deps symlink_data
+[2.287s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/build/naviguard_visual_odometry/share/naviguard_visual_odometry/hook/pythonpath_develop.ps1'
+[2.288s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/build/naviguard_visual_odometry/share/naviguard_visual_odometry/hook/pythonpath_develop.dsv'
+[2.288s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/build/naviguard_visual_odometry/share/naviguard_visual_odometry/hook/pythonpath_develop.sh'
+[2.288s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_visual_odometry' for CMake module files
+[2.289s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_visual_odometry' for CMake config files
+[2.289s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/lib'
+[2.289s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/bin'
+[2.289s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/lib/pkgconfig/naviguard_visual_odometry.pc'
+[2.289s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/lib/python3.12/site-packages'
+[2.289s] Level 1:colcon.colcon_core.shell:create_environment_hook('naviguard_visual_odometry', 'pythonpath')
+[2.289s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/share/naviguard_visual_odometry/hook/pythonpath.ps1'
+[2.290s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/share/naviguard_visual_odometry/hook/pythonpath.dsv'
+[2.290s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/share/naviguard_visual_odometry/hook/pythonpath.sh'
+[2.290s] Level 1:colcon.colcon_core.environment:checking '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/bin'
+[2.290s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(naviguard_visual_odometry)
+[2.290s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/share/naviguard_visual_odometry/package.ps1'
+[2.291s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/share/naviguard_visual_odometry/package.dsv'
+[2.291s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/share/naviguard_visual_odometry/package.sh'
+[2.291s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/share/naviguard_visual_odometry/package.bash'
+[2.292s] INFO:colcon.colcon_core.shell:Creating package script '/home/maxx/naviguard_ws/install/naviguard_visual_odometry/share/naviguard_visual_odometry/package.zsh'
+[2.292s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/maxx/naviguard_ws/install/naviguard_visual_odometry/share/colcon-core/packages/naviguard_visual_odometry)
+[2.292s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[2.292s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[2.293s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[2.293s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[2.333s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.notify_send': Could not find 'notify-send'
+[2.333s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[2.333s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[2.333s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[2.334s] DEBUG:colcon.colcon_notification.desktop_notification.notify2:Failed to initialize notify2: org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.Notifications was not provided by any .service files
+[2.334s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[2.334s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/maxx/naviguard_ws/install/local_setup.ps1'
+[2.335s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/maxx/naviguard_ws/install/_local_setup_util_ps1.py'
+[2.335s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/maxx/naviguard_ws/install/setup.ps1'
+[2.336s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/maxx/naviguard_ws/install/local_setup.sh'
+[2.336s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/maxx/naviguard_ws/install/_local_setup_util_sh.py'
+[2.337s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/maxx/naviguard_ws/install/setup.sh'
+[2.337s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/maxx/naviguard_ws/install/local_setup.bash'
+[2.338s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/maxx/naviguard_ws/install/setup.bash'
+[2.338s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/maxx/naviguard_ws/install/local_setup.zsh'
+[2.338s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/maxx/naviguard_ws/install/setup.zsh'

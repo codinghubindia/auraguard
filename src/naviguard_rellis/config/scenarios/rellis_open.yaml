@@ -1,0 +1,9 @@
+# RELLIS Scenario: Open Off-Road Trail
+scenario_name: "rellis_open_trail"
+description: "Evaluates camera-primary visual odometry and SLAM on open dirt trail with high feature density."
+sequence: "00000"
+start_pose: [0.0, 0.0, 0.0, 0.0]
+goal_pose: [20.0, 0.0, 0.0, 0.0]
+expected_ate_rmse_threshold_m: 0.50
+expected_continuity_threshold_pct: 95.0
+hazards_present: false

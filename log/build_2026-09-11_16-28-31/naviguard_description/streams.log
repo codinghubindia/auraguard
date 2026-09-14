@@ -1,0 +1,30 @@
+[0.027s] Invoking command in '/home/maxx/naviguard_ws/build/naviguard_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/maxx/naviguard_ws/build/naviguard_description -- -j12 -l12
+[0.338s] Invoked command in '/home/maxx/naviguard_ws/build/naviguard_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/maxx/naviguard_ws/build/naviguard_description -- -j12 -l12
+[0.346s] Invoking command in '/home/maxx/naviguard_ws/build/naviguard_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/maxx/naviguard_ws/build/naviguard_description
+[0.500s] -- Install configuration: ""
+[0.500s] -- Execute custom install script
+[0.500s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/urdf/chassis.xacro
+[0.500s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/urdf/gazebo_control.xacro
+[0.500s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/urdf/materials.xacro
+[0.501s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/urdf/naviguard.urdf.xacro
+[0.501s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/urdf/sensors.xacro
+[0.501s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/urdf/wheel.xacro
+[0.501s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/launch/naviguard_sim.launch.py
+[0.501s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/config/bridge.yaml
+[0.501s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/worlds/naviguard_world.sdf
+[0.501s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/ament_index/resource_index/package_run_dependencies/naviguard_description
+[0.501s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/ament_index/resource_index/parent_prefix_path/naviguard_description
+[0.501s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/environment/ament_prefix_path.sh
+[0.501s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/environment/ament_prefix_path.dsv
+[0.501s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/environment/path.sh
+[0.501s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/environment/path.dsv
+[0.502s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/local_setup.bash
+[0.502s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/local_setup.sh
+[0.502s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/local_setup.zsh
+[0.502s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/local_setup.dsv
+[0.502s] -- Symlinking: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/package.dsv
+[0.502s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/ament_index/resource_index/packages/naviguard_description
+[0.502s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/cmake/naviguard_descriptionConfig.cmake
+[0.502s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/cmake/naviguard_descriptionConfig-version.cmake
+[0.503s] -- Up-to-date symlink: /home/maxx/naviguard_ws/install/naviguard_description/share/naviguard_description/package.xml
+[0.516s] Invoked command in '/home/maxx/naviguard_ws/build/naviguard_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/maxx/naviguard_ws/build/naviguard_description

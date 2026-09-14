@@ -1,0 +1,17 @@
+[2.749s] Invoking command in '/home/maxx/naviguard_ws/build/naviguard_state_estimation': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_state_estimation/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_state_estimation/build --no-deps symlink_data
+[3.335s] running develop
+[3.356s] running egg_info
+[3.380s] writing naviguard_state_estimation.egg-info/PKG-INFO
+[3.380s] writing dependency_links to naviguard_state_estimation.egg-info/dependency_links.txt
+[3.389s] writing entry points to naviguard_state_estimation.egg-info/entry_points.txt
+[3.389s] writing requirements to naviguard_state_estimation.egg-info/requires.txt
+[3.389s] writing top-level names to naviguard_state_estimation.egg-info/top_level.txt
+[3.436s] reading manifest file 'naviguard_state_estimation.egg-info/SOURCES.txt'
+[3.436s] writing manifest file 'naviguard_state_estimation.egg-info/SOURCES.txt'
+[3.453s] running build_ext
+[3.454s] Creating /home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/python3.12/site-packages/naviguard-state-estimation.egg-link (link to .)
+[3.455s] Installing state_estimation_node script to /home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/naviguard_state_estimation
+[3.455s] 
+[3.455s] Installed /home/maxx/naviguard_ws/build/naviguard_state_estimation
+[3.456s] running symlink_data
+[3.561s] Invoked command in '/home/maxx/naviguard_ws/build/naviguard_state_estimation' returned '0': PYTHONPATH=/home/maxx/naviguard_ws/build/naviguard_state_estimation/prefix_override:/home/maxx/.local/lib/python3.12/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/maxx/naviguard_ws/install/naviguard_state_estimation/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/maxx/naviguard_ws/build/naviguard_state_estimation/build --no-deps symlink_data

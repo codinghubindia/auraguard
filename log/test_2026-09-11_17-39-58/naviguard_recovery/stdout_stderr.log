@@ -1,0 +1,19 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.6.0
+cachedir: /home/maxx/naviguard_ws/build/naviguard_recovery/.pytest_cache
+rootdir: /home/maxx/naviguard_ws/src/naviguard_recovery
+plugins: launch-testing-ros-0.26.12, ament-xmllint-0.17.5, launch-testing-3.4.11, ament-lint-0.17.5, ament-copyright-0.17.5, ament-pep257-0.17.5, ament-flake8-0.17.5, colcon-core-0.21.1, cov-7.1.0, repeat-0.9.4, rerunfailures-16.6.1
+collecting ... 
+collected 19 items                                                             
+
+test/test_demo_motion_node.py ..                                         [ 10%]
+test/test_recovery_budget.py .                                           [ 15%]
+test/test_recovery_controller.py ...                                     [ 31%]
+test/test_recovery_node_lifecycle.py ...                                 [ 47%]
+test/test_recovery_planner.py ..                                         [ 57%]
+test/test_recovery_state_machine.py ....                                 [ 78%]
+test/test_relocalization_manager.py ..                                   [ 89%]
+test/test_trusted_state_manager.py ..                                    [100%]
+
+- generated xml file: /home/maxx/naviguard_ws/build/naviguard_recovery/pytest.xml -
+============================== 19 passed in 0.49s ==============================

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite
+  name="naviguard_description.flake8"
+  tests="1"
+  errors="0"
+  failures="0"
+  time="0.176"
+>
+  <testcase
+    name="flake8"
+    classname="naviguard_description.flake8"/>
+  <system-out>Checked files:
+* ./launch/naviguard_sim.launch.py
+* ./launch/naviguard_demo.launch.py</system-out>
+</testsuite>

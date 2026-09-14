@@ -1,0 +1,24 @@
+state_estimation_node:
+  ros__parameters:
+    publish_rate_hz: 20.0
+    enable_visual: true
+    enable_imu: true
+    enable_wheel_odom: true
+    odom_frame: "odom"
+    base_frame: "base_link"
+    publish_tf: false
+    log_trajectory_csv: ""
+
+    # Extended Kalman Filter process noise
+    q_pos: 0.01
+    q_theta: 0.005
+    q_vx: 0.08
+    q_wz: 0.05
+    mahalanobis_gate_1d: 9.0
+    mahalanobis_gate_2d: 13.8
+
+    # Monocular scale observation gating
+    min_inliers: 15
+    min_wheel_disp_m: 0.02
+    min_wheel_speed_mps: 0.05
+    max_direction_error_deg: 45.0

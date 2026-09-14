@@ -1,0 +1,51 @@
+{
+  "State_1_Stationary": {
+    "mean_vx_mps": 1.2354588939031677e-20,
+    "max_abs_vx_mps": 1.9476698908119004e-19,
+    "mean_wz_radps": -6.951551227472719e-07,
+    "drift_x_m": 3.676493777391986e-20,
+    "drift_y_m": -1.737627712080813e-24,
+    "scale_valid": "False",
+    "scale_status": "UNOBSERVED",
+    "updates_wheel": 1574,
+    "updates_imu": 3119,
+    "updates_visual": 0,
+    "rejections_visual": 742,
+    "last_rej_reason_visual": "GEOM_DEGENERATE_SMALL_BASELINE",
+    "res_wz_wheel_imu_radps": 0.0,
+    "res_accel_wheel_imu_mps2": 0.0146
+  },
+  "State_2_Forward": {
+    "commanded_vx_mps": 0.4,
+    "mean_est_vx_mps": 0.3747770501343542,
+    "distance_traveled_x_m": 1.337951231355965,
+    "scale_valid_count": 0,
+    "mean_observed_scale_m": 0.0,
+    "scale_status": "UNOBSERVED",
+    "direction_error_deg": 0.0,
+    "updates_visual": 3,
+    "res_wz_vis_wheel_radps": 0.0915,
+    "res_wz_vis_imu_radps": 0.0914,
+    "is_vis_wheel_consistent": "False"
+  },
+  "State_3_Rotation": {
+    "commanded_wz_radps": 0.5,
+    "mean_est_wz_radps": 0.3637746660239957,
+    "delta_yaw_deg": 53.94222415982883,
+    "max_abs_vx_mps": 0.06809839480187506,
+    "scale_valid_during_turn": false,
+    "res_wz_vis_wheel_radps": 0.5557,
+    "res_wz_wheel_imu_radps": 0.0889,
+    "is_vis_imu_consistent": "True"
+  },
+  "State_4_Combined": {
+    "commanded_vx_mps": 0.35,
+    "commanded_wz_radps": 0.25,
+    "mean_est_vx_mps": 0.32612977854135744,
+    "mean_est_wz_radps": 0.1045190689381989,
+    "delta_x_m": 0.39523311318753573,
+    "delta_y_m": 0.7689025521402876,
+    "final_pos_cov_norm": 1.1179,
+    "warning_notes": "vis_wheel_wz:VIS_WHEEL_WZ_DIVERGENCE_1.50; vis_imu_wz:VIS_IMU_WZ_DIVERGENCE_1.64"
+  }
+}

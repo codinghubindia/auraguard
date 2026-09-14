@@ -1,0 +1,118 @@
+[0.000000] (-) TimerEvent: {}
+[0.000875] (naviguard_description) JobQueued: {'identifier': 'naviguard_description', 'dependencies': OrderedDict({'naviguard_description': '/home/maxx/naviguard_ws/install/naviguard_description'})}
+[0.000910] (naviguard_description) JobStarted: {'identifier': 'naviguard_description'}
+[0.041688] (naviguard_description) Command: {'cmd': ['/usr/bin/ctest', '-C', 'Release', '-D', 'ExperimentalTest', '--no-compress-output', '-V', '--force-new-ctest-process'], 'cwd': '/home/maxx/naviguard_ws/build/naviguard_description', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'GZ_SIM_RESOURCE_PATH': '/opt/ros/jazzy/share', 'AI_AGENT': 'antigravity', 'USER': 'maxx', 'ANTIGRAVITY_SOURCE_METADATA': '{"tool":{"conversationId":"abfe8232-7941-4801-9555-d5a680678fe6","stepIndex":1471,"toolCall":{"id":"call_1439740","name":"run_command","argumentsJson":"{\\"BypassSandbox\\":true,\\"CommandLine\\":\\"bash -c \\\\\\"source /opt/ros/jazzy/setup.bash \\\\u0026\\\\u0026 colcon build --packages-select naviguard_description --symlink-install \\\\u0026\\\\u0026 colcon test --packages-select naviguard_description \\\\u0026\\\\u0026 colcon test-result --all\\\\\\"\\",\\"Cwd\\":\\"/home/maxx/naviguard_ws\\",\\"WaitMsBeforeAsync\\":10000,\\"toolAction\\":\\"Building and testing naviguard_description\\",\\"toolSummary\\":\\"Build and test naviguard_description\\"}","thinkingSignature":"EqUCCqICARFNMg/8gOaj8iG1+e93Lc0gib72ZMRqQMDke3CRlssLYjo4FT92e8XkkaosgyTZ33z0QzJS/zcY1AKfgCVDKWFKW3XJEF/Azfi9/JPR5qHhM09ttd116ZTfi7l+usnrffDlRzPuR3Z4xGU5R8y+tEgrjI5hXl2MgLNSwbKpm+0yvZS2McFguIpfqJjredzjfyuXFv47NzoqWlBJKHy/PzpoXQDKXcH39G9klm0Ce+ayMNpAQREVrRWaJnyih5Bu131kHkNZn1xxAZ3WkbCN1TwVoSSRGJ28QfLlE04DytiDuF5P5LiVU62RETL+zbIv4akUZ7LIpcL+27NovjFSeVanS2WleVXG/lZf5bJ1VPDhxwoc/gOnxTIPbs1hQhgCdH4="}}}', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'ANTIGRAVITY_AGENTAPI_EXE': '/home/maxx/.local/bin/agy', 'JETSKI_APP_DATA_DIR': 'antigravity-cli', 'SHLVL': '2', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'WT_PROFILE_ID': '{61c54bbd-c2c6-5271-96e7-009a87ff44bf}', 'HOME': '/home/maxx', 'OLDPWD': '/home/maxx', 'ROS_PYTHON_VERSION': '3', 'PAGER': 'cat', 'ANTIGRAVITY_SAFECLIS_SOURCE': '/home/maxx/.gemini/antigravity-cli/bin/secplugins/src', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'WSL_DISTRO_NAME': 'Ubuntu-24.04', 'ANTIGRAVITY_AGENT': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'maxx', 'NAME': 'Agni', 'WSL_INTEROP': '/run/WSL/295_interop', 'PULSE_SERVER': 'unix:/mnt/wslg/PulseServer', '_': '/home/maxx/.local/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'dumb', 'ANTIGRAVITY_LS_VERSION': 'cli-1.2.1', 'PATH': '/home/maxx/.gemini/antigravity-cli/bin:/home/maxx/.local/bin:/home/maxx/.local/bin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/nodejs/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/GitHub CLI/:/mnt/c/Program Files/Java/jdk-21.0.12.1/bin:/mnt/c/Users/maxxc/AppData/Local/agy/bin:/mnt/c/Users/maxxc/AppData/Local/Programs/Python/Python314/Scripts/:/mnt/c/Users/maxxc/AppData/Local/Programs/Python/Python314/:/mnt/c/Users/maxxc/AppData/Local/Programs/Python/Launcher/:/mnt/c/Users/maxxc/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/maxxc/AppData/Local/Programs/Antigravity IDE/bin:/mnt/c/Users/maxxc/AppData/Roaming/npm:/mnt/c/Users/maxxc/AppData/Local/Android/Sdk/platform-tools:/mnt/c/Users/maxxc/flutter/bin:/mnt/c/Users/maxxc/AppData/Local/Android/Sdk/cmdline-tools/latest/bin:/snap/bin', 'WT_SESSION': 'a935a4a9-0b59-4293-8197-592151dd540a', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'C.UTF-8', 'ANTIGRAVITY_CONVERSATION_ID': 'abfe8232-7941-4801-9555-d5a680678fe6', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'AMENT_PREFIX_PATH': '/home/maxx/naviguard_ws/install/naviguard_description:/opt/ros/jazzy', 'ANTIGRAVITY_PROJECT_ID': 'default-cli-project', 'SHELL': '/bin/bash', 'ANTIGRAVITY_LS_ADDRESS': 'localhost:37975', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'GIT_PAGER': 'cat', 'ANTIGRAVITY_TRAJECTORY_ID': '60a6d2e6-baa9-4592-bdff-e459401abe42', 'PWD': '/home/maxx/naviguard_ws/build/naviguard_description', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib/python:/opt/ros/jazzy/opt/sdformat_vendor/lib/python:/opt/ros/jazzy/opt/gz_transport_vendor/lib/python:/opt/ros/jazzy/opt/gz_msgs_vendor/lib/python:/opt/ros/jazzy/opt/gz_math_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'WSL2_GUI_APPS_ENABLED': '1', 'ANTIGRAVITY_CSRF_TOKEN': '', 'HOSTTYPE': 'x86_64', 'CMAKE_PREFIX_PATH': '/home/maxx/naviguard_ws/install/naviguard_description:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor', 'WSLENV': 'WT_SESSION:WT_PROFILE_ID:'}), 'shell': False}
+[0.048445] (naviguard_description) StdoutLine: {'line': b'UpdateCTestConfiguration  from :/home/maxx/naviguard_ws/build/naviguard_description/CTestConfiguration.ini\n'}
+[0.048567] (naviguard_description) StdoutLine: {'line': b'Parse Config file:/home/maxx/naviguard_ws/build/naviguard_description/CTestConfiguration.ini\n'}
+[0.048682] (naviguard_description) StdoutLine: {'line': b'   Site: Agni\n'}
+[0.048788] (naviguard_description) StdoutLine: {'line': b'   Build name: (empty)\n'}
+[0.048959] (naviguard_description) StdoutLine: {'line': b' Add coverage exclude regular expressions.\n'}
+[0.049008] (naviguard_description) StdoutLine: {'line': b'Create new tag: 20260911-1740 - Experimental\n'}
+[0.049076] (naviguard_description) StdoutLine: {'line': b'UpdateCTestConfiguration  from :/home/maxx/naviguard_ws/build/naviguard_description/CTestConfiguration.ini\n'}
+[0.049311] (naviguard_description) StdoutLine: {'line': b'Parse Config file:/home/maxx/naviguard_ws/build/naviguard_description/CTestConfiguration.ini\n'}
+[0.049414] (naviguard_description) StdoutLine: {'line': b'Test project /home/maxx/naviguard_ws/build/naviguard_description\n'}
+[0.049518] (naviguard_description) StdoutLine: {'line': b'Constructing a list of tests\n'}
+[0.049731] (naviguard_description) StdoutLine: {'line': b'Done constructing a list of tests\n'}
+[0.049820] (naviguard_description) StdoutLine: {'line': b'Updating test list for fixtures\n'}
+[0.049860] (naviguard_description) StdoutLine: {'line': b'Added 0 tests to meet fixture requirements\n'}
+[0.049895] (naviguard_description) StdoutLine: {'line': b'Checking test dependency graph...\n'}
+[0.049928] (naviguard_description) StdoutLine: {'line': b'Checking test dependency graph end\n'}
+[0.049963] (naviguard_description) StdoutLine: {'line': b'test 1\n'}
+[0.049994] (naviguard_description) StdoutLine: {'line': b'    Start 1: flake8\n'}
+[0.050026] (naviguard_description) StdoutLine: {'line': b'\n'}
+[0.050059] (naviguard_description) StdoutLine: {'line': b'1: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/flake8.xunit.xml" "--package-name" "naviguard_description" "--output-file" "/home/maxx/naviguard_ws/build/naviguard_description/ament_flake8/flake8.txt" "--command" "/opt/ros/jazzy/bin/ament_flake8" "--xunit-file" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/flake8.xunit.xml"\n'}
+[0.050095] (naviguard_description) StdoutLine: {'line': b'1: Working Directory: /home/maxx/naviguard_ws/src/naviguard_description\n'}
+[0.050128] (naviguard_description) StdoutLine: {'line': b'1: Test timeout computed to be: 60\n'}
+[0.097280] (naviguard_description) StdoutLine: {'line': b"1: -- run_test.py: invoking following command in '/home/maxx/naviguard_ws/src/naviguard_description':\n"}
+[0.097421] (naviguard_description) StdoutLine: {'line': b'1:  - /opt/ros/jazzy/bin/ament_flake8 --xunit-file /home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/flake8.xunit.xml\n'}
+[0.099680] (-) TimerEvent: {}
+[0.200045] (-) TimerEvent: {}
+[0.278181] (naviguard_description) StdoutLine: {'line': b'1: \n'}
+[0.278308] (naviguard_description) StdoutLine: {'line': b'1: 2 files checked\n'}
+[0.278346] (naviguard_description) StdoutLine: {'line': b'1: No problems found\n'}
+[0.278379] (naviguard_description) StdoutLine: {'line': b'1: \n'}
+[0.278411] (naviguard_description) StdoutLine: {'line': b'1: Checked files:\n'}
+[0.278440] (naviguard_description) StdoutLine: {'line': b'1: \n'}
+[0.278469] (naviguard_description) StdoutLine: {'line': b'1: * ./launch/naviguard_sim.launch.py\n'}
+[0.278503] (naviguard_description) StdoutLine: {'line': b'1: * ./launch/naviguard_demo.launch.py\n'}
+[0.300397] (-) TimerEvent: {}
+[0.301163] (naviguard_description) StdoutLine: {'line': b'1: -- run_test.py: return code 0\n'}
+[0.301356] (naviguard_description) StdoutLine: {'line': b"1: -- run_test.py: verify result file '/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/flake8.xunit.xml'\n"}
+[0.309749] (naviguard_description) StdoutLine: {'line': b'1/4 Test #1: flake8 ...........................   Passed    0.26 sec\n'}
+[0.310016] (naviguard_description) StdoutLine: {'line': b'test 2\n'}
+[0.310098] (naviguard_description) StdoutLine: {'line': b'    Start 2: lint_cmake\n'}
+[0.310139] (naviguard_description) StdoutLine: {'line': b'\n'}
+[0.310178] (naviguard_description) StdoutLine: {'line': b'2: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/lint_cmake.xunit.xml" "--package-name" "naviguard_description" "--output-file" "/home/maxx/naviguard_ws/build/naviguard_description/ament_lint_cmake/lint_cmake.txt" "--command" "/opt/ros/jazzy/bin/ament_lint_cmake" "--xunit-file" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/lint_cmake.xunit.xml"\n'}
+[0.310217] (naviguard_description) StdoutLine: {'line': b'2: Working Directory: /home/maxx/naviguard_ws/src/naviguard_description\n'}
+[0.310253] (naviguard_description) StdoutLine: {'line': b'2: Test timeout computed to be: 60\n'}
+[0.351857] (naviguard_description) StdoutLine: {'line': b"2: -- run_test.py: invoking following command in '/home/maxx/naviguard_ws/src/naviguard_description':\n"}
+[0.351981] (naviguard_description) StdoutLine: {'line': b'2:  - /opt/ros/jazzy/bin/ament_lint_cmake --xunit-file /home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/lint_cmake.xunit.xml\n'}
+[0.400399] (naviguard_description) StdoutLine: {'line': b'2: \n'}
+[0.400519] (-) TimerEvent: {}
+[0.400592] (naviguard_description) StdoutLine: {'line': b'2: No problems found\n'}
+[0.416150] (naviguard_description) StdoutLine: {'line': b'2: -- run_test.py: return code 0\n'}
+[0.416367] (naviguard_description) StdoutLine: {'line': b"2: -- run_test.py: verify result file '/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/lint_cmake.xunit.xml'\n"}
+[0.425250] (naviguard_description) StdoutLine: {'line': b'2/4 Test #2: lint_cmake .......................   Passed    0.12 sec\n'}
+[0.425412] (naviguard_description) StdoutLine: {'line': b'test 3\n'}
+[0.425485] (naviguard_description) StdoutLine: {'line': b'    Start 3: pep257\n'}
+[0.425542] (naviguard_description) StdoutLine: {'line': b'\n'}
+[0.425579] (naviguard_description) StdoutLine: {'line': b'3: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/pep257.xunit.xml" "--package-name" "naviguard_description" "--output-file" "/home/maxx/naviguard_ws/build/naviguard_description/ament_pep257/pep257.txt" "--command" "/opt/ros/jazzy/bin/ament_pep257" "--xunit-file" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/pep257.xunit.xml"\n'}
+[0.425622] (naviguard_description) StdoutLine: {'line': b'3: Working Directory: /home/maxx/naviguard_ws/src/naviguard_description\n'}
+[0.425654] (naviguard_description) StdoutLine: {'line': b'3: Test timeout computed to be: 60\n'}
+[0.465915] (naviguard_description) StdoutLine: {'line': b"3: -- run_test.py: invoking following command in '/home/maxx/naviguard_ws/src/naviguard_description':\n"}
+[0.466183] (naviguard_description) StdoutLine: {'line': b'3:  - /opt/ros/jazzy/bin/ament_pep257 --xunit-file /home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/pep257.xunit.xml\n'}
+[0.500679] (-) TimerEvent: {}
+[0.550996] (naviguard_description) StdoutLine: {'line': b'3: ./launch/naviguard_demo.launch.py:1 at module level: D213: Multi-line docstring summary should start at the second line\n'}
+[0.553133] (naviguard_description) StdoutLine: {'line': b'3: 1 errors\n'}
+[0.553351] (naviguard_description) StdoutLine: {'line': b'3: checking ./launch/naviguard_demo.launch.py\n'}
+[0.553453] (naviguard_description) StdoutLine: {'line': b'3: checking ./launch/naviguard_sim.launch.py\n'}
+[0.566499] (naviguard_description) StdoutLine: {'line': b'3: -- run_test.py: return code 1\n'}
+[0.566637] (naviguard_description) StdoutLine: {'line': b"3: -- run_test.py: verify result file '/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/pep257.xunit.xml'\n"}
+[0.572738] (naviguard_description) StdoutLine: {'line': b'3/4 Test #3: pep257 ...........................***Failed    0.15 sec\n'}
+[0.572932] (naviguard_description) StdoutLine: {'line': b'test 4\n'}
+[0.572985] (naviguard_description) StdoutLine: {'line': b'    Start 4: xmllint\n'}
+[0.573019] (naviguard_description) StdoutLine: {'line': b'\n'}
+[0.573053] (naviguard_description) StdoutLine: {'line': b'4: Test command: /usr/bin/python3 "-u" "/opt/ros/jazzy/share/ament_cmake_test/cmake/run_test.py" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/xmllint.xunit.xml" "--package-name" "naviguard_description" "--output-file" "/home/maxx/naviguard_ws/build/naviguard_description/ament_xmllint/xmllint.txt" "--command" "/opt/ros/jazzy/bin/ament_xmllint" "--xunit-file" "/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/xmllint.xunit.xml"\n'}
+[0.573085] (naviguard_description) StdoutLine: {'line': b'4: Working Directory: /home/maxx/naviguard_ws/src/naviguard_description\n'}
+[0.573114] (naviguard_description) StdoutLine: {'line': b'4: Test timeout computed to be: 60\n'}
+[0.600832] (-) TimerEvent: {}
+[0.614698] (naviguard_description) StdoutLine: {'line': b"4: -- run_test.py: invoking following command in '/home/maxx/naviguard_ws/src/naviguard_description':\n"}
+[0.614924] (naviguard_description) StdoutLine: {'line': b'4:  - /opt/ros/jazzy/bin/ament_xmllint --xunit-file /home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/xmllint.xunit.xml\n'}
+[0.701050] (-) TimerEvent: {}
+[0.801358] (-) TimerEvent: {}
+[0.901738] (-) TimerEvent: {}
+[1.002059] (-) TimerEvent: {}
+[1.102335] (-) TimerEvent: {}
+[1.202824] (-) TimerEvent: {}
+[1.303956] (-) TimerEvent: {}
+[1.404519] (-) TimerEvent: {}
+[1.505150] (-) TimerEvent: {}
+[1.605509] (-) TimerEvent: {}
+[1.705990] (-) TimerEvent: {}
+[1.741043] (naviguard_description) StdoutLine: {'line': b"4: File 'package.xml' is valid\n"}
+[1.741190] (naviguard_description) StdoutLine: {'line': b'4: \n'}
+[1.741234] (naviguard_description) StdoutLine: {'line': b'4: No problems found\n'}
+[1.749385] (naviguard_description) StdoutLine: {'line': b'4: -- run_test.py: return code 0\n'}
+[1.749791] (naviguard_description) StdoutLine: {'line': b"4: -- run_test.py: verify result file '/home/maxx/naviguard_ws/build/naviguard_description/test_results/naviguard_description/xmllint.xunit.xml'\n"}
+[1.755733] (naviguard_description) StdoutLine: {'line': b'4/4 Test #4: xmllint ..........................   Passed    1.18 sec\n'}
+[1.755985] (naviguard_description) StdoutLine: {'line': b'\n'}
+[1.756061] (naviguard_description) StdoutLine: {'line': b'75% tests passed, 1 tests failed out of 4\n'}
+[1.756131] (naviguard_description) StdoutLine: {'line': b'\n'}
+[1.756244] (naviguard_description) StdoutLine: {'line': b'Label Time Summary:\n'}
+[1.756286] (naviguard_description) StdoutLine: {'line': b'flake8        =   0.26 sec*proc (1 test)\n'}
+[1.756320] (naviguard_description) StdoutLine: {'line': b'lint_cmake    =   0.12 sec*proc (1 test)\n'}
+[1.756353] (naviguard_description) StdoutLine: {'line': b'linter        =   1.71 sec*proc (4 tests)\n'}
+[1.756383] (naviguard_description) StdoutLine: {'line': b'pep257        =   0.15 sec*proc (1 test)\n'}
+[1.756413] (naviguard_description) StdoutLine: {'line': b'xmllint       =   1.18 sec*proc (1 test)\n'}
+[1.756449] (naviguard_description) StdoutLine: {'line': b'\n'}
+[1.756479] (naviguard_description) StdoutLine: {'line': b'Total Test time (real) =   1.71 sec\n'}
+[1.756510] (naviguard_description) StdoutLine: {'line': b'\n'}
+[1.756540] (naviguard_description) StdoutLine: {'line': b'The following tests FAILED:\n'}
+[1.756570] (naviguard_description) StdoutLine: {'line': b'\t  3 - pep257 (Failed)\n'}
+[1.757771] (naviguard_description) StderrLine: {'line': b'Errors while running CTest\n'}
+[1.757867] (naviguard_description) StderrLine: {'line': b'Output from these tests are in: /home/maxx/naviguard_ws/build/naviguard_description/Testing/Temporary/LastTest.log\n'}
+[1.757907] (naviguard_description) StderrLine: {'line': b'Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.\n'}
+[1.759324] (naviguard_description) CommandEnded: {'returncode': 8}
+[1.759552] (naviguard_description) TestFailure: {'identifier': 'naviguard_description'}
+[1.759566] (naviguard_description) JobEnded: {'identifier': 'naviguard_description', 'rc': 0}
+[1.760071] (-) EventReactorShutdown: {}
