@@ -4,6 +4,7 @@ import heapq
 import math
 from typing import Optional, List, Tuple, Dict
 from naviguard_navigation.occupancy_grid import NavigationOccupancyGrid
+from naviguard_navigation.vehicle_geometry import VehicleGeometry
 
 
 class GlobalPlannerAStar:
@@ -117,11 +118,26 @@ class GlobalPlannerAStar:
                 # 1. Base geometric step distance
                 step_dist = step_mult * grid.resolution
 
-                # 2. Multi-cost evaluation (clearance, terrain, slope, unknown)
-                cell_cost = grid.get_cost(nx, ny)
+                # 2. Footprint-derived corridor width feasibility
+                if grid.clearance_grid.size > 0:
+                    clr = grid.get_clearance(nx, ny)
+                    min_required_clearance = (VehicleGeometry.WIDTH_M / 2.0) + VehicleGeometry.MINIMUM_CLEARANCE_M
+                    # Reject cells where physical vehicle width cannot fit
+                    if clr < min_required_clearance and clr > 0.0:
+                        continue
+                    # Tight corridor penalty: prefer wide high-clearance routes over tight ones
+                    nominal_clearance = (VehicleGeometry.WIDTH_M / 2.0) + VehicleGeometry.SAFETY_MARGIN_M
+                    if clr < nominal_clearance:
+                        tight_factor = (nominal_clearance - clr) / max(0.01, nominal_clearance - min_required_clearance)
+                        cell_cost = grid.get_cost(nx, ny) + tight_factor * 15.0
+                    else:
+                        cell_cost = grid.get_cost(nx, ny)
+                else:
+                    cell_cost = grid.get_cost(nx, ny)
+
                 cost_penalty = cell_cost * self.clearance_weight
 
-                # 3. Turning cost based on direction change
+                # 3. Turning cost based on direction change and turning space
                 turn_penalty = 0.0
                 if parent_dir is not None and (dx != parent_dir[0] or dy != parent_dir[1]):
                     pdx, pdy = parent_dir
@@ -129,6 +145,13 @@ class GlobalPlannerAStar:
                     dot = max(-1.0, min(1.0, dot))
                     turn_angle = math.acos(dot)
                     turn_penalty = self.turn_penalty_weight * turn_angle * grid.resolution
+
+                    # Turning space feasibility: turning in tight corridor requires circumscribed radius
+                    if turn_angle > math.radians(35.0) and grid.clearance_grid.size > 0:
+                        clr = grid.get_clearance(nx, ny)
+                        min_turn_clr = VehicleGeometry.CIRCUMSCRIBED_RADIUS_M + VehicleGeometry.MINIMUM_CLEARANCE_M
+                        if clr < min_turn_clr and clr > 0.0:
+                            turn_penalty += 10.0 * (min_turn_clr - clr) / min_turn_clr * grid.resolution
 
                 edge_cost = step_dist * (1.0 + cost_penalty) + turn_penalty
                 tentative_g = current_g + edge_cost

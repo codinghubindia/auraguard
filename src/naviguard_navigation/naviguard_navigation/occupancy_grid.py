@@ -1,9 +1,8 @@
-"""Occupancy Grid representation, multi-cost layers, coordinate transforms, and obstacle inflation for NAVIGUARD."""
-
 import math
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Dict, Any
 import numpy as np
 from nav_msgs.msg import OccupancyGrid
+from naviguard_navigation.vehicle_geometry import VehicleGeometry
 
 
 class NavigationOccupancyGrid:
@@ -11,14 +10,18 @@ class NavigationOccupancyGrid:
 
     def __init__(
         self,
-        inflation_radius_m: float = 0.50,
-        proximity_radius_m: float = 1.0,
+        inflation_radius_m: Optional[float] = None,
+        proximity_radius_m: float = 0.60,
         safe_clearance_m: float = 1.20,
         allow_unknown: bool = True,
         unknown_cost_penalty: float = 8.0,
         obstacle_threshold: int = 50,
     ) -> None:
-        self.inflation_radius_m = inflation_radius_m
+        # Default inflation derived strictly from vehicle geometry (inscribed radius + margin)
+        if inflation_radius_m is None:
+            self.inflation_radius_m = VehicleGeometry.INSCRIBED_RADIUS_M + VehicleGeometry.INFLATION_MARGIN_M
+        else:
+            self.inflation_radius_m = inflation_radius_m
         self.proximity_radius_m = proximity_radius_m
         self.safe_clearance_m = safe_clearance_m
         self.allow_unknown = allow_unknown
@@ -305,3 +308,33 @@ class NavigationOccupancyGrid:
                 cy += sy
 
         return True
+
+    def is_footprint_collision_free(self, x: float, y: float, yaw: float) -> bool:
+        """Verify whether the full oriented vehicle footprint at (x, y, yaw) is collision-free."""
+        return VehicleGeometry.is_footprint_collision_free(x, y, yaw, self)
+
+    def is_swept_footprint_collision_free(
+        self,
+        p1: Tuple[float, float],
+        p2: Tuple[float, float],
+        step_m: float = 0.08,
+    ) -> bool:
+        """Verify whether the swept vehicle footprint along segment p1 -> p2 is collision-free."""
+        return VehicleGeometry.is_swept_footprint_collision_free(p1, p2, self, step_m=step_m)
+
+    def get_corridor_width_at(self, wx: float, wy: float) -> float:
+        """Estimate available corridor width (m) at world coordinate (2x clearance)."""
+        pt = self.world_to_map(wx, wy)
+        if pt is None:
+            return 0.0
+        return 2.0 * self.get_clearance(pt[0], pt[1])
+
+    def evaluate_passage_at(
+        self,
+        wx: float,
+        wy: float,
+        heading_change_rad: float = 0.0,
+    ) -> Tuple[bool, str, Dict[str, Any]]:
+        """Evaluate whether the UGV can safely pass through (wx, wy)."""
+        avail_width = self.get_corridor_width_at(wx, wy)
+        return VehicleGeometry.evaluate_passage(avail_width, heading_change_rad)

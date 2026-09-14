@@ -35,7 +35,7 @@ class PathSmoother:
                 if math.hypot(p2[0] - p1[0], p2[1] - p1[1]) > self.max_shortcut_distance_m:
                     continue
 
-                if grid.is_segment_collision_free(p1[0], p1[1], p2[0], p2[1]):
+                if grid.is_segment_collision_free(p1[0], p1[1], p2[0], p2[1]) and grid.is_swept_footprint_collision_free(p1, p2):
                     furthest_idx = target_idx
                     break
 
@@ -47,7 +47,7 @@ class PathSmoother:
         for i in range(len(smoothed) - 1):
             p1 = smoothed[i]
             p2 = smoothed[i + 1]
-            if grid.is_segment_collision_free(p1[0], p1[1], p2[0], p2[1]):
+            if grid.is_segment_collision_free(p1[0], p1[1], p2[0], p2[1]) and grid.is_swept_footprint_collision_free(p1, p2):
                 verified.append(p2)
             else:
                 # If smoothing failed safety test, reject and retain raw path

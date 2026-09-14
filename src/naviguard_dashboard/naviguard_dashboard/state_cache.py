@@ -160,6 +160,41 @@ class StateCache:
             "timestamp": 0.0,
         }
 
+        # 6b. Vehicle Geometry & Passage Diagnostics
+        self.vehicle_diagnostics: Dict[str, Any] = {
+            "vehicle": {
+                "length_m": 0.56,
+                "width_m": 0.48,
+                "height_m": 0.26,
+                "inscribed_radius_m": 0.24,
+                "circumscribed_radius_m": 0.369,
+                "nominal_passage_m": 0.68,
+                "tight_passage_limit_m": 0.58,
+                "min_turn_diameter_m": 0.94,
+                "safety_margin_m": 0.10,
+            },
+            "status": "SAFE",
+            "can_fit": True,
+            "can_turn": True,
+            "available_clear_width_m": 1.20,
+            "required_clear_width_m": 0.68,
+            "clearance_margin_m": 0.72,
+            "turning_diameter_available_m": 1.20,
+        }
+
+        # 6c. YOLO Perception Diagnostics
+        self.yolo_diagnostics: Dict[str, Any] = {
+            "model": "yolov8n.onnx (fallback-saliency)",
+            "enabled": True,
+            "device": "CPU",
+            "fps": 0.0,
+            "latency_ms": 0.0,
+            "num_detections": 0,
+            "detections": [],
+            "status": "ONLINE",
+            "backend": "cv2.dnn",
+        }
+
         # 7. Map Metadata & Grid
         self.map_meta: Dict[str, Any] = {
             "width": 600,
@@ -179,6 +214,7 @@ class StateCache:
             "segmentation": StreamBuffer("segmentation", target_fps=10.0),
             "vo": StreamBuffer("vo", target_fps=10.0),
             "chase": StreamBuffer("chase", target_fps=15.0),
+            "yolo": StreamBuffer("yolo", target_fps=10.0),
         }
 
         # 9. Rolling Event Log
@@ -269,6 +305,14 @@ class StateCache:
             self.failure_record = None
             self.success_record = None
 
+    def set_vehicle_diagnostics(self, diag: Dict[str, Any]) -> None:
+        with self._lock:
+            self.vehicle_diagnostics.update(diag)
+
+    def set_yolo_diagnostics(self, diag: Dict[str, Any]) -> None:
+        with self._lock:
+            self.yolo_diagnostics.update(diag)
+
     def get_snapshot(self) -> Dict[str, Any]:
         """Return full JSON-serializable snapshot of dashboard state."""
         with self._lock:
@@ -317,6 +361,8 @@ class StateCache:
                 "active_goal": dict(self.active_goal) if self.active_goal else None,
                 "nav_stats": dict(self.nav_stats),
                 "replan_diagnostics": dict(self.replan_diagnostics),
+                "vehicle_diagnostics": dict(self.vehicle_diagnostics),
+                "yolo_diagnostics": dict(self.yolo_diagnostics),
                 "map_meta": dict(self.map_meta),
                 "subsystems": dict(self.subsystems),
                 "events": list(self.events),

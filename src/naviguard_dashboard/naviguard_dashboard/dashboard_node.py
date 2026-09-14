@@ -63,14 +63,14 @@ class NaviguardDashboardNode(Node):
         self._counts = {
             'camera': 0, 'chase': 0, 'imu': 0, 'odom': 0, 'percept': 0, 'seg': 0,
             'vo': 0, 'slam': 0, 'state_est': 0, 'decision': 0,
-            'recovery': 0, 'nav': 0, 'replan_diag': 0
+            'recovery': 0, 'nav': 0, 'replan_diag': 0, 'yolo': 0
         }
         self._subsystem_rates = {k: 0.0 for k in self._counts}
         self._last_rate_calc = time.time()
 
         # Stream encode rate limiting (Decouple autonomy from dashboard display rate)
         self._last_encode_time = {
-            'raw': 0.0, 'chase': 0.0, 'perception': 0.0, 'segmentation': 0.0, 'vo': 0.0
+            'raw': 0.0, 'chase': 0.0, 'perception': 0.0, 'segmentation': 0.0, 'vo': 0.0, 'yolo': 0.0
         }
         self._min_encode_interval = {
             'raw': 1.0 / 15.0,         # 15 FPS display limit
@@ -78,6 +78,7 @@ class NaviguardDashboardNode(Node):
             'perception': 1.0 / 10.0,  # 10 FPS display limit
             'segmentation': 1.0 / 10.0,# 10 FPS display limit
             'vo': 1.0 / 10.0,          # 10 FPS display limit
+            'yolo': 1.0 / 10.0,        # 10 FPS display limit
         }
 
         # Static assets path
@@ -134,6 +135,7 @@ class NaviguardDashboardNode(Node):
         self.create_subscription(Image, '/perception/segmentation', self._cb_seg_img, qos_sensor)
         self.create_subscription(Image, '/visual_odometry/debug_image', self._cb_vo_img, qos_sensor)
         self.create_subscription(Image, '/camera/chase_image', self._cb_chase_cam, qos_sensor)
+        self.create_subscription(Image, '/perception/yolo/debug_image', self._cb_yolo_cam, qos_sensor)
 
         # 2. Sensors & State
         self.create_subscription(Imu, '/imu', self._cb_imu, qos_sensor)
@@ -160,6 +162,10 @@ class NaviguardDashboardNode(Node):
         self.create_subscription(Path, '/navigation/path', self._cb_nav_path, qos_reliable)
         self.create_subscription(PoseArray, '/navigation/waypoints', self._cb_nav_waypoints, qos_reliable)
         self.create_subscription(String, '/navigation/replan_diagnostics', self._cb_replan_diag, qos_reliable)
+        self.create_subscription(String, '/navigation/vehicle_diagnostics', self._cb_vehicle_diag, qos_reliable)
+
+        # 8. YOLO Perception Diagnostics
+        self.create_subscription(String, '/perception/yolo/diagnostics', self._cb_yolo_diag, qos_reliable)
 
         # ---------------------------------------------------------------------
         # Publishers (CRITICAL: NEVER publish to /cmd_vel)
@@ -277,6 +283,24 @@ class NaviguardDashboardNode(Node):
             _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 65])
             latency_ms = (time.perf_counter() - t0) * 1000.0
             self.cache.set_jpeg_frame("chase", enc.tobytes(), timestamp=now, encode_latency_ms=latency_ms, source_fps=self._subsystem_rates['chase'])
+        except Exception:
+            pass
+
+    def _cb_yolo_cam(self, msg: Image):
+        self._counts['yolo'] += 1
+        now = time.time()
+        if now - self._last_encode_time['yolo'] < self._min_encode_interval['yolo']:
+            return
+        self._last_encode_time['yolo'] = now
+
+        t0 = time.perf_counter()
+        try:
+            cv_img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+            if cv_img.shape[1] > 640:
+                cv_img = cv2.resize(cv_img, (640, int(640 * cv_img.shape[0] / cv_img.shape[1])))
+            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
+            latency_ms = (time.perf_counter() - t0) * 1000.0
+            self.cache.set_jpeg_frame("yolo", enc.tobytes(), timestamp=now, encode_latency_ms=latency_ms, source_fps=self._subsystem_rates.get('yolo', 10.0))
         except Exception:
             pass
 
@@ -493,6 +517,20 @@ class NaviguardDashboardNode(Node):
             diff = data.get("path_difference_m", 0.0)
             status = data.get("status", "REPLAN")
             self.cache.add_event("REPLAN", f"{status} [{reason}]: old={old_l:.2f}m, new={new_l:.2f}m (diff={diff:+.2f}m)")
+        except Exception:
+            pass
+
+    def _cb_vehicle_diag(self, msg: String):
+        try:
+            data = json.loads(msg.data)
+            self.cache.set_vehicle_diagnostics(data)
+        except Exception:
+            pass
+
+    def _cb_yolo_diag(self, msg: String):
+        try:
+            data = json.loads(msg.data)
+            self.cache.set_yolo_diagnostics(data)
         except Exception:
             pass
 

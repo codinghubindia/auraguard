@@ -5,8 +5,9 @@ OpenCV preprocessing, calculates performance metrics, and publishes
 diagnostic perception images.
 """
 
-from collections import deque
+import json
 import time
+from collections import deque
 from typing import Deque, Optional
 import cv_bridge
 from cv_bridge import CvBridgeError
@@ -20,11 +21,14 @@ from rclpy.qos import (
     ReliabilityPolicy,
 )
 from sensor_msgs.msg import CameraInfo, Image
+from std_msgs.msg import String
 
 from naviguard_perception.image_processor import (
     ImageProcessor,
     ImageProcessorConfig,
 )
+from naviguard_perception.yolo_detector import YOLODetector, YOLOConfig
+from naviguard_perception.perception_fusion import PerceptionFusion
 
 
 class NaviguardPerceptionNode(Node):
@@ -48,6 +52,12 @@ class NaviguardPerceptionNode(Node):
         self.declare_parameter('ground_roi_bottom_ratio', 0.98)
         self.declare_parameter('self_mask_height_ratio', 0.15)
         self.declare_parameter('diag_publish_period_sec', 3.0)
+        self.declare_parameter('yolo_model_path', '')
+        self.declare_parameter('yolo_device', 'AUTO')
+        self.declare_parameter('yolo_conf_thresh', 0.40)
+        self.declare_parameter('yolo_iou_thresh', 0.45)
+        self.declare_parameter('yolo_inference_rate', 12.0)
+        self.declare_parameter('yolo_half_precision', False)
 
         # Retrieve parameter values
         image_topic = self.get_parameter('image_topic').get_parameter_value().string_value
@@ -69,6 +79,18 @@ class NaviguardPerceptionNode(Node):
 
         self.processor = ImageProcessor(config)
         self.bridge = cv_bridge.CvBridge()
+
+        # Initialize YOLO Neural Detector & Perception Fusion Engine
+        yolo_cfg = YOLOConfig(
+            model_path=self.get_parameter('yolo_model_path').get_parameter_value().string_value,
+            device=self.get_parameter('yolo_device').get_parameter_value().string_value,
+            confidence_threshold=self.get_parameter('yolo_conf_thresh').get_parameter_value().double_value,
+            iou_threshold=self.get_parameter('yolo_iou_thresh').get_parameter_value().double_value,
+            inference_rate_fps=self.get_parameter('yolo_inference_rate').get_parameter_value().double_value,
+            half_precision=self.get_parameter('yolo_half_precision').get_parameter_value().bool_value,
+        )
+        self.yolo_detector = YOLODetector(yolo_cfg)
+        self.fusion = PerceptionFusion()
 
         # ------------------- Camera Calibration State -------------------
         self.camera_info_received = False
@@ -127,6 +149,36 @@ class NaviguardPerceptionNode(Node):
             segmentation_topic,
             qos_profile=sensor_qos,
         )
+        self.yolo_image_pub = self.create_publisher(
+            Image,
+            '/perception/yolo/debug_image',
+            qos_profile=sensor_qos,
+        )
+        self.yolo_detections_pub = self.create_publisher(
+            String,
+            '/perception/yolo/detections',
+            qos_profile=sensor_qos,
+        )
+        self.yolo_diag_pub = self.create_publisher(
+            String,
+            '/perception/yolo/diagnostics',
+            qos_profile=sensor_qos,
+        )
+        self.fused_image_pub = self.create_publisher(
+            Image,
+            '/perception/fused_image',
+            qos_profile=sensor_qos,
+        )
+        self.fused_obstacles_pub = self.create_publisher(
+            String,
+            '/perception/fused_obstacles',
+            qos_profile=sensor_qos,
+        )
+        self.confidence_pub = self.create_publisher(
+            String,
+            '/perception/confidence',
+            qos_profile=sensor_qos,
+        )
 
         # ------------------- Diagnostic Timer -------------------
         diag_period = self.get_parameter('diag_publish_period_sec').get_parameter_value().double_value
@@ -138,6 +190,9 @@ class NaviguardPerceptionNode(Node):
             f'  Subscribing: {camera_info_topic} (sensor_data QoS)\n'
             f'  Publishing:  {debug_image_topic}\n'
             f'  Publishing:  {segmentation_topic}\n'
+            f'  Publishing:  /perception/yolo/debug_image\n'
+            f'  Publishing:  /perception/fused_image\n'
+            f'  YOLO Device: {self.yolo_detector.active_device}\n'
             f'  Display Mode: {config.display_mode}'
         )
 
@@ -257,6 +312,62 @@ class NaviguardPerceptionNode(Node):
         except Exception as exc:
             self.total_dropped += 1
             self.get_logger().warn(f'Failed to publish debug image: {exc}', throttle_duration_sec=2.0)
+
+        # 6. Real YOLO Visual Object Detection
+        detections = []
+        try:
+            detections, yolo_vis, yolo_diag = self.yolo_detector.detect(
+                cv_image,
+                timestamp=time.time(),
+                frame_id=msg.header.frame_id,
+            )
+            if yolo_vis is not None:
+                yolo_msg = self.bridge.cv2_to_imgmsg(yolo_vis, encoding='bgr8')
+                yolo_msg.header.stamp = msg.header.stamp
+                yolo_msg.header.frame_id = msg.header.frame_id
+                self.yolo_image_pub.publish(yolo_msg)
+
+            det_msg = String()
+            det_msg.data = json.dumps({
+                "stamp": msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9,
+                "frame_id": msg.header.frame_id,
+                "count": len(detections),
+                "detections": detections,
+            })
+            self.yolo_detections_pub.publish(det_msg)
+
+            diag_msg = String()
+            diag_msg.data = json.dumps(yolo_diag)
+            self.yolo_diag_pub.publish(diag_msg)
+        except Exception as exc:
+            self.get_logger().warn(f'YOLO detection error: {exc}', throttle_duration_sec=2.0)
+
+        # 7. Perception Fusion (Classical Traversability + YOLO Semantics + Spatial Projection)
+        try:
+            fused_vis, confirmed_obstacles, confidences = self.fusion.update(
+                cv_image,
+                seg_bgr if 'seg_bgr' in locals() else None,
+                detections,
+                timestamp=time.time(),
+            )
+            if fused_vis is not None:
+                fused_msg = self.bridge.cv2_to_imgmsg(fused_vis, encoding='bgr8')
+                fused_msg.header.stamp = msg.header.stamp
+                fused_msg.header.frame_id = msg.header.frame_id
+                self.fused_image_pub.publish(fused_msg)
+
+            obst_msg = String()
+            obst_msg.data = json.dumps({
+                "stamp": msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9,
+                "obstacles": confirmed_obstacles,
+            })
+            self.fused_obstacles_pub.publish(obst_msg)
+
+            conf_msg = String()
+            conf_msg.data = json.dumps(confidences)
+            self.confidence_pub.publish(conf_msg)
+        except Exception as exc:
+            self.get_logger().warn(f'Perception fusion error: {exc}', throttle_duration_sec=2.0)
 
     def diagnostics_callback(self) -> None:
         """Log concise performance diagnostics at periodic intervals."""

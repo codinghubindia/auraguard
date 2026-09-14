@@ -30,7 +30,7 @@ class Replanner:
         for i in range(current_idx, len(waypoints) - 1):
             p1 = (waypoints[i].x, waypoints[i].y)
             p2 = (waypoints[i + 1].x, waypoints[i + 1].y)
-            if not grid.is_segment_collision_free(p1[0], p1[1], p2[0], p2[1]):
+            if not grid.is_segment_collision_free(p1[0], p1[1], p2[0], p2[1]) or not grid.is_swept_footprint_collision_free(p1, p2):
                 mx = 0.5 * (p1[0] + p2[0])
                 my = 0.5 * (p1[1] + p2[1])
                 return mx, my, i

@@ -531,8 +531,35 @@
         </div>
 
         <div style="padding: 6px 10px; background: #080d16; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.66rem; color: var(--text-muted); flex-wrap: wrap; gap: 4px;">
-          <span>LAYERS: <b style="color: #00d2ff;">● Robot</b> | <b style="color: #05f187;">― Path</b> | <b style="color: #f59e0b;">┈ Traj</b> | <b style="color: #ff3366;">⚑ Goal</b> | <b style="color: #38bdf8;">🎯 Target</b> | <b style="color: #ef4444;">◼ Obstacles</b> | <b style="color: #00ffff;">◆ Checkpoints</b></span>
+          <span>LAYERS: <b style="color: #00d2ff;">● Robot (0.56×0.48m)</b> | <b style="color: #05f187;">― Path</b> | <b style="color: #f59e0b;">┈ Traj</b> | <b style="color: #ff3366;">⚑ Goal</b> | <b style="color: #38bdf8;">🎯 Target</b> | <b style="color: #ef4444;">◼ Obstacles</b> | <b style="color: #00ffff;">◆ Checkpoints</b></span>
           <span>Click anywhere to target &bull; Double-click to instant-dispatch</span>
+        </div>
+      </div>
+
+      <!-- 11-Layer Spatial Map Architecture Specification Card -->
+      <div class="gcs-card" style="font-size: 0.68rem;">
+        <div class="gcs-card-header" style="cursor: pointer; user-select: none;" onclick="toggleMapLegendDetails()">
+          <span>11-LAYER SPATIAL ARCHITECTURE SPECIFICATION</span>
+          <span id="lblLegendToggle" style="color: var(--accent-cyan); font-weight: bold;">[EXPAND ▾]</span>
+        </div>
+        <div id="mapLegendDetails" style="display: none; padding: 8px 12px; background: #090e18; line-height: 1.5; border-top: 1px solid var(--border-subtle);">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div>
+              <div><b style="color: #64748b;">L1 — RELLIS Basemap:</b> High-fidelity off-road satellite / terrain texture</div>
+              <div><b style="color: #94a3b8;">L2 — SLAM Occupancy:</b> 2D probability grid map (/slam/map, res=0.05m)</div>
+              <div><b style="color: #22c55e;">L3 — Traversability Cost:</b> OpenCV HSV terrain segmentation &amp; slope cost</div>
+              <div><b style="color: #00d2ff;">L4 — UGV Footprint:</b> Exact physical envelope (0.56m × 0.48m) &amp; heading</div>
+              <div><b style="color: #f59e0b;">L5 — Trajectory:</b> Odometry historical tracking breadcrumb trail</div>
+              <div><b style="color: #10b981;">L6 — Planned Global Path:</b> Multi-cost A* optimal clearance trajectory</div>
+            </div>
+            <div>
+              <div><b style="color: #38bdf8;">L7 — Adaptive Waypoints:</b> Pure Pursuit lookahead targets &amp; velocities</div>
+              <div><b style="color: #ff3366;">L8 — Target &amp; Goal:</b> Operator dispatched target with arrival circle</div>
+              <div><b style="color: #ef4444;">L9 — Dynamic Obstacles:</b> YOLO &amp; perceived confirmed obstacle markers</div>
+              <div><b style="color: #06b6d4;">L10 — Recovery Checkpoints:</b> Verified safe positions for emergency backtrack</div>
+              <div><b style="color: #e2e8f0;">L11 — Telemetry HUD:</b> Real-time coordinate, scale, and mission overlay</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -738,6 +765,74 @@
               <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">FAULT TEST:</span>
               <button class="btn btn-secondary btn-sm" onclick="triggerRecoveryFault()">Inject Fault</button>
               <button class="btn btn-secondary btn-sm" onclick="resetRecoveryBudget()">Reset Budget</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vehicle Physical Geometry & Passage Feasibility Card -->
+      <div class="gcs-card">
+        <div class="gcs-card-header">
+          <span>VEHICLE GEOMETRY & PASSAGE CLEARANCE</span>
+          <span class="badge badge-green" id="badgePassageStatus">PASSAGE: SAFE</span>
+        </div>
+        <div class="gcs-card-body">
+          <!-- Physical Footprint Specifications -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.70rem;">
+            <div class="metric-grid">
+              <div class="metric-row"><span class="metric-label">Length (Bumpers):</span><span class="metric-val" id="vgLength">0.56 m</span></div>
+              <div class="metric-row"><span class="metric-label">Width (Wheels):</span><span class="metric-val" id="vgWidth">0.48 m</span></div>
+              <div class="metric-row"><span class="metric-label">Height (Chassis):</span><span class="metric-val" id="vgHeight">0.26 m</span></div>
+              <div class="metric-row"><span class="metric-label">Wheelbase / Track:</span><span class="metric-val">0.30m / 0.42m</span></div>
+            </div>
+            <div class="metric-grid">
+              <div class="metric-row"><span class="metric-label">Safety Margin:</span><span class="metric-val" id="vgMargin">0.10 m</span></div>
+              <div class="metric-row"><span class="metric-label">Nominal Passage:</span><span class="metric-val" id="vgNominal">0.68 m</span></div>
+              <div class="metric-row"><span class="metric-label">Tight Limit:</span><span class="metric-val" id="vgTight">0.58 m</span></div>
+              <div class="metric-row"><span class="metric-label">In-Place Turn Diam:</span><span class="metric-val" id="vgTurnDiam">0.94 m</span></div>
+            </div>
+          </div>
+          <!-- Live Passage & Clearance Evaluation -->
+          <div style="margin-top: 6px; border-top: 1px solid var(--border-subtle); padding-top: 4px;">
+            <div class="metric-grid">
+              <div class="metric-row"><span class="metric-label">Available Clear Width:</span><span class="metric-val" id="vgAvailableWidth" style="color: var(--accent-cyan); font-weight: bold;">-- m</span></div>
+              <div class="metric-row"><span class="metric-label">Clearance Margin:</span><span class="metric-val" id="vgClearanceMargin">-- m</span></div>
+              <div class="metric-row"><span class="metric-label">Corridor Feasibility:</span><span class="metric-val" id="vgCanFit">CAN FIT: YES</span></div>
+              <div class="metric-row"><span class="metric-label">Turning Space Feasibility:</span><span class="metric-val" id="vgCanTurn">CAN TURN: YES</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- YOLOv8 Outdoor Perception & Detection Engine Card -->
+      <div class="gcs-card">
+        <div class="gcs-card-header">
+          <span>YOLOv8 OUTDOOR PERCEPTION & DETECTIONS</span>
+          <span class="badge badge-green" id="badgeYoloStatus">ONLINE</span>
+        </div>
+        <div class="gcs-card-body">
+          <!-- Stream Preview + Detection Info -->
+          <div style="display: grid; grid-template-columns: 130px 1fr; gap: 8px; align-items: start;">
+            <div class="video-box" style="height: 100px;">
+              <img id="camYolo" alt="YOLO Detection Stream">
+              <div class="video-badge-title" style="color: var(--accent-amber);">YOLO OVERLAY</div>
+              <div class="video-badge-fps" id="fpsYolo">[LIVE] 10 FPS</div>
+            </div>
+            <div>
+              <div class="metric-grid">
+                <div class="metric-row"><span class="metric-label">Model:</span><span class="metric-val" id="yoloModel" style="font-size: 0.65rem;">yolov8n.onnx</span></div>
+                <div class="metric-row"><span class="metric-label">Hardware Device:</span><span class="badge badge-cyan" id="yoloDevice">CPU</span></div>
+                <div class="metric-row"><span class="metric-label">Backend:</span><span class="metric-val" id="yoloBackend">cv2.dnn</span></div>
+                <div class="metric-row"><span class="metric-label">Latency / Rate:</span><span class="metric-val" id="yoloLatencyRate">0.0 ms (0.0 FPS)</span></div>
+                <div class="metric-row"><span class="metric-label">Active Detections:</span><span class="metric-val" id="yoloCount" style="color: var(--accent-green); font-weight: bold;">0</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Detection List -->
+          <div style="margin-top: 6px; border-top: 1px solid var(--border-subtle); padding-top: 4px;">
+            <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700; margin-bottom: 3px;">DETECTED OBJECTS (OUTDOOR ONTOLOGY):</div>
+            <div id="yoloDetectionsList" style="display: flex; gap: 4px; flex-wrap: wrap; max-height: 50px; overflow-y: auto;">
+              <span style="font-size: 0.65rem; color: var(--text-muted);">No objects detected in current FOV</span>
             </div>
           </div>
         </div>
@@ -1086,6 +1181,19 @@
         .then(() => appendLog("RECOVERY", "Recovery attempt budget reset to nominal."));
     }
 
+    function toggleMapLegendDetails() {
+      const el = document.getElementById('mapLegendDetails');
+      const lbl = document.getElementById('lblLegendToggle');
+      if (!el || !lbl) return;
+      if (el.style.display === 'none') {
+        el.style.display = 'block';
+        lbl.textContent = '[COLLAPSE ▴]';
+      } else {
+        el.style.display = 'none';
+        lbl.textContent = '[EXPAND ▾]';
+      }
+    }
+
     /* --------------------------------------------------------------------------
        High-Efficiency Visual Stream Loaders (Latest-Frame Bounded Buffer)
        -------------------------------------------------------------------------- */
@@ -1095,6 +1203,7 @@
       { id: 'camPercept', type: 'perception', fpsEl: 'fpsPercept', targetFps: 10, periodMs: 100 },
       { id: 'camVO', type: 'vo', fpsEl: 'fpsVO', targetFps: 10, periodMs: 100 },
       { id: 'camChase', type: 'chase', fpsEl: 'fpsChase', targetFps: 15, periodMs: 66 },
+      { id: 'camYolo', type: 'yolo', fpsEl: 'fpsYolo', targetFps: 10, periodMs: 100 },
     ];
 
     let currentVisionMode = 'all';
@@ -1290,6 +1399,71 @@
         document.getElementById('navReplans').textContent = data.nav_stats.replan_count;
         if (data.replan_diagnostics) {
           document.getElementById('navReplanReason').textContent = data.replan_diagnostics.replan_reason || "None";
+        }
+
+        // Vehicle Geometry & Passage Diagnostics Update
+        if (data.vehicle_diagnostics) {
+          const vd = data.vehicle_diagnostics;
+          const v = vd.vehicle || {};
+          if (v.length_m) document.getElementById('vgLength').textContent = `${v.length_m.toFixed(2)} m`;
+          if (v.width_m) document.getElementById('vgWidth').textContent = `${v.width_m.toFixed(2)} m`;
+          if (v.height_m) document.getElementById('vgHeight').textContent = `${v.height_m.toFixed(2)} m`;
+          if (v.safety_margin_m) document.getElementById('vgMargin').textContent = `${v.safety_margin_m.toFixed(2)} m`;
+          if (v.nominal_passage_m) document.getElementById('vgNominal').textContent = `${v.nominal_passage_m.toFixed(2)} m`;
+          if (v.tight_passage_limit_m) document.getElementById('vgTight').textContent = `${v.tight_passage_limit_m.toFixed(2)} m`;
+          if (v.min_turn_diameter_m) document.getElementById('vgTurnDiam').textContent = `${v.min_turn_diameter_m.toFixed(2)} m`;
+
+          const pStatus = vd.status || (vd.passage ? vd.passage.passage_status : 'SAFE');
+          const pBadge = document.getElementById('badgePassageStatus');
+          if (pBadge) {
+            pBadge.textContent = `PASSAGE: ${pStatus}`;
+            pBadge.className = pStatus === 'SAFE' ? 'badge badge-green' : (pStatus === 'TIGHT' ? 'badge badge-amber' : 'badge badge-red');
+          }
+
+          const availW = vd.available_clear_width_m !== undefined ? vd.available_clear_width_m : (vd.passage ? vd.passage.available_width_m : 1.0);
+          const reqW = vd.required_clear_width_m !== undefined ? vd.required_clear_width_m : 0.68;
+          const marginW = vd.clearance_margin_m !== undefined ? vd.clearance_margin_m : (availW - 0.48);
+          document.getElementById('vgAvailableWidth').textContent = `${availW.toFixed(2)} m (req: ${reqW.toFixed(2)}m)`;
+          document.getElementById('vgClearanceMargin').textContent = `${marginW >= 0 ? '+' : ''}${marginW.toFixed(2)} m`;
+
+          const canFit = vd.can_fit !== undefined ? vd.can_fit : (vd.passage ? vd.passage.can_fit : true);
+          const canTurn = vd.can_turn !== undefined ? vd.can_turn : (vd.passage ? vd.passage.can_turn : true);
+          document.getElementById('vgCanFit').textContent = canFit ? 'CAN FIT: YES' : 'CAN FIT: NO (INSUFFICIENT CLEARANCE)';
+          document.getElementById('vgCanFit').style.color = canFit ? '#05f187' : '#ff3366';
+          document.getElementById('vgCanTurn').textContent = canTurn ? 'CAN TURN: YES' : 'CAN TURN: NO (RESTRICTED TURNING SPACE)';
+          document.getElementById('vgCanTurn').style.color = canTurn ? '#05f187' : '#ffb703';
+        }
+
+        // YOLOv8 Diagnostics Update
+        if (data.yolo_diagnostics) {
+          const yd = data.yolo_diagnostics;
+          if (document.getElementById('yoloModel')) document.getElementById('yoloModel').textContent = yd.model || 'yolov8n.onnx';
+          if (document.getElementById('yoloDevice')) {
+            const devEl = document.getElementById('yoloDevice');
+            devEl.textContent = yd.device || 'CPU';
+            devEl.className = (yd.device === 'CUDA') ? 'badge badge-green' : 'badge badge-cyan';
+          }
+          if (document.getElementById('yoloBackend')) document.getElementById('yoloBackend').textContent = yd.backend || 'cv2.dnn';
+          if (document.getElementById('yoloLatencyRate')) {
+            document.getElementById('yoloLatencyRate').textContent = `${(yd.latency_ms || 0).toFixed(1)} ms (${(yd.fps || 0).toFixed(1)} FPS)`;
+          }
+          const detCount = (yd.detections ? yd.detections.length : (yd.num_detections || 0));
+          if (document.getElementById('yoloCount')) document.getElementById('yoloCount').textContent = detCount;
+
+          const detListEl = document.getElementById('yoloDetectionsList');
+          if (detListEl) {
+            if (!yd.detections || yd.detections.length === 0) {
+              detListEl.innerHTML = '<span style="font-size: 0.65rem; color: var(--text-muted);">No objects detected in current FOV</span>';
+            } else {
+              detListEl.innerHTML = yd.detections.map(d => {
+                const conf = ((d.confidence || 0) * 100).toFixed(0);
+                const col = d.traversable ? '#05f187' : '#ff3366';
+                return `<span class="badge" style="background: rgba(20,30,50,0.8); border: 1px solid ${col}; color: #f1f5f9; font-size: 0.62rem;">
+                  <b style="color: ${col};">${d.class_name}</b> ${conf}%
+                </span>`;
+              }).join('');
+            }
+          }
         }
 
         // Event Log
@@ -1683,15 +1857,39 @@
           const p = latestTelemetry.robot_pose;
           const [ru, rv] = worldToCanvas(p.x, p.y);
 
-          // Real physical UGV footprint box: length=0.65m, width=0.48m
-          const fpL = 0.65 / mapMeta.resolution;
-          const fpW = 0.48 / mapMeta.resolution;
+          // Real physical UGV footprint box: length=0.56m, width=0.48m (from URDF audit)
+          const vdiag = latestTelemetry.vehicle_diagnostics?.vehicle || {};
+          const vLength = vdiag.length_m || 0.56;
+          const vWidth = vdiag.width_m || 0.48;
+          const fpL = vLength / mapMeta.resolution;
+          const fpW = vWidth / mapMeta.resolution;
+
           ctx.save();
           ctx.translate(ru, rv);
           ctx.rotate(-p.yaw);
-          ctx.fillStyle = 'rgba(0, 210, 255, 0.25)';
+
+          // Outer safety margin buffer (0.10m margin)
+          const marginM = vdiag.safety_margin_m || 0.10;
+          const marginPx = marginM / mapMeta.resolution;
+          ctx.fillStyle = 'rgba(0, 210, 255, 0.06)';
+          ctx.strokeStyle = 'rgba(0, 210, 255, 0.40)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([3, 3]);
+          ctx.strokeRect(-(fpL / 2 + marginPx), -(fpW / 2 + marginPx), fpL + 2 * marginPx, fpW + 2 * marginPx);
+          ctx.setLineDash([]);
+
+          // Inscribed radius circle (0.24m)
+          const rInscribed = (vdiag.inscribed_radius_m || 0.24) / mapMeta.resolution;
+          ctx.strokeStyle = 'rgba(5, 241, 135, 0.35)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(0, 0, rInscribed, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Physical Chassis and Wheels footprint
+          ctx.fillStyle = 'rgba(0, 210, 255, 0.28)';
           ctx.strokeStyle = '#00d2ff';
-          ctx.lineWidth = 1.5;
+          ctx.lineWidth = 1.8;
           ctx.fillRect(-fpL / 2, -fpW / 2, fpL, fpW);
           ctx.strokeRect(-fpL / 2, -fpW / 2, fpL, fpW);
 
@@ -1703,7 +1901,7 @@
           // Heading arrow
           ctx.strokeStyle = '#00d2ff';
           ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(fpL * 0.7, 0); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(fpL * 0.75, 0); ctx.stroke();
           ctx.restore();
         }
 

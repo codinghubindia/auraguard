@@ -40,11 +40,17 @@ class FailureCode:
     GOAL_TIMEOUT = "GOAL_TIMEOUT"
     EXCESSIVE_SLIP = "EXCESSIVE_SLIP"
     OBSTACLE_UNRESOLVED = "OBSTACLE_UNRESOLVED"
+    INSUFFICIENT_CLEARANCE = "INSUFFICIENT_CLEARANCE"
     ENVIRONMENT_UNTRAVERSABLE = "ENVIRONMENT_UNTRAVERSABLE"
     SYSTEM_FAULT = "SYSTEM_FAULT"
 
 
 FAILURE_TAXONOMY: Dict[str, Dict[str, str]] = {
+    FailureCode.INSUFFICIENT_CLEARANCE: {
+        "category": "NAVIGATION",
+        "human_reason": "Corridor width is narrower than vehicle physical footprint clearance.",
+        "detail": "Physical vehicle width (0.48m) with required safety margin exceeds available passage clearance in the narrow corridor.",
+    },
     FailureCode.NO_SAFE_PATH: {
         "category": "NAVIGATION",
         "human_reason": "No safe collision-free path exists to the goal.",

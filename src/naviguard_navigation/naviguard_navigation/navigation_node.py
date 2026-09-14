@@ -24,6 +24,7 @@ from naviguard_navigation.path_follower import PathFollower
 from naviguard_navigation.goal_checker import GoalChecker
 from naviguard_navigation.replanner import Replanner
 from naviguard_navigation.navigation_diagnostics import NavigationDiagnostics
+from naviguard_navigation.vehicle_geometry import VehicleGeometry
 
 
 class NavigationNode(Node):
@@ -34,7 +35,7 @@ class NavigationNode(Node):
 
         # 1. Declare Parameters
         self.declare_parameter('control_rate_hz', 10.0)
-        self.declare_parameter('inflation_radius_m', 0.50)
+        self.declare_parameter('inflation_radius_m', 0.34)
         self.declare_parameter('proximity_radius_m', 1.0)
         self.declare_parameter('safe_clearance_m', 1.20)
         self.declare_parameter('allow_unknown', True)
@@ -128,6 +129,15 @@ class NavigationNode(Node):
         self.current_clearance_m: float = 1.0
         self.current_terrain_cost: float = 0.0
         self.current_speed_scale: float = 1.0
+        self.last_passage_eval: dict = {
+            "passage_status": "UNKNOWN",
+            "available_width_m": 0.0,
+            "required_width_m": VehicleGeometry.NOMINAL_PASSAGE_WIDTH_M,
+            "clearance_margin_m": 0.0,
+            "can_fit": True,
+            "can_turn": True,
+            "turning_diameter_available_m": 0.0,
+        }
 
         # 4. QoS Profiles
         qos_map = QoSProfile(
@@ -150,6 +160,7 @@ class NavigationNode(Node):
         self.marker_pub = self.create_publisher(MarkerArray, '/navigation/markers', 10)
         self.diag_pub = self.create_publisher(DiagnosticArray, '/navigation/diagnostics', 10)
         self.replan_diag_pub = self.create_publisher(String, '/navigation/replan_diagnostics', 10)
+        self.vehicle_diag_pub = self.create_publisher(String, '/navigation/vehicle_diagnostics', 10)
 
         # 6. Subscribers
         self.map_sub = self.create_subscription(
@@ -172,6 +183,12 @@ class NavigationNode(Node):
         )
         self.recovery_sub = self.create_subscription(
             String, '/recovery/state', self._recovery_callback, qos_reliable
+        )
+        self.fused_obstacles_sub = self.create_subscription(
+            String, '/perception/fused_obstacles', self._fused_obstacles_callback, qos_reliable
+        )
+        self.perception_conf_sub = self.create_subscription(
+            String, '/perception/confidence', self._perception_confidence_callback, qos_reliable
         )
 
         # 7. Services
@@ -241,6 +258,39 @@ class NavigationNode(Node):
         self.get_logger().info("Mission canceled by operator.")
         return resp
 
+    def _fused_obstacles_callback(self, msg: String) -> None:
+        """Integrate perception fused obstacles into navigation occupancy grid."""
+        try:
+            data = json.loads(msg.data)
+            obstacles = data.get("obstacles", [])
+            if self.robot_pose is None or not self.occ_grid.is_initialized:
+                return
+            rx, ry, ryaw = self.robot_pose
+            cos_yaw = math.cos(ryaw)
+            sin_yaw = math.sin(ryaw)
+            for obs in obstacles:
+                # Insert non-traversable confirmed obstacles or emergency obstacles
+                if not obs.get("traversable", False) and (obs.get("confirmed", False) or obs.get("emergency", False)):
+                    xb = float(obs.get("x_base", 0.0))
+                    yb = float(obs.get("y_base", 0.0))
+                    radius = float(obs.get("radius", 0.25))
+                    # Transform from base_link to map
+                    xm = rx + xb * cos_yaw - yb * sin_yaw
+                    ym = ry + xb * sin_yaw + yb * cos_yaw
+                    self.occ_grid.mark_blocked_region(xm, ym, radius_m=max(0.20, radius))
+        except Exception as e:
+            self.get_logger().warn(f"Failed parsing fused obstacles: {e}")
+
+    def _perception_confidence_callback(self, msg: String) -> None:
+        """Update confidence metrics from perception confidence pipeline."""
+        try:
+            data = json.loads(msg.data)
+            vis_conf = data.get("visual_confidence") or data.get("confidence")
+            if vis_conf is not None:
+                self.confidence_visual = float(vis_conf)
+        except Exception:
+            pass
+
     def _decision_callback(self, msg: String) -> None:
         try:
             data = json.loads(msg.data)
@@ -278,6 +328,7 @@ class NavigationNode(Node):
             "recovery_max_attempts": 3,
             "blocked_regions": len(self.occ_grid.persistent_blocked_regions),
             "path_status": "BLOCKED" if len(self.occ_grid.persistent_blocked_regions) > 0 else "NO_SAFE_PATH",
+            "passage": self.last_passage_eval,
             "sensor_status": {
                 "SLAM": "ONLINE" if self.robot_pose is not None else "OFFLINE",
                 "Map": "ONLINE" if self.occ_grid.is_initialized else "OFFLINE",
@@ -287,6 +338,12 @@ class NavigationNode(Node):
 
     def _control_loop(self) -> None:
         now_sec = self.get_clock().now().nanoseconds * 1e-9
+
+        # Evaluate vehicle footprint passage and clearance at current pose
+        if self.robot_pose is not None and self.occ_grid.is_initialized:
+            rx, ry, ryaw = self.robot_pose
+            _, _, diag = self.occ_grid.evaluate_passage_at(rx, ry, ryaw)
+            self.last_passage_eval = diag
 
         # Handle Mission State Machine
         if self.mission_mgr.state == MissionState.IDLE:
@@ -309,7 +366,9 @@ class NavigationNode(Node):
                 self.mission_mgr.transition_to(MissionState.NAVIGATING, now_sec)
             else:
                 ctx = self._build_context(now_sec)
-                self.mission_mgr.record_planning_failure(now_sec, "NO_COLLISION_FREE_PATH", context=ctx)
+                can_fit = self.last_passage_eval.get("can_fit", True)
+                fail_code = FailureCode.INSUFFICIENT_CLEARANCE if not can_fit else FailureCode.NO_SAFE_PATH
+                self.mission_mgr.record_planning_failure(now_sec, fail_code, context=ctx)
 
         elif self.mission_mgr.state == MissionState.NAVIGATING:
             # 1. Check recovery integration & mutual exclusion
@@ -426,7 +485,9 @@ class NavigationNode(Node):
                 self.mission_mgr.transition_to(MissionState.NAVIGATING, now_sec)
             else:
                 ctx = self._build_context(now_sec)
-                self.mission_mgr.record_planning_failure(now_sec, "REPLAN_PATH_BLOCKED", context=ctx)
+                can_fit = self.last_passage_eval.get("can_fit", True)
+                fail_code = FailureCode.INSUFFICIENT_CLEARANCE if not can_fit else FailureCode.PATH_BLOCKED
+                self.mission_mgr.record_planning_failure(now_sec, fail_code, context=ctx)
 
         elif self.mission_mgr.state == MissionState.RECOVERY_WAIT:
             # Strictly do not publish /cmd_vel; yield to recovery
@@ -588,6 +649,7 @@ class NavigationNode(Node):
             "confidence_decision": self.confidence_decision,
             "recovery_state": self.recovery_state,
             "cmd_ownership": self.cmd_ownership,
+            "passage": self.last_passage_eval,
             "persistent_blocked_regions": [
                 {"x": round(bx, 2), "y": round(by, 2), "radius_m": round(br, 2)}
                 for bx, by, br in self.occ_grid.persistent_blocked_regions
@@ -596,7 +658,33 @@ class NavigationNode(Node):
         state_msg.data = json.dumps(state_data)
         self.state_pub.publish(state_msg)
 
-        # 2. Diagnostic Array
+        # 2. Vehicle & Passage Diagnostics
+        v_diag_msg = String()
+        v_diag_data = {
+            "timestamp": now_sec,
+            "vehicle": {
+                "length_m": VehicleGeometry.TOTAL_LENGTH_M,
+                "width_m": VehicleGeometry.TOTAL_WIDTH_M,
+                "height_m": VehicleGeometry.CHASSIS_HEIGHT_M,
+                "inscribed_radius_m": VehicleGeometry.INSCRIBED_RADIUS_M,
+                "circumscribed_radius_m": VehicleGeometry.CIRCUMSCRIBED_RADIUS_M,
+                "nominal_passage_m": VehicleGeometry.NOMINAL_PASSAGE_WIDTH_M,
+                "tight_passage_limit_m": VehicleGeometry.TIGHT_PASSAGE_LIMIT_M,
+                "min_turn_diameter_m": VehicleGeometry.MIN_TURN_DIAMETER_M,
+                "safety_margin_m": VehicleGeometry.SAFETY_MARGIN_M,
+            },
+            "passage": self.last_passage_eval,
+            "status": self.last_passage_eval.get("passage_status", "SAFE"),
+            "can_fit": self.last_passage_eval.get("can_fit", True),
+            "can_turn": self.last_passage_eval.get("can_turn", True),
+            "available_clear_width_m": round(self.last_passage_eval.get("available_width_m", 0.0), 3),
+            "required_clear_width_m": round(self.last_passage_eval.get("required_width_m", VehicleGeometry.NOMINAL_PASSAGE_WIDTH_M), 3),
+            "clearance_margin_m": round(self.last_passage_eval.get("clearance_margin_m", 0.0), 3),
+        }
+        v_diag_msg.data = json.dumps(v_diag_data)
+        self.vehicle_diag_pub.publish(v_diag_msg)
+
+        # 3. Diagnostic Array
         diag_msg = NavigationDiagnostics.build_diagnostic_array(
             stamp=stamp,
             mission_state=self.mission_mgr.state.to_string(),

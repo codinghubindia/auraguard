@@ -5,7 +5,7 @@ navigation_node:
     map_frame: "map"
 
     # Footprint & Costmap Parameters
-    inflation_radius_m: 0.50          # 0.35m circumscribed robot radius + 0.15m safety buffer
+    inflation_radius_m: 0.34          # 0.24m inscribed robot radius + 0.10m safety buffer (exact URDF geometry)
     proximity_radius_m: 1.0           # Proximity decay distance for safe obstacle clearance
     allow_unknown: true               # Allow exploration into unknown space with penalty
     unknown_cost_penalty: 5.0         # Additive traversal penalty for unknown cells

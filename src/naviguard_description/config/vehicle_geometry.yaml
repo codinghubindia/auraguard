@@ -1,0 +1,48 @@
+# ==============================================================================
+# NAVIGUARD Centralized Vehicle Geometry Configuration
+# Derived strictly from URDF / XACRO in naviguard_description
+# ==============================================================================
+vehicle_geometry:
+  # Base chassis dimensions (meters)
+  chassis_length_m: 0.50
+  chassis_width_m: 0.32
+  chassis_height_m: 0.16
+  chassis_mass_kg: 15.0
+
+  # Overall physical exterior envelope including bumpers and wheel outer edges
+  vehicle_length_m: 0.56
+  vehicle_width_m: 0.48
+  vehicle_height_m: 0.26
+
+  # Drivetrain & Kinematics
+  wheelbase_m: 0.30       # Distance between front and rear axle centers
+  track_width_m: 0.42     # Distance between left and right wheel centers
+  wheel_radius_m: 0.10    # Radius of drive wheels (0.20m diameter)
+  wheel_width_m: 0.06     # Width of individual tires
+  ground_clearance_m: 0.04 # Chassis ground clearance under base_link
+
+  # Overhangs
+  front_overhang_m: 0.13  # Bumper to front axle center (0.28 - 0.15)
+  rear_overhang_m: 0.13   # Bumper to rear axle center (-0.15 - (-0.28))
+
+  # Footprint Radii
+  inscribed_radius_m: 0.2400     # Half of vehicle width (0.48 / 2)
+  circumscribed_radius_m: 0.3688 # Hypotenuse sqrt(0.28^2 + 0.24^2)
+
+  # Safety & Planning Margins
+  safety_margin_m: 0.10          # Standard operational buffer on each side
+  minimum_clearance_m: 0.05      # Absolute minimum clearance for tight corridors
+  inflation_margin_m: 0.10       # Costmap inflation buffer added to inscribed radius
+
+  # Required Passage Clearances
+  required_nominal_passage_m: 0.68  # vehicle_width (0.48) + 2 * safety_margin (0.10)
+  required_tight_passage_m: 0.58    # vehicle_width (0.48) + 2 * minimum_clearance (0.05)
+  required_turn_in_place_diam_m: 0.94 # 2 * circumscribed_radius (0.37) + 2 * safety_margin (0.10)
+
+  # Polygonal Footprint (relative to base_link / base_footprint in meters)
+  # Ordered counter-clockwise starting from Front-Left
+  footprint_polygon:
+    - [0.28, 0.24]    # Front-Left (x, y)
+    - [-0.28, 0.24]   # Rear-Left (x, y)
+    - [-0.28, -0.24]  # Rear-Right (x, y)
+    - [0.28, -0.24]   # Front-Right (x, y)
