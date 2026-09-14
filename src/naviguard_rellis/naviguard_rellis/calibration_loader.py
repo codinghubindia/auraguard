@@ -60,6 +60,32 @@ def parse_rellis_camera_info(filepath: str) -> Dict:
         with open(filepath, 'r') as f:
             lines = f.readlines()
 
+        # Check for plain whitespace-separated numbers (e.g. official RELLIS camera_info.txt: fx fy cx cy)
+        all_tokens = []
+        for line in lines:
+            line_str = line.strip()
+            if not line_str or line_str.startswith('#'):
+                continue
+            for t in line_str.split():
+                try:
+                    all_tokens.append(float(t))
+                except ValueError:
+                    pass
+
+        if len(all_tokens) == 4 and ':' not in "".join(lines):
+            fx, fy, cx, cy = all_tokens[0], all_tokens[1], all_tokens[2], all_tokens[3]
+            params['k'] = np.array([
+                [fx, 0.0, cx],
+                [0.0, fy, cy],
+                [0.0, 0.0, 1.0]
+            ], dtype=np.float64)
+            params['p'] = np.array([
+                [fx, 0.0, cx, 0.0],
+                [0.0, fy, cy, 0.0],
+                [0.0, 0.0, 1.0, 0.0]
+            ], dtype=np.float64)
+            return params
+
         current_key = None
         buffer_numbers = []
 

@@ -55,6 +55,9 @@ def test_manifest_provenance_truth():
         assert manifest["approximation_notes"]["physical_dataset_present"] is False
         assert "SYNTHETIC" in manifest["approximation_notes"]["status"]
         assert manifest["approximation_notes"]["dashboard_label"] == "RELLIS-INSPIRED SYNTHETIC ENVIRONMENT"
+    else:
+        assert manifest["dataset_status"] in ("OFFICIAL_REPO_INSTALLED", "INSTALLED_LOCALLY")
+        assert manifest["approximation_notes"]["physical_dataset_present"] is True
 
 
 def test_manifest_coordinate_transform():

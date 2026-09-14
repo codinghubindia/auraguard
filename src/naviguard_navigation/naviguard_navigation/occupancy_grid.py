@@ -357,3 +357,107 @@ class NavigationOccupancyGrid:
         """Evaluate whether the UGV can safely pass through (wx, wy)."""
         avail_width = self.get_corridor_width_at(wx, wy)
         return VehicleGeometry.evaluate_passage(avail_width, heading_change_rad)
+
+    def evaluate_360_passages(
+        self,
+        wx: float,
+        wy: float,
+        goal_x: Optional[float] = None,
+        goal_y: Optional[float] = None,
+        num_sectors: int = 36,
+        max_range_m: float = 3.5,
+        vehicle_width_m: float = 0.48,
+    ) -> Dict[str, Any]:
+        """Evaluate 360-degree radial clearance and identify navigable passages/corridors around (wx, wy).
+
+        Verifies whether small passages are wide enough for the UGV (>= vehicle_width_m)
+        and scores candidate retry exit headings towards the goal.
+        """
+        passages: List[Dict[str, Any]] = []
+        best_heading_rad = 0.0
+        best_score = -1e9
+        widest_corridor_m = 0.0
+
+        if not self.is_initialized or self.width_cells <= 0 or self.height_cells <= 0:
+            return {
+                "scan_complete": True,
+                "sectors_evaluated": num_sectors,
+                "best_heading_rad": 0.0,
+                "best_heading_deg": 0.0,
+                "passages": [],
+                "widest_corridor_m": 0.0,
+                "selected_passage": None,
+            }
+
+        goal_angle = None
+        if goal_x is not None and goal_y is not None:
+            goal_angle = float(math.atan2(goal_y - wy, goal_x - wx))
+
+        step_m = max(0.05, self.resolution)
+        steps = int(max_range_m / step_m)
+
+        for s in range(num_sectors):
+            angle = float(s * (2.0 * math.pi / num_sectors))
+            cos_a = math.cos(angle)
+            sin_a = math.sin(angle)
+
+            free_dist = 0.0
+            min_side_clearance = max_range_m
+
+            for st in range(1, steps + 1):
+                cur_dist = st * step_m
+                px = wx + cur_dist * cos_a
+                py = wy + cur_dist * sin_a
+
+                mpt = self.world_to_map(px, py)
+                if mpt is None:
+                    break
+                mx, my = mpt
+                if self.is_lethal(mx, my):
+                    break
+
+                cell_clearance = self.get_clearance(mx, my)
+                min_side_clearance = min(min_side_clearance, cell_clearance)
+                free_dist = cur_dist
+
+            corridor_width = 2.0 * min(free_dist * 0.5, min_side_clearance)
+            widest_corridor_m = max(widest_corridor_m, corridor_width)
+
+            # Passable condition: clear depth >= 0.60m and corridor width >= vehicle width
+            is_passable = (free_dist >= 0.60) and (corridor_width >= vehicle_width_m)
+            is_narrow = is_passable and (corridor_width < 0.85)
+
+            score = free_dist * 2.0 + corridor_width * 3.0
+            if goal_angle is not None:
+                score += math.cos(angle - goal_angle) * 4.0
+
+            if is_passable:
+                passages.append({
+                    "sector_idx": s,
+                    "heading_rad": angle,
+                    "heading_deg": round(float(math.degrees(angle)), 1),
+                    "free_dist_m": round(free_dist, 2),
+                    "corridor_width_m": round(corridor_width, 2),
+                    "is_narrow_passage": is_narrow,
+                    "score": round(score, 2),
+                })
+
+                if score > best_score:
+                    best_score = score
+                    best_heading_rad = angle
+
+        selected = None
+        for p in passages:
+            if abs(p["heading_rad"] - best_heading_rad) < 1e-3:
+                selected = p
+                break
+
+        return {
+            "scan_complete": True,
+            "sectors_evaluated": num_sectors,
+            "best_heading_rad": best_heading_rad,
+            "best_heading_deg": round(float(math.degrees(best_heading_rad)), 1),
+            "passages": passages,
+            "widest_corridor_m": round(widest_corridor_m, 2),
+            "selected_passage": selected,
+        }

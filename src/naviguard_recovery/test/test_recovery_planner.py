@@ -75,3 +75,51 @@ def test_backtrack_trajectory_and_collision():
     )
     assert ok_block is False
     assert "OBSTACLE" in msg_block
+
+
+def test_360_lookaround_and_passages():
+    planner = RecoveryPlanner()
+
+    # 1. Blocked path triggers 360 lookaround
+    s_blocked = planner.select_strategy("PATH_BLOCKED_AHEAD", attempt_number=1, has_checkpoint=True)
+    assert s_blocked == RecoveryStrategy.LOOKAROUND_360_SCAN
+
+    # 2. Obstacle retry on attempt 2 triggers 360 lookaround
+    s_retry = planner.select_strategy("OBSTACLE_COLLISION_CRITICAL", attempt_number=2, has_checkpoint=True)
+    assert s_retry == RecoveryStrategy.LOOKAROUND_360_SCAN
+
+    # 3. Explicit lookaround request
+    s_look = planner.select_strategy("LOOKAROUND_360_SCAN_REQUEST", attempt_number=1, has_checkpoint=True)
+    assert s_look == RecoveryStrategy.LOOKAROUND_360_SCAN
+
+    # 4. Plan 360 rotation sweep
+    dyaw, tyaw, name = planner.plan_360_lookaround(current_yaw=0.5, direction=1)
+    assert abs(dyaw - 2.0 * 3.14159265) < 1e-3
+    assert abs(tyaw - (0.5 + 2.0 * 3.14159265)) < 1e-3
+    assert name == "LOOKAROUND_360_SCAN"
+
+    # 5. Evaluate 360 passages with a clear corridor towards +X
+    # 20x20 grid, resolution 0.1m, origin (-1.0, -1.0)
+    # Robot at (0.0, 0.0)
+    grid = [0] * 400
+    # Add obstacles north and south, leaving an east-west passage (width 1.0m > 0.48m)
+    for cx in range(20):
+        grid[18 * 20 + cx] = 100  # North wall at y ~ 0.8m
+        grid[2 * 20 + cx] = 100   # South wall at y ~ -0.8m
+
+    eval_res = planner.evaluate_360_passages(
+        current_pose=(0.0, 0.0, 0.0),
+        grid_data=grid,
+        grid_res=0.1,
+        grid_w=20,
+        grid_h=20,
+        grid_ox=-1.0,
+        grid_oy=-1.0,
+        goal_pose=(2.0, 0.0),
+        vehicle_width_m=0.48,
+    )
+    assert eval_res["scan_complete"] is True
+    assert len(eval_res["passages"]) > 0
+    # Best heading should be directed towards forward-right / goal quadrant (< 0.60 rad / ~34 deg)
+    assert abs(eval_res["best_heading_rad"]) < 0.60
+

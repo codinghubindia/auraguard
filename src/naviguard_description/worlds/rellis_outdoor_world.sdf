@@ -42,6 +42,15 @@
       name="gz::sim::systems::Imu">
     </plugin>
 
+    <!-- Official Texas A&M RELLIS Campus Geodetic Anchor (WGS84) -->
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <latitude_deg>30.6279</latitude_deg>
+      <longitude_deg>-96.4800</longitude_deg>
+      <elevation>98.0</elevation>
+      <heading_deg>0.0</heading_deg>
+    </spherical_coordinates>
+
     <!-- Scene lighting, sky and atmospheric realism -->
     <scene>
       <ambient>0.62 0.64 0.60 1.0</ambient>

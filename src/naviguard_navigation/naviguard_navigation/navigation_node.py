@@ -480,6 +480,22 @@ class NavigationNode(Node):
         elif self.mission_mgr.state == MissionState.REPLANNING:
             self.cmd_ownership = "REPLANNING"
             self.nav_reason = "Computing alternate detour around detected blockage"
+            # 360-degree look-around evaluation for open corridors and small passages
+            if self.robot_pose is not None and self.occ_grid.is_initialized:
+                rx, ry, ryaw = self.robot_pose
+                goal = self.goal_mgr.get_goal()
+                gx = goal.x if goal else None
+                gy = goal.y if goal else None
+                lookaround_res = self.occ_grid.evaluate_360_passages(rx, ry, gx, gy)
+                passages = lookaround_res.get("passages", [])
+                if passages:
+                    best_deg = lookaround_res.get("best_heading_deg", 0.0)
+                    widest_m = lookaround_res.get("widest_corridor_m", 0.0)
+                    self.nav_reason = (
+                        f"360° Lookaround: {len(passages)} passages identified "
+                        f"(best: {best_deg:+.1f}°, width {widest_m:.2f}m)"
+                    )
+
             success = self._compute_and_set_path(now_sec, replan_reason="OBSTACLE_OR_DEVIATION_REPLAN")
             if success:
                 self.mission_mgr.transition_to(MissionState.NAVIGATING, now_sec)
@@ -492,10 +508,15 @@ class NavigationNode(Node):
         elif self.mission_mgr.state == MissionState.RECOVERY_WAIT:
             # Strictly do not publish /cmd_vel; yield to recovery
             self.cmd_ownership = "YIELDED_TO_RECOVERY"
-            self.nav_reason = f"Recovery in progress: {self.recovery_state}"
+            # Retry mechanism waits until recovery completes looking out 360 degrees for path
+            if "360" in self.recovery_state or "LOOKAROUND" in self.recovery_state:
+                self.nav_reason = "Retry mechanism: waiting for 360° panoramic path lookaround scan"
+            else:
+                self.nav_reason = f"Recovery in progress: {self.recovery_state} (waiting for 360° path scan)"
+
             # If recovery returns to NORMAL and confidence is healthy, resume by replanning
             if self.recovery_state == "NORMAL" and self.confidence_decision in ("CONTINUE", "VERIFY"):
-                self.get_logger().info("Recovery completed. Re-planning path from current pose to original goal.")
+                self.get_logger().info("360° lookaround recovery completed. Re-planning path from current pose to original goal.")
                 self.mission_mgr.transition_to(MissionState.REPLANNING, now_sec, "RECOVERY_RESUME")
             elif self.recovery_state == "FAILED_SAFE":
                 ctx = self._build_context(now_sec)

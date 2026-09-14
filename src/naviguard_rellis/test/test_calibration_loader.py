@@ -1,5 +1,6 @@
 import os
 import tempfile
+import pytest
 import numpy as np
 from naviguard_rellis.calibration_loader import (
     parse_rellis_camera_info,
@@ -54,3 +55,23 @@ def test_create_camera_info_msg():
     assert msg.header.frame_id == 'test_camera'
     assert len(msg.k) == 9
     assert len(msg.d) == 5
+
+
+def test_parse_official_rellis_camera_info():
+    # Official RELLIS-3D camera_info.txt format: fx fy cx cy
+    official_content = "2813.643275 2808.326079 969.285772 624.049972\n"
+    with tempfile.NamedTemporaryFile('w', delete=False) as f:
+        f.write(official_content)
+        temp_path = f.name
+
+    try:
+        params = parse_rellis_camera_info(temp_path)
+        assert pytest.approx(params['k'][0, 0], abs=1e-3) == 2813.643
+        assert pytest.approx(params['k'][1, 1], abs=1e-3) == 2808.326
+        assert pytest.approx(params['k'][0, 2], abs=1e-3) == 969.286
+        assert pytest.approx(params['k'][1, 2], abs=1e-3) == 624.050
+        assert params['p'][0, 0] == params['k'][0, 0]
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+

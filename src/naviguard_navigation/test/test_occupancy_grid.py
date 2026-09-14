@@ -108,3 +108,21 @@ def test_mark_blocked_region_and_persistence():
     # Clear blocked regions restores free space
     grid.clear_blocked_regions()
     assert grid.is_lethal(50, 50) is False
+
+
+def test_evaluate_360_passages():
+    grid = NavigationOccupancyGrid(inflation_radius_m=0.10)
+    msg = make_test_grid(width=100, height=100, resolution=0.05, origin_x=-2.5, origin_y=-2.5)
+    grid.update_from_msg(msg)
+
+    # Robot at (0.0, 0.0), goal at (2.0, 0.0)
+    # Add a block in front at (1.0, 0.0) and walls, leaving open corridors at +45 deg and -45 deg
+    grid.mark_blocked_region(1.0, 0.0, radius_m=0.35)
+
+    res = grid.evaluate_360_passages(0.0, 0.0, goal_x=2.0, goal_y=0.0, num_sectors=36, max_range_m=2.0, vehicle_width_m=0.48)
+    assert res["scan_complete"] is True
+    assert res["sectors_evaluated"] == 36
+    assert len(res["passages"]) > 0
+    # Widest corridor should fit the 0.48m vehicle
+    assert res["widest_corridor_m"] >= 0.48
+

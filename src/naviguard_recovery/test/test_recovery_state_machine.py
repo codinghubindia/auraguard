@@ -12,13 +12,16 @@ def test_recovery_state_enum():
     assert RecoveryState.SAFE_STOP == 2
     assert RecoveryState.RECOVER == 4
     assert RecoveryState.FAILED_SAFE == 9
+    assert RecoveryState.LOOKAROUND_360_SCAN == 13
 
     assert RecoveryState.NORMAL.to_string() == "NORMAL"
     assert RecoveryState.SAFE_STOP.to_string() == "SAFE_STOP"
+    assert RecoveryState.LOOKAROUND_360_SCAN.to_string() == "LOOKAROUND_360_SCAN"
     assert RecoveryState.FAILED_SAFE.to_string() == "FAILED_SAFE"
 
     assert RecoveryState.from_string("normal") == RecoveryState.NORMAL
     assert RecoveryState.from_string("SAFE_STOP") == RecoveryState.SAFE_STOP
+    assert RecoveryState.from_string("LOOKAROUND_360_SCAN") == RecoveryState.LOOKAROUND_360_SCAN
 
     with pytest.raises(ValueError):
         RecoveryState.from_string("INVALID_STATE")
@@ -110,3 +113,22 @@ def test_state_machine_budget_exhaustion_failed_safe():
     fsm.transition_to(RecoveryState.SAFE_STOP, 1.0)
     fsm.step_recovery_lifecycle(1.1, 0.1, False, False, False)
     assert fsm.state == RecoveryState.FAILED_SAFE
+
+
+def test_lookaround_360_lifecycle():
+    cfg = RecoveryStateMachineConfig(safe_stop_dwell_sec=0.5, verification_dwell_sec=1.0)
+    fsm = RecoveryStateMachine(cfg)
+    fsm.reset(0.0)
+
+    # Transition to LOOKAROUND_360_SCAN
+    fsm.transition_to(RecoveryState.LOOKAROUND_360_SCAN, 1.0)
+    assert fsm.state == RecoveryState.LOOKAROUND_360_SCAN
+
+    # While action in progress (rotating 360 deg), stays in LOOKAROUND_360_SCAN
+    fsm.step_recovery_lifecycle(2.0, 1.0, action_in_progress=True, relocalization_ok=False, verification_ok=False)
+    assert fsm.state == RecoveryState.LOOKAROUND_360_SCAN
+
+    # When 360 rotation finishes, transitions to VISUAL_REACQUISITION_OBSERVATION
+    fsm.step_recovery_lifecycle(3.5, 1.5, action_in_progress=False, relocalization_ok=False, verification_ok=False)
+    assert fsm.state == RecoveryState.VISUAL_REACQUISITION_OBSERVATION
+

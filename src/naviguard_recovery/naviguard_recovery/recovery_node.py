@@ -62,7 +62,7 @@ class NaviguardRecoveryNode(Node):
         self.declare_parameter('max_attempts', 3)
         self.declare_parameter('max_total_duration_sec', 45.0)
         self.declare_parameter('max_backtrack_dist_m', 3.0)
-        self.declare_parameter('max_rotation_deg', 180.0)
+        self.declare_parameter('max_rotation_deg', 400.0)
         self.declare_parameter('log_events_json', '')
 
         rate_hz = float(self.get_parameter('rate_hz').value)
@@ -114,6 +114,10 @@ class NaviguardRecoveryNode(Node):
         self.target_rotation_yaw: float = 0.0
         self.rotation_start_yaw: float = 0.0
         self.active_strategy_enum: RecoveryStrategy = RecoveryStrategy.STOP_AND_RELOCALIZE
+        self.lookaround_accum_rad: float = 0.0
+        self.lookaround_last_yaw: float = 0.0
+        self.lookaround_direction: int = 1
+        self.lookaround_360_eval: dict = {}
 
         self.last_timer_time = time.time()
 
@@ -353,17 +357,23 @@ class NaviguardRecoveryNode(Node):
                     self.action_in_progress = True
                     self.fsm.transition_to(RecoveryState.RECOVER, now_sec)
                 else:
-                    # Fallback to rotation if backtrack path blocked
-                    self.active_strategy_enum = RecoveryStrategy.ROTATE_FOR_VISUAL_REACQUISITION
+                    # Fallback to 360 lookaround if backtrack path blocked
+                    self.active_strategy_enum = RecoveryStrategy.LOOKAROUND_360_SCAN
                     self.fsm.active_strategy = self.active_strategy_enum.to_string()
-                    dyaw, tyaw, scan_name = self.planner.plan_rotation_scan(
-                        self.current_pose_map[2],
-                        attempt_number=self.fsm.budget.attempt_count,
-                    )
-                    self.target_rotation_yaw = tyaw
-                    self.rotation_start_yaw = self.current_pose_map[2]
+                    self.lookaround_accum_rad = 0.0
+                    self.lookaround_last_yaw = self.current_pose_map[2]
+                    self.lookaround_direction = 1
+                    self.lookaround_360_eval = {}
                     self.action_in_progress = True
-                    self.fsm.transition_to(RecoveryState.RECOVER, now_sec)
+                    self.fsm.transition_to(RecoveryState.LOOKAROUND_360_SCAN, now_sec)
+
+            elif strategy == RecoveryStrategy.LOOKAROUND_360_SCAN:
+                self.lookaround_accum_rad = 0.0
+                self.lookaround_last_yaw = self.current_pose_map[2]
+                self.lookaround_direction = 1
+                self.lookaround_360_eval = {}
+                self.action_in_progress = True
+                self.fsm.transition_to(RecoveryState.LOOKAROUND_360_SCAN, now_sec)
 
             elif strategy == RecoveryStrategy.ROTATE_FOR_VISUAL_REACQUISITION:
                 dyaw, tyaw, scan_name = self.planner.plan_rotation_scan(
@@ -379,7 +389,7 @@ class NaviguardRecoveryNode(Node):
                 self.action_in_progress = False
                 self.fsm.transition_to(RecoveryState.RELOCALIZE, now_sec)
 
-        elif self.fsm.state == RecoveryState.RECOVER:
+        elif self.fsm.state in (RecoveryState.RECOVER, RecoveryState.LOOKAROUND_360_SCAN):
             if self.active_strategy_enum == RecoveryStrategy.SHORT_BACKTRACK:
                 if self.current_waypoints and self.waypoint_index < len(self.current_waypoints):
                     target_wp = self.current_waypoints[self.waypoint_index]
@@ -403,6 +413,37 @@ class NaviguardRecoveryNode(Node):
                     self.action_in_progress = False
                 # Early success exit if visual confidence has recovered
                 if self.phase7_vis_conf >= 0.70 and self.phase7_overall_conf >= 0.75:
+                    self.action_in_progress = False
+
+            elif self.active_strategy_enum == RecoveryStrategy.LOOKAROUND_360_SCAN:
+                cmd_vx, cmd_wz, self.lookaround_accum_rad, reached = self.controller.compute_lookaround_360_step(
+                    current_yaw=self.current_pose_map[2],
+                    last_yaw=self.lookaround_last_yaw,
+                    accumulated_yaw_rad=self.lookaround_accum_rad,
+                    target_total_rad=2.0 * np.pi,
+                    direction=self.lookaround_direction,
+                )
+                self.lookaround_last_yaw = self.current_pose_map[2]
+                self.fsm.budget.record_motion(0.0, float(np.degrees(abs(cmd_wz) * dt)))
+
+                # Continuously survey 360-degree clear paths & narrow passages
+                self.lookaround_360_eval = self.planner.evaluate_360_passages(
+                    current_pose=self.current_pose_map,
+                    grid_data=self.grid_data,
+                    grid_res=self.grid_res,
+                    grid_w=self.grid_w,
+                    grid_h=self.grid_h,
+                    grid_ox=self.grid_ox,
+                    grid_oy=self.grid_oy,
+                )
+
+                # Retry mechanism WAITS until full 360-degree sweep is completely performed
+                if reached:
+                    self.get_logger().info(
+                        f"360-degree lookaround complete ({np.degrees(self.lookaround_accum_rad):.1f} deg). "
+                        f"Found {len(self.lookaround_360_eval.get('passages', []))} viable passages. "
+                        f"Best heading: {self.lookaround_360_eval.get('best_heading_deg', 0.0):.1f} deg."
+                    )
                     self.action_in_progress = False
             else:
                 self.action_in_progress = False
@@ -452,6 +493,13 @@ class NaviguardRecoveryNode(Node):
             "current_attempt": self.fsm.budget.current_attempt.to_dict() if self.fsm.budget.current_attempt else None,
             "attempt_history": [att.to_dict() for att in self.fsm.budget.attempt_history],
             "selected_checkpoint": self.trusted_mgr.selected_checkpoint.to_dict() if self.trusted_mgr.selected_checkpoint else None,
+            "lookaround_360": {
+                "progress_deg": round(float(np.degrees(self.lookaround_accum_rad)), 1),
+                "is_complete": (not self.action_in_progress) if (self.active_strategy_enum == RecoveryStrategy.LOOKAROUND_360_SCAN) else False,
+                "best_heading_deg": self.lookaround_360_eval.get("best_heading_deg", 0.0),
+                "passages_count": len(self.lookaround_360_eval.get("passages", [])),
+                "widest_corridor_m": self.lookaround_360_eval.get("widest_corridor_m", 0.0),
+            },
         }
         msg.data = json.dumps(data)
         self.state_pub.publish(msg)

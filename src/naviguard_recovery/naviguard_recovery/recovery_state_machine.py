@@ -24,6 +24,7 @@ class RecoveryState(IntEnum):
     VISUAL_REACQUISITION_ROTATION = 10      # Controlled rotation scan
     VISUAL_REACQUISITION_OBSERVATION = 11   # Stationary dwell for feature settlement
     TRANSLATIONAL_RELOCALIZATION = 12       # Controlled translation check
+    LOOKAROUND_360_SCAN = 13                # Dedicated 360-degree panoramic path lookaround scan
 
     def to_string(self) -> str:
         return self.name
@@ -71,7 +72,7 @@ class RecoveryBudget:
     max_attempts: int = 3
     max_total_duration_sec: float = 40.0
     max_backtrack_dist_m: float = 3.5
-    max_rotation_deg: float = 180.0
+    max_rotation_deg: float = 400.0
 
     attempt_count: int = 0
     total_recovery_time_sec: float = 0.0
@@ -250,7 +251,7 @@ class RecoveryStateMachine:
             # Action dispatcher will set active_strategy and transition to RECOVER
             pass
 
-        elif self.state == RecoveryState.RECOVER:
+        elif self.state in (RecoveryState.RECOVER, RecoveryState.LOOKAROUND_360_SCAN):
             if not action_in_progress:
                 self.transition_to(RecoveryState.VISUAL_REACQUISITION_OBSERVATION, stamp_sec)
             elif dwell >= self.cfg.action_timeout_sec:

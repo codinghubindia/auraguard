@@ -66,3 +66,28 @@ class RecoveryController:
 
         wz = float(np.sign(yaw_err) * np.clip(abs(yaw_err) * 0.6, 0.08, self.max_rotation_speed_radps))
         return 0.0, wz, False
+
+    def compute_lookaround_360_step(
+        self,
+        current_yaw: float,
+        last_yaw: float,
+        accumulated_yaw_rad: float,
+        target_total_rad: float = 2.0 * np.pi,
+        direction: int = 1,
+    ) -> Tuple[float, float, float, bool]:
+        """Compute bounded in-place rotation completing a full 360-degree sweep.
+
+        Tracks cumulative angular displacement across coordinate wraps.
+        Returns (vx, wz, new_accumulated_yaw_rad, reached).
+        """
+        dyaw = float(np.arctan2(
+            np.sin(current_yaw - last_yaw),
+            np.cos(current_yaw - last_yaw),
+        ))
+        new_accum = accumulated_yaw_rad + abs(dyaw)
+        remaining = target_total_rad - new_accum
+        if remaining <= self.goal_tolerance_yaw_rad:
+            return 0.0, 0.0, new_accum, True
+
+        wz = float(direction * np.clip(remaining * 0.6, 0.10, self.max_rotation_speed_radps))
+        return 0.0, wz, new_accum, False
