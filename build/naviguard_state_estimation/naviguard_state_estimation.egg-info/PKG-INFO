@@ -1,7 +1,0 @@
-Metadata-Version: 2.1
-Name: naviguard-state-estimation
-Version: 0.1.0
-Summary: Baseline metric state estimator combining visual relative motion, IMU, and wheel odometry for NAVIGUARD UGV
-Maintainer: maxx
-Maintainer-email: maxx@todo.todo
-License: Apache-2.0

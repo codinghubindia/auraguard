@@ -1,1 +1,0 @@
-/home/maxx/naviguard_ws/src/naviguard_sensor_sync/setup.py

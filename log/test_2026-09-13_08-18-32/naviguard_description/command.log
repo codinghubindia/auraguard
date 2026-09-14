@@ -1,2 +1,0 @@
-Invoking command in '/home/maxx/naviguard_ws/build/naviguard_description': /usr/bin/ctest -C Release -D ExperimentalTest --no-compress-output -V --force-new-ctest-process
-Invoked command in '/home/maxx/naviguard_ws/build/naviguard_description' returned '0': /usr/bin/ctest -C Release -D ExperimentalTest --no-compress-output -V --force-new-ctest-process

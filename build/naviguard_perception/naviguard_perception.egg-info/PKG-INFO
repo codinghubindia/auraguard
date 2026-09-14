@@ -1,7 +1,0 @@
-Metadata-Version: 2.1
-Name: naviguard-perception
-Version: 0.1.0
-Summary: ROS 2 perception foundation for NAVIGUARD outdoor autonomous UGV
-Maintainer: maxx
-Maintainer-email: maxx@todo.todo
-License: Apache-2.0

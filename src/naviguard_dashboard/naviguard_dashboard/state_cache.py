@@ -3,11 +3,65 @@ Thread-safe Telemetry & State Cache for NAVIGUARD Operator Dashboard.
 
 Maintains live snapshots of robot states, camera feeds, occupancy grid,
 and system health metrics for web client consumption.
+Implements bounded latest-frame buffers (size = 1) for visual streams.
 """
 
 import time
 import threading
 from typing import Dict, Any, List, Optional, Tuple
+
+
+class StreamBuffer:
+    """Bounded latest-frame buffer (size = 1) for live operator visual streams."""
+
+    def __init__(self, name: str, target_fps: float = 12.0) -> None:
+        self.name = name
+        self.target_fps = target_fps
+        self.min_period = 1.0 / max(1.0, target_fps)
+        self.jpeg_bytes: Optional[bytes] = None
+        self.timestamp: float = 0.0
+        self.frame_seq: int = 0
+        self.source_fps: float = 0.0
+        self.display_fps: float = 0.0
+        self.encode_latency_ms: float = 0.0
+        self.dropped_frames: int = 0
+        self.total_frames_received: int = 0
+        self._last_display_time: float = 0.0
+        self._recent_display_times: List[float] = []
+
+    def update_frame(
+        self,
+        jpeg_bytes: bytes,
+        timestamp: float,
+        encode_latency_ms: float = 0.0,
+        source_fps: float = 0.0,
+    ) -> None:
+        """Replace buffer with newest frame (buffer size = 1, overwriting stale)."""
+        self.jpeg_bytes = jpeg_bytes
+        self.timestamp = timestamp
+        self.frame_seq += 1
+        self.total_frames_received += 1
+        self.encode_latency_ms = round(encode_latency_ms, 2)
+        if source_fps > 0.0:
+            self.source_fps = round(source_fps, 1)
+
+    def consume_latest(self) -> Tuple[Optional[bytes], float, float, str]:
+        """Consume the newest frame, updating display FPS and calculating frame age."""
+        now = time.time()
+        age_ms = max(0.0, (now - self.timestamp) * 1000.0) if self.timestamp > 0.0 else 0.0
+
+        # Track display FPS
+        self._recent_display_times.append(now)
+        if len(self._recent_display_times) > 15:
+            self._recent_display_times.pop(0)
+        if len(self._recent_display_times) >= 2:
+            dt = self._recent_display_times[-1] - self._recent_display_times[0]
+            if dt > 0.01:
+                self.display_fps = round((len(self._recent_display_times) - 1) / dt, 1)
+
+        # Determine LIVE vs DEGRADED based on frame age
+        status = "LIVE" if age_ms < 350.0 else "DEGRADED"
+        return self.jpeg_bytes, self.timestamp, round(age_ms, 1), status
 
 
 class StateCache:
@@ -76,8 +130,10 @@ class StateCache:
 
         # 6. Localization & Navigation Geometry
         self.robot_pose = {"x": 0.0, "y": 0.0, "z": 0.0, "yaw": 0.0}
+        self.last_valid_pose = {"x": 0.0, "y": 0.0, "z": 0.0, "yaw": 0.0}
         self.trajectory: List[Dict[str, float]] = []
         self.nav_path: List[Dict[str, float]] = []
+        self.waypoints: List[Dict[str, float]] = []
         self.active_goal: Optional[Dict[str, float]] = None
         self.nav_stats: Dict[str, Any] = {
             "dist_to_goal_m": 0.0,
@@ -87,6 +143,11 @@ class StateCache:
             "cmd_vx": 0.0,
             "cmd_wz": 0.0,
             "path_valid": False,
+            "terrain_cost": 0.0,
+            "slope_deg": 0.0,
+            "clearance_m": 1.0,
+            "speed_scale": 1.0,
+            "nav_reason": "Nominal path following",
         }
         self.replan_diagnostics: Dict[str, Any] = {
             "replan_reason": "None",
@@ -111,17 +172,27 @@ class StateCache:
         self.grid_data: Optional[List[int]] = None
         self.map_png_bytes: Optional[bytes] = None
 
-        # 8. Encoded Camera Frames (JPEG bytes)
-        self.raw_cam_jpeg: Optional[bytes] = None
-        self.perception_jpeg: Optional[bytes] = None
-        self.segmentation_jpeg: Optional[bytes] = None
-        self.vo_jpeg: Optional[bytes] = None
-        self.chase_jpeg: Optional[bytes] = None
-
+        # 8. Visual Stream Buffers (Latest-Frame Bounded Buffers, size=1)
+        self.streams: Dict[str, StreamBuffer] = {
+            "raw": StreamBuffer("raw", target_fps=15.0),
+            "perception": StreamBuffer("perception", target_fps=10.0),
+            "segmentation": StreamBuffer("segmentation", target_fps=10.0),
+            "vo": StreamBuffer("vo", target_fps=10.0),
+            "chase": StreamBuffer("chase", target_fps=15.0),
+        }
 
         # 9. Rolling Event Log
         self.events: List[Dict[str, Any]] = []
         self.add_event("SYSTEM", "NAVIGUARD Operator Dashboard initialized.")
+
+        # 10. Structured Failure & Success Records
+        self.failure_record: Optional[Dict[str, Any]] = None
+        self.success_record: Optional[Dict[str, Any]] = None
+
+        # 11. Additional Map Layers Data
+        self.checkpoints: List[Dict[str, Any]] = []
+        self.persistent_obstacles: List[Dict[str, Any]] = []
+        self.traversability_grid: Optional[List[int]] = None
 
     def add_event(self, category: str, text: str) -> None:
         """Add an event to rolling log."""
@@ -141,6 +212,7 @@ class StateCache:
     def update_robot_pose(self, x: float, y: float, z: float, yaw: float) -> None:
         with self._lock:
             self.robot_pose = {"x": round(x, 3), "y": round(y, 3), "z": round(z, 3), "yaw": round(yaw, 3)}
+            self.last_valid_pose = dict(self.robot_pose)
             # Append to trajectory if moved significantly
             if not self.trajectory:
                 self.trajectory.append({"x": x, "y": y})
@@ -157,9 +229,45 @@ class StateCache:
         with self._lock:
             self.nav_path = [{"x": round(p[0], 2), "y": round(p[1], 2)} for p in points]
 
+    def set_waypoints(self, wps: List[Dict[str, Any]]) -> None:
+        with self._lock:
+            self.waypoints = wps
+
+    def set_checkpoints(self, ckpts: List[Dict[str, Any]]) -> None:
+        with self._lock:
+            self.checkpoints = ckpts
+
+    def set_persistent_obstacles(self, obsts: List[Dict[str, Any]]) -> None:
+        with self._lock:
+            self.persistent_obstacles = obsts
+
     def set_active_goal(self, goal: Optional[Dict[str, float]]) -> None:
         with self._lock:
             self.active_goal = goal
+
+    def set_failure_record(self, record: Dict[str, Any]) -> None:
+        """Store structured mission failure explanation and emit concise event."""
+        with self._lock:
+            self.failure_record = record
+            self.mission_state = "FAILED"
+        reason = record.get("human_reason", record.get("failure_code", "UNKNOWN"))
+        code = record.get("failure_code", "GENERIC_FAILURE")
+        rec = f"{record.get('recovery_attempts', 0)}/{record.get('recovery_max_attempts', 3)}"
+        self.add_event("FAILURE", f"MISSION FAILED [{code}]: {reason} | Recovery: {rec}")
+
+    def set_success_record(self, record: Dict[str, Any]) -> None:
+        """Store structured mission success report and emit event."""
+        with self._lock:
+            self.success_record = record
+            self.mission_state = "COMPLETED"
+        dist = record.get("travel_distance_m", 0.0)
+        dur = record.get("duration_sec", 0.0)
+        self.add_event("MISSION", f"GOAL REACHED! Distance={dist:.2f}m, Time={dur:.1f}s")
+
+    def clear_failure_and_success(self) -> None:
+        with self._lock:
+            self.failure_record = None
+            self.success_record = None
 
     def get_snapshot(self) -> Dict[str, Any]:
         """Return full JSON-serializable snapshot of dashboard state."""
@@ -172,6 +280,20 @@ class StateCache:
                 sys_status = "DEGRADED"
             else:
                 sys_status = "OFFLINE"
+
+            # Stream metrics summary
+            streams_summary = {}
+            for k, buf in self.streams.items():
+                now = time.time()
+                age_ms = max(0.0, (now - buf.timestamp) * 1000.0) if buf.timestamp > 0.0 else 0.0
+                streams_summary[k] = {
+                    "source_fps": buf.source_fps,
+                    "display_fps": buf.display_fps,
+                    "frame_age_ms": round(age_ms, 1),
+                    "status": "LIVE" if age_ms < 350.0 else "DEGRADED",
+                    "encode_latency_ms": buf.encode_latency_ms,
+                    "seq": buf.frame_seq,
+                }
 
             return {
                 "system_status": sys_status,
@@ -186,41 +308,55 @@ class StateCache:
                 "recovery_dwell_sec": round(self.recovery_dwell_sec, 1),
                 "vo_telemetry": dict(self.vo_telemetry),
                 "robot_pose": dict(self.robot_pose),
+                "last_valid_pose": dict(self.last_valid_pose),
                 "trajectory": list(self.trajectory),
                 "nav_path": list(self.nav_path),
+                "waypoints": list(self.waypoints),
+                "checkpoints": list(self.checkpoints),
+                "persistent_obstacles": list(self.persistent_obstacles),
                 "active_goal": dict(self.active_goal) if self.active_goal else None,
                 "nav_stats": dict(self.nav_stats),
                 "replan_diagnostics": dict(self.replan_diagnostics),
                 "map_meta": dict(self.map_meta),
                 "subsystems": dict(self.subsystems),
                 "events": list(self.events),
+                "stream_metrics": streams_summary,
+                "failure_record": dict(self.failure_record) if self.failure_record else None,
+                "success_record": dict(self.success_record) if self.success_record else None,
                 "timestamp": time.time(),
             }
 
-    def set_jpeg_frame(self, frame_type: str, jpeg_bytes: bytes) -> None:
+    def set_jpeg_frame(
+        self,
+        frame_type: str,
+        jpeg_bytes: bytes,
+        timestamp: Optional[float] = None,
+        encode_latency_ms: float = 0.0,
+        source_fps: float = 0.0,
+    ) -> None:
+        """Store new frame in bounded buffer (replaces older frame, size=1)."""
+        ts = timestamp if timestamp is not None else time.time()
         with self._lock:
-            if frame_type == "raw":
-                self.raw_cam_jpeg = jpeg_bytes
-            elif frame_type == "perception":
-                self.perception_jpeg = jpeg_bytes
-            elif frame_type == "segmentation":
-                self.segmentation_jpeg = jpeg_bytes
-            elif frame_type == "vo":
-                self.vo_jpeg = jpeg_bytes
-            elif frame_type == "chase":
-                self.chase_jpeg = jpeg_bytes
+            if frame_type in self.streams:
+                self.streams[frame_type].update_frame(
+                    jpeg_bytes=jpeg_bytes,
+                    timestamp=ts,
+                    encode_latency_ms=encode_latency_ms,
+                    source_fps=source_fps,
+                )
 
-    def get_jpeg_frame(self, frame_type: str) -> Optional[bytes]:
+    def get_jpeg_frame(self, frame_type: str, with_metadata: bool = False):
+        """Get latest JPEG frame. If with_metadata=True, returns (bytes, ts, age_ms, status). Otherwise returns bytes or None."""
         with self._lock:
-            if frame_type == "raw":
-                return self.raw_cam_jpeg
-            elif frame_type == "perception":
-                return self.perception_jpeg
-            elif frame_type == "segmentation":
-                return self.segmentation_jpeg
-            elif frame_type == "vo":
-                return self.vo_jpeg
-            elif frame_type == "chase":
-                return self.chase_jpeg
+            if frame_type in self.streams:
+                bytes_out, ts, age_ms, status = self.streams[frame_type].consume_latest()
+                if with_metadata:
+                    return bytes_out, ts, age_ms, status
+                return bytes_out
+            if with_metadata:
+                return None, 0.0, 0.0, "DEGRADED"
             return None
 
+    def get_stream_frame(self, frame_type: str) -> Tuple[Optional[bytes], float, float, str]:
+        """Get latest stream frame with metadata (jpeg_bytes, timestamp, age_ms, status)."""
+        return self.get_jpeg_frame(frame_type, with_metadata=True)

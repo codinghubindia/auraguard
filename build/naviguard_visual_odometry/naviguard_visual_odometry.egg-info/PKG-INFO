@@ -1,7 +1,0 @@
-Metadata-Version: 2.1
-Name: naviguard-visual-odometry
-Version: 0.1.0
-Summary: Temporal feature tracking and visual motion estimation foundation for NAVIGUARD UGV
-Maintainer: maxx
-Maintainer-email: maxx@todo.todo
-License: Apache-2.0

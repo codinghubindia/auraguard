@@ -2,8 +2,8 @@
 NAVIGUARD Operator Dashboard ROS 2 Node.
 
 Subscribes to all operational autonomy streams, bridges live telemetry to the
-state cache, and exposes HTTP REST endpoints on port 8080 for operator control.
-Strictly NEVER publishes to /cmd_vel.
+state cache, provides bounded latest-frame image buffering, and exposes HTTP REST endpoints
+on port 8080 for operator control. Strictly NEVER publishes to /cmd_vel.
 """
 
 import os
@@ -20,10 +20,11 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 from sensor_msgs.msg import Image, Imu
 from nav_msgs.msg import Odometry, OccupancyGrid, Path
-from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
+from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, PoseArray
 from std_msgs.msg import String
 from std_srvs.srv import Trigger
 from diagnostic_msgs.msg import DiagnosticArray
+from visualization_msgs.msg import MarkerArray
 from cv_bridge import CvBridge
 
 from ament_index_python.packages import get_package_share_directory
@@ -43,7 +44,7 @@ def quaternion_to_yaw(q) -> float:
 
 
 class NaviguardDashboardNode(Node):
-    """Bridges ROS 2 topics to the Operator Web Dashboard."""
+    """Bridges ROS 2 topics to the Operator Web Dashboard with bounded latest-frame buffers."""
 
     def __init__(self):
         super().__init__('naviguard_dashboard_node')
@@ -58,13 +59,26 @@ class NaviguardDashboardNode(Node):
         self.converter = MapCoordinateConverter()
         self.validator = GoalValidator(self.converter)
 
-        # Rate tracking
+        # Rate tracking and display rate throttling
         self._counts = {
             'camera': 0, 'chase': 0, 'imu': 0, 'odom': 0, 'percept': 0, 'seg': 0,
             'vo': 0, 'slam': 0, 'state_est': 0, 'decision': 0,
             'recovery': 0, 'nav': 0, 'replan_diag': 0
         }
+        self._subsystem_rates = {k: 0.0 for k in self._counts}
         self._last_rate_calc = time.time()
+
+        # Stream encode rate limiting (Decouple autonomy from dashboard display rate)
+        self._last_encode_time = {
+            'raw': 0.0, 'chase': 0.0, 'perception': 0.0, 'segmentation': 0.0, 'vo': 0.0
+        }
+        self._min_encode_interval = {
+            'raw': 1.0 / 15.0,         # 15 FPS display limit
+            'chase': 1.0 / 15.0,       # 15 FPS display limit
+            'perception': 1.0 / 10.0,  # 10 FPS display limit
+            'segmentation': 1.0 / 10.0,# 10 FPS display limit
+            'vo': 1.0 / 10.0,          # 10 FPS display limit
+        }
 
         # Static assets path
         try:
@@ -122,7 +136,6 @@ class NaviguardDashboardNode(Node):
         self.create_subscription(Image, '/camera/chase_image', self._cb_chase_cam, qos_sensor)
 
         # 2. Sensors & State
-
         self.create_subscription(Imu, '/imu', self._cb_imu, qos_sensor)
         self.create_subscription(Odometry, '/odom', self._cb_odom, qos_sensor)
         self.create_subscription(Odometry, '/state_estimation/odom', self._cb_state_est_odom, qos_reliable)
@@ -138,12 +151,14 @@ class NaviguardDashboardNode(Node):
         # 5. Confidence Decision
         self.create_subscription(String, '/naviguard/decision', self._cb_decision, qos_reliable)
 
-        # 6. Recovery State
+        # 6. Recovery State & Checkpoint Visualization
         self.create_subscription(String, '/recovery/state', self._cb_recovery, qos_reliable)
+        self.create_subscription(MarkerArray, '/recovery/visualization', self._cb_recovery_markers, qos_reliable)
 
-        # 7. Navigation State & Path
+        # 7. Navigation State, Path, Waypoints & Obstacles
         self.create_subscription(String, '/navigation/state', self._cb_nav_state, qos_reliable)
         self.create_subscription(Path, '/navigation/path', self._cb_nav_path, qos_reliable)
+        self.create_subscription(PoseArray, '/navigation/waypoints', self._cb_nav_waypoints, qos_reliable)
         self.create_subscription(String, '/navigation/replan_diagnostics', self._cb_replan_diag, qos_reliable)
 
         # ---------------------------------------------------------------------
@@ -173,55 +188,95 @@ class NaviguardDashboardNode(Node):
         )
 
     # -------------------------------------------------------------------------
-    # Image Callbacks (Compress to JPEG with OpenCV)
+    # Image Callbacks (Rate-Throttled Encoding to protect Autonomy Stack)
     # -------------------------------------------------------------------------
     def _cb_raw_cam(self, msg: Image):
         self._counts['camera'] += 1
+        now = time.time()
+        if now - self._last_encode_time['raw'] < self._min_encode_interval['raw']:
+            return
+        self._last_encode_time['raw'] = now
+
+        t0 = time.perf_counter()
         try:
             cv_img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-            # Resize if large to conserve bandwidth
             if cv_img.shape[1] > 640:
                 cv_img = cv2.resize(cv_img, (640, int(640 * cv_img.shape[0] / cv_img.shape[1])))
-            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
-            self.cache.set_jpeg_frame("raw", enc.tobytes())
+            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+            latency_ms = (time.perf_counter() - t0) * 1000.0
+            self.cache.set_jpeg_frame("raw", enc.tobytes(), timestamp=now, encode_latency_ms=latency_ms, source_fps=self._subsystem_rates['camera'])
         except Exception:
             pass
 
     def _cb_percept_img(self, msg: Image):
         self._counts['percept'] += 1
+        now = time.time()
+        if now - self._last_encode_time['perception'] < self._min_encode_interval['perception']:
+            return
+        self._last_encode_time['perception'] = now
+
+        t0 = time.perf_counter()
         try:
             cv_img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
-            self.cache.set_jpeg_frame("perception", enc.tobytes())
+            if cv_img.shape[1] > 640:
+                cv_img = cv2.resize(cv_img, (640, int(640 * cv_img.shape[0] / cv_img.shape[1])))
+            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+            latency_ms = (time.perf_counter() - t0) * 1000.0
+            self.cache.set_jpeg_frame("perception", enc.tobytes(), timestamp=now, encode_latency_ms=latency_ms, source_fps=self._subsystem_rates['percept'])
         except Exception:
             pass
 
     def _cb_seg_img(self, msg: Image):
         self._counts['seg'] += 1
+        now = time.time()
+        if now - self._last_encode_time['segmentation'] < self._min_encode_interval['segmentation']:
+            return
+        self._last_encode_time['segmentation'] = now
+
+        t0 = time.perf_counter()
         try:
             cv_img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
-            self.cache.set_jpeg_frame("segmentation", enc.tobytes())
+            if cv_img.shape[1] > 640:
+                cv_img = cv2.resize(cv_img, (640, int(640 * cv_img.shape[0] / cv_img.shape[1])))
+            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+            latency_ms = (time.perf_counter() - t0) * 1000.0
+            self.cache.set_jpeg_frame("segmentation", enc.tobytes(), timestamp=now, encode_latency_ms=latency_ms, source_fps=self._subsystem_rates['seg'])
         except Exception:
             pass
 
     def _cb_vo_img(self, msg: Image):
         self._counts['vo'] += 1
+        now = time.time()
+        if now - self._last_encode_time['vo'] < self._min_encode_interval['vo']:
+            return
+        self._last_encode_time['vo'] = now
+
+        t0 = time.perf_counter()
         try:
             cv_img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
-            self.cache.set_jpeg_frame("vo", enc.tobytes())
+            if cv_img.shape[1] > 640:
+                cv_img = cv2.resize(cv_img, (640, int(640 * cv_img.shape[0] / cv_img.shape[1])))
+            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+            latency_ms = (time.perf_counter() - t0) * 1000.0
+            self.cache.set_jpeg_frame("vo", enc.tobytes(), timestamp=now, encode_latency_ms=latency_ms, source_fps=self._subsystem_rates['vo'])
         except Exception:
             pass
 
     def _cb_chase_cam(self, msg: Image):
         self._counts['chase'] += 1
+        now = time.time()
+        if now - self._last_encode_time['chase'] < self._min_encode_interval['chase']:
+            return
+        self._last_encode_time['chase'] = now
+
+        t0 = time.perf_counter()
         try:
             cv_img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
             if cv_img.shape[1] > 640:
                 cv_img = cv2.resize(cv_img, (640, int(640 * cv_img.shape[0] / cv_img.shape[1])))
-            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
-            self.cache.set_jpeg_frame("chase", enc.tobytes())
+            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 65])
+            latency_ms = (time.perf_counter() - t0) * 1000.0
+            self.cache.set_jpeg_frame("chase", enc.tobytes(), timestamp=now, encode_latency_ms=latency_ms, source_fps=self._subsystem_rates['chase'])
         except Exception:
             pass
 
@@ -285,13 +340,11 @@ class NaviguardDashboardNode(Node):
             rgba[arr == 0] = [180, 240, 180, 40]
             # >50: Confirmed obstacles -> high contrast red/orange hazard (B=20, G=20, R=240, A=240)
             rgba[arr > 50] = [20, 20, 240, 240]
-            # Flip vertically for ROS grid coordinates (row 0 at bottom) to image coordinates (row 0 at top)
             rgba_flipped = cv2.flip(rgba, 0)
             _, enc = cv2.imencode('.png', rgba_flipped)
             self.cache.map_png_bytes = enc.tobytes()
         except Exception as e:
             self.get_logger().warn(f"Map rendering error: {e}")
-
 
     def _cb_slam_pose(self, msg: PoseWithCovarianceStamped):
         self._counts['slam'] += 1
@@ -300,7 +353,7 @@ class NaviguardDashboardNode(Node):
         self.cache.update_robot_pose(p.x, p.y, p.z, yaw)
 
     def _cb_slam_traj(self, msg: Path):
-        pts = [{'x': ps.pose.position.x, 'y': ps.pose.position.y} for ps in msg.poses[-100:]]
+        pts = [{'x': ps.pose.position.x, 'y': ps.pose.position.y} for ps in msg.poses[-150:]]
         self.cache.trajectory = pts
 
     # -------------------------------------------------------------------------
@@ -311,7 +364,7 @@ class NaviguardDashboardNode(Node):
         try:
             data = json.loads(msg.data)
             prev_dec = self.cache.confidence_state
-            new_dec = data.get('state', 'CONTINUE')
+            new_dec = data.get('state', data.get('decision', 'CONTINUE'))
             self.cache.confidence_state = new_dec
             self.cache.confidence_primary_reason = data.get('primary_reason', 'NOMINAL_OPERATION')
             scores = data.get('scores', {})
@@ -335,11 +388,25 @@ class NaviguardDashboardNode(Node):
             self.cache.recovery_attempts = int(data.get('attempts', budget.get('attempt_count', 0)))
             self.cache.recovery_max_attempts = int(data.get('max_attempts', budget.get('max_attempts', 3)))
             self.cache.recovery_dwell_sec = float(data.get('dwell_sec', 0.0))
+            self.cache.recovery_strategy = data.get('active_strategy', 'None')
 
             if new_rec != prev_rec:
                 self.cache.add_event("RECOVERY", f"Recovery Transition: {prev_rec} -> {new_rec} (Strategy: {self.cache.recovery_strategy})")
         except Exception:
             pass
+
+    def _cb_recovery_markers(self, msg: MarkerArray):
+        """Extract trusted recovery checkpoints for Layer 10 visualization."""
+        ckpts = []
+        for m in msg.markers:
+            if m.ns == "checkpoints":
+                ckpts.append({
+                    "x": round(m.pose.position.x, 2),
+                    "y": round(m.pose.position.y, 2),
+                    "id": m.id,
+                })
+        if ckpts:
+            self.cache.set_checkpoints(ckpts)
 
     def _cb_nav_state(self, msg: String):
         self._counts['nav'] += 1
@@ -356,10 +423,51 @@ class NaviguardDashboardNode(Node):
             ns['replan_count'] = int(data.get('replan_count', 0))
             ns['cmd_vx'] = float(data.get('cmd_vx', 0.0))
             ns['cmd_wz'] = float(data.get('cmd_wz', 0.0))
-            ns['path_valid'] = bool(data.get('path_valid', False))
+            ns['clearance_m'] = float(data.get('clearance_m', 1.0))
+            ns['terrain_cost'] = float(data.get('terrain_cost', 0.0))
+            ns['speed_scale'] = float(data.get('speed_scale', 1.0))
+            ns['nav_reason'] = data.get('nav_reason', 'Nominal path following')
 
             goal_dict = data.get('goal')
             self.cache.set_active_goal(goal_dict)
+
+            # Store persistent blocked regions for Layer 9
+            if 'persistent_blocked_regions' in data:
+                self.cache.set_persistent_obstacles(data['persistent_blocked_regions'])
+
+            # Store structured failure record
+            if 'failure_record' in data and data['failure_record']:
+                self.cache.set_failure_record(data['failure_record'])
+            elif new_mstate == "MISSION_FAILED" and not self.cache.failure_record:
+                # Synthesize fallback structured record
+                rec = {
+                    "failure_code": "NO_SAFE_PATH",
+                    "failure_category": "NAVIGATION",
+                    "human_reason": data.get("failure_reason", "No collision-free traversable path exists under current constraints."),
+                    "detail": "Planner failed to find a valid route to the goal.",
+                    "timestamp": time.time(),
+                    "mission_state": "MISSION_FAILED",
+                    "navigation_state": "FAILED",
+                    "recovery_state": self.cache.recovery_state,
+                    "confidence": self.cache.confidence_scores.get("overall", 1.0),
+                    "visual_confidence": self.cache.confidence_scores.get("visual", 1.0),
+                    "localization_confidence": self.cache.confidence_scores.get("localization", 1.0),
+                    "goal": self.cache.active_goal,
+                    "robot_pose": self.cache.robot_pose,
+                    "distance_to_goal": ns.get("dist_to_goal_m", 0.0),
+                    "last_valid_pose": self.cache.last_valid_pose,
+                    "recovery_attempts": self.cache.recovery_attempts,
+                    "recovery_max_attempts": self.cache.recovery_max_attempts,
+                    "replan_count": ns.get("replan_count", 0),
+                    "blocked_regions": len(self.cache.persistent_obstacles),
+                    "path_status": "BLOCKED",
+                    "sensor_status": {k: v["status"] for k, v in self.cache.subsystems.items()},
+                }
+                self.cache.set_failure_record(rec)
+
+            # Store structured success report
+            if 'success_record' in data and data['success_record']:
+                self.cache.set_success_record(data['success_record'])
 
             if new_mstate != prev_mstate:
                 self.cache.add_event("MISSION", f"Mission State: {prev_mstate} -> {new_mstate}")
@@ -369,6 +477,10 @@ class NaviguardDashboardNode(Node):
     def _cb_nav_path(self, msg: Path):
         pts = [(ps.pose.position.x, ps.pose.position.y) for ps in msg.poses]
         self.cache.set_nav_path(pts)
+
+    def _cb_nav_waypoints(self, msg: PoseArray):
+        wps = [{"x": round(p.position.x, 2), "y": round(p.position.y, 2)} for p in msg.poses]
+        self.cache.set_waypoints(wps)
 
     def _cb_replan_diag(self, msg: String):
         self._counts['replan_diag'] += 1
@@ -392,17 +504,20 @@ class NaviguardDashboardNode(Node):
         dt = max(0.1, now - self._last_rate_calc)
         self._last_rate_calc = now
 
+        for k in self._counts:
+            self._subsystem_rates[k] = self._counts[k] / dt
+
         rates = {
-            'Camera': self._counts['camera'] / dt,
-            'IMU': self._counts['imu'] / dt,
-            'Odometry': self._counts['odom'] / dt,
-            'Perception': self._counts['percept'] / dt,
-            'Visual Odometry': self._counts['vo'] / dt,
-            'State Estimation': self._counts['state_est'] / dt,
-            'SLAM': self._counts['slam'] / dt,
-            'Confidence': self._counts['decision'] / dt,
-            'Recovery': self._counts['recovery'] / dt,
-            'Navigation': self._counts['nav'] / dt,
+            'Camera': self._subsystem_rates['camera'],
+            'IMU': self._subsystem_rates['imu'],
+            'Odometry': self._subsystem_rates['odom'],
+            'Perception': self._subsystem_rates['percept'],
+            'Visual Odometry': self._subsystem_rates['vo'],
+            'State Estimation': self._subsystem_rates['state_est'],
+            'SLAM': self._subsystem_rates['slam'],
+            'Confidence': self._subsystem_rates['decision'],
+            'Recovery': self._subsystem_rates['recovery'],
+            'Navigation': self._subsystem_rates['nav'],
         }
 
         # Gazebo is online if clock / bridge is producing IMU or Camera
@@ -410,7 +525,6 @@ class NaviguardDashboardNode(Node):
         gz_online = gz_rate > 1.0
         self.cache.update_subsystem_rate("Gazebo", gz_rate, is_online=gz_online)
 
-        # Operational thresholds for status determination
         thresholds = {
             'Camera': 1.0,
             'IMU': 10.0,
@@ -429,10 +543,8 @@ class NaviguardDashboardNode(Node):
             is_on = (r >= thresh)
             self.cache.update_subsystem_rate(name, r, is_online=is_on)
 
-        # Dashboard node itself is active
         self.cache.update_subsystem_rate("Dashboard", 1.0, is_online=True)
 
-        # Reset counters
         for k in self._counts:
             self._counts[k] = 0
 
@@ -442,6 +554,7 @@ class NaviguardDashboardNode(Node):
     def publish_navigation_goal(self, x: float, y: float, yaw: float = 0.0) -> bool:
         """Publishes PoseStamped goal to /goal_pose and /navigation/set_goal."""
         try:
+            self.cache.clear_failure_and_success()
             msg = GoalValidator.create_goal_msg(x, y, yaw, frame_id="map", stamp=self.get_clock().now().to_msg())
             self.goal_pub.publish(msg)
             self.nav_goal_pub.publish(msg)
@@ -452,45 +565,41 @@ class NaviguardDashboardNode(Node):
             return False
 
     def cancel_active_mission(self) -> bool:
-        """Calls /navigation/cancel_goal service."""
+        """Invokes /navigation/cancel_goal service."""
         try:
-            if self.cancel_cli.service_is_ready():
-                req = Trigger.Request()
-                self.cancel_cli.call_async(req)
-                self.get_logger().info("Dispatched cancellation to /navigation/cancel_goal")
-                return True
-            return False
-        except Exception:
+            self.cache.clear_failure_and_success()
+            if not self.cancel_cli.service_is_ready():
+                return False
+            req = Trigger.Request()
+            self.cancel_cli.call_async(req)
+            return True
+        except Exception as e:
+            self.get_logger().error(f"Cancel mission call error: {e}")
             return False
 
     def trigger_recovery_fault(self) -> bool:
-        """Calls /recovery/trigger_manual_recovery service."""
+        """Invokes /recovery/trigger_manual_recovery service."""
         try:
-            if self.fault_cli.service_is_ready():
-                req = Trigger.Request()
-                self.fault_cli.call_async(req)
-                return True
-            return False
-        except Exception:
+            if not self.fault_cli.service_is_ready():
+                return False
+            req = Trigger.Request()
+            self.fault_cli.call_async(req)
+            return True
+        except Exception as e:
+            self.get_logger().error(f"Trigger fault call error: {e}")
             return False
 
     def reset_recovery_budget(self) -> bool:
-        """Calls /recovery/reset_budget service."""
+        """Invokes /recovery/reset_budget service."""
         try:
-            if self.reset_cli.service_is_ready():
-                req = Trigger.Request()
-                self.reset_cli.call_async(req)
-                return True
+            if not self.reset_cli.service_is_ready():
+                return False
+            req = Trigger.Request()
+            self.reset_cli.call_async(req)
+            return True
+        except Exception as e:
+            self.get_logger().error(f"Reset budget call error: {e}")
             return False
-        except Exception:
-            return False
-
-    def destroy_node(self):
-        try:
-            self.server.shutdown()
-        except Exception:
-            pass
-        super().destroy_node()
 
 
 def main(args=None):

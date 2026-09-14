@@ -1,4 +1,0 @@
-[console_scripts]
-dataset_validator = naviguard_rellis.dataset_validator:main
-rellis_evaluator_node = naviguard_rellis.rellis_evaluator_node:main
-rellis_replay_node = naviguard_rellis.image_replayer:main

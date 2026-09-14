@@ -14,7 +14,7 @@ from std_srvs.srv import Trigger
 from visualization_msgs.msg import Marker, MarkerArray
 from diagnostic_msgs.msg import DiagnosticArray
 
-from naviguard_navigation.mission_manager import MissionManager, MissionState
+from naviguard_navigation.mission_manager import MissionManager, MissionState, FailureCode
 from naviguard_navigation.goal_manager import GoalManager, NavigationGoal
 from naviguard_navigation.occupancy_grid import NavigationOccupancyGrid
 from naviguard_navigation.global_planner import GlobalPlannerAStar
@@ -27,7 +27,7 @@ from naviguard_navigation.navigation_diagnostics import NavigationDiagnostics
 
 
 class NavigationNode(Node):
-    """Integrates mission management, A* global planning, and closed-loop path following."""
+    """Integrates mission management, multi-cost A* global planning, and adaptive closed-loop path following."""
 
     def __init__(self, node_name: str = 'navigation_node') -> None:
         super().__init__(node_name)
@@ -36,8 +36,9 @@ class NavigationNode(Node):
         self.declare_parameter('control_rate_hz', 10.0)
         self.declare_parameter('inflation_radius_m', 0.50)
         self.declare_parameter('proximity_radius_m', 1.0)
+        self.declare_parameter('safe_clearance_m', 1.20)
         self.declare_parameter('allow_unknown', True)
-        self.declare_parameter('unknown_cost_penalty', 5.0)
+        self.declare_parameter('unknown_cost_penalty', 8.0)
         self.declare_parameter('max_linear_velocity', 0.25)
         self.declare_parameter('min_linear_velocity', 0.05)
         self.declare_parameter('max_angular_velocity', 0.35)
@@ -54,6 +55,7 @@ class NavigationNode(Node):
         control_rate = float(self.get_parameter('control_rate_hz').value)
         inflation_radius = float(self.get_parameter('inflation_radius_m').value)
         proximity_radius = float(self.get_parameter('proximity_radius_m').value)
+        safe_clearance = float(self.get_parameter('safe_clearance_m').value)
         allow_unknown = bool(self.get_parameter('allow_unknown').value)
         unknown_penalty = float(self.get_parameter('unknown_cost_penalty').value)
         max_v = float(self.get_parameter('max_linear_velocity').value)
@@ -74,10 +76,17 @@ class NavigationNode(Node):
         self.occ_grid = NavigationOccupancyGrid(
             inflation_radius_m=inflation_radius,
             proximity_radius_m=proximity_radius,
+            safe_clearance_m=safe_clearance,
             allow_unknown=allow_unknown,
             unknown_cost_penalty=unknown_penalty,
         )
-        self.planner = GlobalPlannerAStar()
+        self.planner = GlobalPlannerAStar(
+            heuristic_weight=1.0,
+            turn_penalty_weight=0.5,
+            clearance_weight=0.15,
+            terrain_weight=0.15,
+            slope_weight=0.20,
+        )
         self.smoother = PathSmoother()
         self.wp_generator = WaypointGenerator(target_spacing_m=0.35)
         self.follower = PathFollower(
@@ -105,10 +114,20 @@ class NavigationNode(Node):
 
         # Integration states
         self.confidence_decision: str = "CONTINUE"
+        self.confidence_overall: float = 1.0
+        self.confidence_visual: float = 1.0
+        self.confidence_localization: float = 1.0
         self.recovery_state: str = "NORMAL"
+        self.recovery_attempts_count: int = 0
         self.cmd_ownership: str = "YIELDED"
         self.last_cmd_vx: float = 0.0
         self.last_cmd_wz: float = 0.0
+
+        # Environmental state explanations
+        self.nav_reason: str = "Nominal path following"
+        self.current_clearance_m: float = 1.0
+        self.current_terrain_cost: float = 0.0
+        self.current_speed_scale: float = 1.0
 
         # 4. QoS Profiles
         qos_map = QoSProfile(
@@ -186,6 +205,7 @@ class NavigationNode(Node):
         cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
         yaw = math.atan2(siny_cosp, cosy_cosp)
         self.robot_pose = (px, py, yaw)
+        self.mission_mgr.update_odometry_distance(px, py)
 
     def _odom_callback(self, msg: Odometry) -> None:
         # Fallback pose if SLAM pose hasn't arrived yet
@@ -197,16 +217,17 @@ class NavigationNode(Node):
             cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
             yaw = math.atan2(siny_cosp, cosy_cosp)
             self.robot_pose = (px, py, yaw)
+            self.mission_mgr.update_odometry_distance(px, py)
 
     def _goal_callback(self, msg: PoseStamped) -> None:
         now_sec = self.get_clock().now().nanoseconds * 1e-9
         goal = self.goal_mgr.set_goal_from_msg(msg, now_sec)
         if goal is not None:
             self.get_logger().info(f"New navigation goal received: ({goal.x:.2f}, {goal.y:.2f})")
+            self.mission_mgr.start_mission(now_sec)
             if self.mission_mgr.state in (MissionState.IDLE, MissionState.GOAL_REACHED, MissionState.MISSION_FAILED):
                 self.mission_mgr.transition_to(MissionState.GOAL_SET, now_sec)
             elif self.mission_mgr.state == MissionState.NAVIGATING:
-                # Preempt current goal
                 self.mission_mgr.transition_to(MissionState.PLANNING, now_sec, "NEW_GOAL_PREEMPTION")
 
     def _cancel_goal_callback(self, req: Trigger.Request, resp: Trigger.Response) -> Trigger.Response:
@@ -223,7 +244,11 @@ class NavigationNode(Node):
     def _decision_callback(self, msg: String) -> None:
         try:
             data = json.loads(msg.data)
-            self.confidence_decision = data.get("decision", "CONTINUE")
+            self.confidence_decision = data.get("state", data.get("decision", "CONTINUE"))
+            scores = data.get("scores", {})
+            self.confidence_overall = float(scores.get("overall", 1.0))
+            self.confidence_visual = float(scores.get("visual", 1.0))
+            self.confidence_localization = float(scores.get("localization", 1.0))
         except Exception:
             self.confidence_decision = msg.data.strip()
 
@@ -231,8 +256,34 @@ class NavigationNode(Node):
         try:
             data = json.loads(msg.data)
             self.recovery_state = data.get("recovery_state", "NORMAL")
+            self.recovery_attempts_count = int(data.get("attempts", data.get("budget", {}).get("attempt_count", 0)))
         except Exception:
             self.recovery_state = msg.data.strip()
+
+    def _build_context(self, now_sec: float) -> dict:
+        """Construct rich telemetry context for failure explanation."""
+        goal = self.goal_mgr.get_goal()
+        rx, ry, ryaw = self.robot_pose if self.robot_pose else (0.0, 0.0, 0.0)
+        dist_to_goal = math.hypot(goal.x - rx, goal.y - ry) if goal else 0.0
+        return {
+            "recovery_state": self.recovery_state,
+            "confidence": self.confidence_overall,
+            "visual_confidence": self.confidence_visual,
+            "localization_confidence": self.confidence_localization,
+            "goal": goal.to_dict() if goal else None,
+            "robot_pose": {"x": round(rx, 3), "y": round(ry, 3), "yaw": round(ryaw, 3)},
+            "distance_to_goal": round(dist_to_goal, 3),
+            "last_valid_pose": {"x": round(rx, 3), "y": round(ry, 3), "yaw": round(ryaw, 3)},
+            "recovery_attempts": self.recovery_attempts_count,
+            "recovery_max_attempts": 3,
+            "blocked_regions": len(self.occ_grid.persistent_blocked_regions),
+            "path_status": "BLOCKED" if len(self.occ_grid.persistent_blocked_regions) > 0 else "NO_SAFE_PATH",
+            "sensor_status": {
+                "SLAM": "ONLINE" if self.robot_pose is not None else "OFFLINE",
+                "Map": "ONLINE" if self.occ_grid.is_initialized else "OFFLINE",
+                "Confidence": "ONLINE" if self.confidence_overall > 0.3 else "DEGRADED",
+            },
+        }
 
     def _control_loop(self) -> None:
         now_sec = self.get_clock().now().nanoseconds * 1e-9
@@ -240,21 +291,25 @@ class NavigationNode(Node):
         # Handle Mission State Machine
         if self.mission_mgr.state == MissionState.IDLE:
             self.cmd_ownership = "IDLE_STOP"
+            self.nav_reason = "Awaiting operator goal"
             if self.goal_mgr.has_goal():
                 self.mission_mgr.transition_to(MissionState.GOAL_SET, now_sec)
 
         elif self.mission_mgr.state == MissionState.GOAL_SET:
             self.cmd_ownership = "PLANNING_WAIT"
+            self.nav_reason = "Initializing navigation map and pose"
             if self.robot_pose is not None and self.occ_grid.is_initialized:
                 self.mission_mgr.transition_to(MissionState.PLANNING, now_sec)
 
         elif self.mission_mgr.state == MissionState.PLANNING:
             self.cmd_ownership = "PLANNING"
+            self.nav_reason = "Computing optimal multi-cost path"
             success = self._compute_and_set_path(now_sec)
             if success:
                 self.mission_mgr.transition_to(MissionState.NAVIGATING, now_sec)
             else:
-                self.mission_mgr.record_planning_failure(now_sec, "NO_COLLISION_FREE_PATH")
+                ctx = self._build_context(now_sec)
+                self.mission_mgr.record_planning_failure(now_sec, "NO_COLLISION_FREE_PATH", context=ctx)
 
         elif self.mission_mgr.state == MissionState.NAVIGATING:
             # 1. Check recovery integration & mutual exclusion
@@ -269,21 +324,30 @@ class NavigationNode(Node):
                     self.occ_grid.mark_blocked_region(ox, oy, radius_m=0.45)
                 self.mission_mgr.transition_to(MissionState.RECOVERY_WAIT, now_sec, "YIELD_TO_RECOVERY")
                 self.cmd_ownership = "YIELDED_TO_RECOVERY"
+                self.nav_reason = "Recovery active: yielding control to recovery state machine"
                 self._publish_telemetry(now_sec)
                 return
 
             # 2. Check if goal is reached
             goal = self.goal_mgr.get_goal()
             rx, ry, ryaw = self.robot_pose
+            dist_to_goal = math.hypot(goal.x - rx, goal.y - ry) if goal else 0.0
+
             if self.goal_checker.is_goal_reached(rx, ry, ryaw, goal, now_sec):
                 self.get_logger().info(f"Goal successfully reached at ({rx:.2f}, {ry:.2f})!")
-                self.mission_mgr.transition_to(MissionState.GOAL_REACHED, now_sec)
+                path_len = sum(
+                    math.hypot(self.raw_planned_path[i+1][0] - self.raw_planned_path[i][0],
+                               self.raw_planned_path[i+1][1] - self.raw_planned_path[i][1])
+                    for i in range(len(self.raw_planned_path) - 1)
+                ) if len(self.raw_planned_path) > 1 else 0.0
+                self.mission_mgr.trigger_success(now_sec, final_error_m=dist_to_goal, path_length_m=path_len)
                 self._stop_robot()
                 self.cmd_ownership = "GOAL_REACHED_STOP"
+                self.nav_reason = "Goal reached within tolerance"
                 self._publish_telemetry(now_sec)
                 return
 
-            # 3. Check replanning triggers
+            # 3. Check dynamic replanning triggers
             should_replan, reason = self.replanner.should_replan_due_to_obstacle(
                 self.waypoints, self.follower.current_waypoint_idx, self.occ_grid, now_sec
             )
@@ -308,16 +372,46 @@ class NavigationNode(Node):
                     self._publish_telemetry(now_sec)
                     return
 
-            # 4. Normal Path Following
-            speed_scale = 0.5 if self.confidence_decision == "VERIFY" else 1.0
+            # 4. Multi-Cost Clearance and Terrain Evaluation at Robot Pose
+            pt = self.occ_grid.world_to_map(rx, ry)
+            clearance_m = self.occ_grid.get_clearance(pt[0], pt[1]) if pt else 1.0
+            cell_cost = self.occ_grid.get_cost(pt[0], pt[1]) if pt else 0.0
+            self.current_clearance_m = clearance_m
+            self.current_terrain_cost = cell_cost
+
+            # Continuous Clearance factor [0.45 .. 1.0]
+            span = max(0.1, self.occ_grid.proximity_radius_m - self.occ_grid.inflation_radius_m)
+            clearance_factor = min(1.0, max(0.45, (clearance_m - self.occ_grid.inflation_radius_m) / span))
+
+            # Continuous Terrain factor [0.40 .. 1.0]
+            terrain_factor = max(0.40, 1.0 - (cell_cost / 100.0) * 0.60)
+
+            # Confidence factor [0.0, 0.5, 1.0]
+            speed_scale = 0.50 if self.confidence_decision == "VERIFY" else (0.0 if self.confidence_decision == "RECOVER" else 1.0)
+            self.current_speed_scale = speed_scale * clearance_factor * terrain_factor
+
+            # Execute Adaptive Path Following
             vx, wz, lookahead_wp, cross_err = self.follower.compute_commands(
-                rx, ry, ryaw, self.waypoints, speed_scale=speed_scale
+                rx, ry, ryaw, self.waypoints,
+                speed_scale=speed_scale,
+                terrain_factor=terrain_factor,
+                clearance_factor=clearance_factor,
             )
             self.current_lookahead = lookahead_wp
             self.cross_track_error = cross_err
             self.last_cmd_vx = vx
             self.last_cmd_wz = wz
             self.cmd_ownership = "NAVIGATING_ACTIVE"
+
+            # Formulate clear operator explanation
+            if speed_scale < 1.0:
+                self.nav_reason = "Visual confidence degraded: slow for verification"
+            elif terrain_factor < 0.70:
+                self.nav_reason = f"High terrain cost: reduced speed ({vx:.2f} m/s)"
+            elif clearance_factor < 0.70:
+                self.nav_reason = f"Narrow obstacle clearance: cautious speed ({vx:.2f} m/s)"
+            else:
+                self.nav_reason = "Following safest available route"
 
             twist = Twist()
             twist.linear.x = float(vx)
@@ -326,29 +420,38 @@ class NavigationNode(Node):
 
         elif self.mission_mgr.state == MissionState.REPLANNING:
             self.cmd_ownership = "REPLANNING"
+            self.nav_reason = "Computing alternate detour around detected blockage"
             success = self._compute_and_set_path(now_sec, replan_reason="OBSTACLE_OR_DEVIATION_REPLAN")
             if success:
                 self.mission_mgr.transition_to(MissionState.NAVIGATING, now_sec)
             else:
-                self.mission_mgr.record_planning_failure(now_sec, "REPLAN_PATH_BLOCKED")
+                ctx = self._build_context(now_sec)
+                self.mission_mgr.record_planning_failure(now_sec, "REPLAN_PATH_BLOCKED", context=ctx)
 
         elif self.mission_mgr.state == MissionState.RECOVERY_WAIT:
             # Strictly do not publish /cmd_vel; yield to recovery
             self.cmd_ownership = "YIELDED_TO_RECOVERY"
+            self.nav_reason = f"Recovery in progress: {self.recovery_state}"
             # If recovery returns to NORMAL and confidence is healthy, resume by replanning
             if self.recovery_state == "NORMAL" and self.confidence_decision in ("CONTINUE", "VERIFY"):
                 self.get_logger().info("Recovery completed. Re-planning path from current pose to original goal.")
                 self.mission_mgr.transition_to(MissionState.REPLANNING, now_sec, "RECOVERY_RESUME")
             elif self.recovery_state == "FAILED_SAFE":
-                self.mission_mgr.transition_to(MissionState.MISSION_FAILED, now_sec, "RECOVERY_FAILED_SAFE")
+                ctx = self._build_context(now_sec)
+                self.mission_mgr.trigger_failure(FailureCode.RECOVERY_BUDGET_EXHAUSTED, now_sec, context=ctx)
 
         elif self.mission_mgr.state in (MissionState.GOAL_REACHED, MissionState.MISSION_FAILED):
             self.cmd_ownership = "TERMINAL_STOP"
+            if self.mission_mgr.state == MissionState.MISSION_FAILED:
+                rec = self.mission_mgr.failure_record
+                self.nav_reason = f"FAILED: {rec.get('human_reason', 'No safe route')}" if rec else "Mission failed"
+            else:
+                self.nav_reason = "Mission completed successfully"
 
         self._publish_telemetry(now_sec)
 
     def _compute_and_set_path(self, now_sec: float, replan_reason: str = "INITIAL_PLAN") -> bool:
-        """Run A* planner, smooth path, and generate waypoints."""
+        """Run multi-cost A* planner, smooth path, and generate waypoints."""
         goal = self.goal_mgr.get_goal()
         if goal is None or self.robot_pose is None or not self.occ_grid.is_initialized:
             return False
@@ -424,7 +527,7 @@ class NavigationNode(Node):
         self.last_cmd_wz = 0.0
 
     def _publish_path_and_waypoints(self) -> None:
-        """Publish nav_msgs/msg/Path and PoseArray for RViz."""
+        """Publish nav_msgs/msg/Path and PoseArray for RViz and Dashboard."""
         stamp = self.get_clock().now().to_msg()
         path_msg = Path()
         path_msg.header.stamp = stamp
@@ -463,7 +566,7 @@ class NavigationNode(Node):
             p2 = self.raw_planned_path[i + 1]
             path_length += math.hypot(p2[0] - p1[0], p2[1] - p1[1])
 
-        # 1. State JSON
+        # 1. State JSON with Structured Failure & Success Records
         state_msg = String()
         state_data = {
             "mission_state": self.mission_mgr.state.to_string(),
@@ -474,11 +577,21 @@ class NavigationNode(Node):
             "total_waypoints": len(self.waypoints),
             "replan_count": self.mission_mgr.replan_count,
             "failure_reason": self.mission_mgr.failure_reason,
+            "failure_record": self.mission_mgr.failure_record,
+            "success_record": self.mission_mgr.success_record,
+            "nav_reason": self.nav_reason,
+            "clearance_m": round(self.current_clearance_m, 2),
+            "terrain_cost": round(self.current_terrain_cost, 1),
+            "speed_scale": round(self.current_speed_scale, 2),
             "cmd_vx": round(self.last_cmd_vx, 3),
             "cmd_wz": round(self.last_cmd_wz, 3),
             "confidence_decision": self.confidence_decision,
             "recovery_state": self.recovery_state,
             "cmd_ownership": self.cmd_ownership,
+            "persistent_blocked_regions": [
+                {"x": round(bx, 2), "y": round(by, 2), "radius_m": round(br, 2)}
+                for bx, by, br in self.occ_grid.persistent_blocked_regions
+            ],
         }
         state_msg.data = json.dumps(state_data)
         self.state_pub.publish(state_msg)
@@ -505,7 +618,7 @@ class NavigationNode(Node):
         self._publish_markers(goal, stamp)
 
     def _publish_markers(self, goal: Optional[NavigationGoal], stamp) -> None:
-        """Publish RViz markers for target goal and lookahead point."""
+        """Publish RViz markers for target goal, lookahead, and blocked obstacles."""
         marker_arr = MarkerArray()
 
         # Goal Marker
@@ -550,6 +663,27 @@ class NavigationNode(Node):
             m_look.color.a = 0.9
             marker_arr.markers.append(m_look)
 
+        # Blocked Obstacle Markers
+        for idx, (bx, by, br) in enumerate(self.occ_grid.persistent_blocked_regions):
+            m_block = Marker()
+            m_block.header.stamp = stamp
+            m_block.header.frame_id = self.map_frame
+            m_block.ns = "obstacles"
+            m_block.id = 100 + idx
+            m_block.type = Marker.CYLINDER
+            m_block.action = Marker.ADD
+            m_block.pose.position.x = float(bx)
+            m_block.pose.position.y = float(by)
+            m_block.pose.position.z = 0.15
+            m_block.scale.x = float(br * 2)
+            m_block.scale.y = float(br * 2)
+            m_block.scale.z = 0.3
+            m_block.color.r = 0.95
+            m_block.color.g = 0.15
+            m_block.color.b = 0.15
+            m_block.color.a = 0.65
+            marker_arr.markers.append(m_block)
+
         if marker_arr.markers:
             self.marker_pub.publish(marker_arr)
 
@@ -578,4 +712,3 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
-

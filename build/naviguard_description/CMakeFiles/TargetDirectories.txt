@@ -1,9 +1,0 @@
-/home/maxx/naviguard_ws/build/naviguard_description/CMakeFiles/uninstall.dir
-/home/maxx/naviguard_ws/build/naviguard_description/CMakeFiles/naviguard_description_uninstall.dir
-/home/maxx/naviguard_ws/build/naviguard_description/CMakeFiles/test.dir
-/home/maxx/naviguard_ws/build/naviguard_description/CMakeFiles/edit_cache.dir
-/home/maxx/naviguard_ws/build/naviguard_description/CMakeFiles/rebuild_cache.dir
-/home/maxx/naviguard_ws/build/naviguard_description/CMakeFiles/list_install_components.dir
-/home/maxx/naviguard_ws/build/naviguard_description/CMakeFiles/install.dir
-/home/maxx/naviguard_ws/build/naviguard_description/CMakeFiles/install/local.dir
-/home/maxx/naviguard_ws/build/naviguard_description/CMakeFiles/install/strip.dir

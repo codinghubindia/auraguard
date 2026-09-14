@@ -1,2 +1,0 @@
-[console_scripts]
-visual_odometry_node = naviguard_visual_odometry.visual_odometry_node:main

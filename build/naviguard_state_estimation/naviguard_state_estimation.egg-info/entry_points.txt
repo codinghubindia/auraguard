@@ -1,2 +1,0 @@
-[console_scripts]
-state_estimation_node = naviguard_state_estimation.state_estimation_node:main

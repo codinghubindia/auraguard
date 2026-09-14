@@ -1,2 +1,0 @@
-[console_scripts]
-dashboard_node = naviguard_dashboard.dashboard_node:main

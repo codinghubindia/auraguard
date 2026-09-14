@@ -1,2 +1,0 @@
-[console_scripts]
-navigation_node = naviguard_navigation.navigation_node:main

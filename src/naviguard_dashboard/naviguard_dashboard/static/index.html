@@ -118,10 +118,9 @@
       font-size: 0.78rem;
       font-weight: 700;
       color: var(--accent-cyan);
-      letter-spacing: 0.8px;
     }
     .gcs-card-body {
-      padding: 8px 12px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -132,19 +131,18 @@
       position: relative;
       width: 100%;
       height: 440px;
-      background: #17261a;
-      border: 1px solid #273e2c;
-      border-radius: 4px;
+      background: #090e18;
       overflow: hidden;
       cursor: crosshair;
     }
     #mapCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      display: block;
+      image-rendering: pixelated;
     }
-
-    /* Map HUD Overlays */
     .map-hud-bar {
       position: absolute;
       top: 8px;
@@ -152,37 +150,96 @@
       right: 8px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
       pointer-events: none;
       z-index: 10;
     }
     .map-hud-pill {
-      background: rgba(8, 13, 22, 0.88);
+      background: rgba(7, 12, 22, 0.88);
       border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(4px);
       padding: 3px 8px;
       border-radius: 4px;
       font-size: 0.68rem;
-      font-family: monospace;
-      color: #cbd5e1;
-      pointer-events: auto;
-      display: flex;
-      gap: 8px;
-      align-items: center;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: inline-flex;
+      gap: 6px;
     }
 
-    /* Mission Dispatch Control Deck */
-    .dispatch-deck {
-      background: #090e18;
+    /* Mission Status Panel & Failure Card */
+    .mission-status-box {
+      background: #09101d;
       border: 1px solid var(--border-bright);
+      border-radius: 6px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .status-normal-card {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .status-failure-card {
+      background: rgba(255, 51, 102, 0.08);
+      border: 1px solid var(--accent-red);
+      border-radius: 6px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 0 15px rgba(255, 51, 102, 0.2);
+    }
+    .status-success-card {
+      background: rgba(5, 241, 135, 0.08);
+      border: 1px solid var(--accent-green);
+      border-radius: 6px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 0 15px rgba(5, 241, 135, 0.2);
+    }
+    .failure-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .failure-reason-line {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #ff8fa3;
+    }
+    .failure-detail-line {
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      line-height: 1.35;
+    }
+    .failure-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px 10px;
+      font-size: 0.68rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 51, 102, 0.2);
+    }
+
+    /* Dispatch Deck */
+    .dispatch-deck {
+      background: #0a1120;
+      border: 1px solid var(--border-subtle);
       border-radius: 6px;
       padding: 10px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
     .target-status-box {
-      background: #10192b;
-      border: 1.5px solid var(--accent-cyan);
+      background: #0e172a;
+      border: 1px solid var(--border-bright);
       border-radius: 5px;
       padding: 8px 12px;
       display: flex;
@@ -192,9 +249,9 @@
       gap: 8px;
     }
     .target-title {
-      font-size: 0.82rem;
+      font-size: 0.75rem;
       font-weight: 800;
-      color: var(--accent-cyan);
+      color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 6px;
@@ -240,33 +297,18 @@
       padding: 9px 18px;
       box-shadow: 0 0 14px rgba(5, 241, 135, 0.4);
     }
-    .btn-dispatch:hover {
-      box-shadow: 0 0 20px rgba(5, 241, 135, 0.7);
-    }
-    .btn-stop {
-      background: var(--accent-red);
-      color: #fff;
-      font-weight: 800;
-    }
-    .btn-secondary {
-      background: #1e2c45;
-      color: var(--text-main);
-      border: 1px solid var(--border-subtle);
-    }
-    .btn-secondary:hover {
-      background: #283a5a;
-    }
-    .btn-sm {
-      padding: 3px 8px;
-      font-size: 0.68rem;
-    }
+    .btn-dispatch:hover { box-shadow: 0 0 20px rgba(5, 241, 135, 0.7); }
+    .btn-stop { background: var(--accent-red); color: #fff; font-weight: 800; }
+    .btn-secondary { background: #1e2c45; color: var(--text-main); border: 1px solid var(--border-subtle); }
+    .btn-secondary:hover { background: #283a5a; }
+    .btn-sm { padding: 4px 8px; font-size: 0.68rem; }
     .btn-toggle {
       background: #121c2d;
       color: var(--text-muted);
       border: 1px solid var(--border-subtle);
-      padding: 3px 7px;
+      padding: 3px 6px;
       border-radius: 3px;
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       cursor: pointer;
       font-weight: 600;
     }
@@ -278,12 +320,7 @@
     }
 
     /* Coordinate Inputs */
-    .coord-inputs {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
+    .coord-inputs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .coord-field {
       display: flex;
       align-items: center;
@@ -310,9 +347,7 @@
       font-weight: 700;
       text-align: center;
     }
-    .coord-input:focus {
-      outline: 1px solid var(--accent-cyan);
-    }
+    .coord-input:focus { outline: 1px solid var(--accent-cyan); }
     .step-btn {
       padding: 4px 6px;
       background: #1b2942;
@@ -325,12 +360,7 @@
     .step-btn:hover { background: #2b3e60; color: #fff; }
 
     /* Quick Target Presets */
-    .preset-group {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
+    .preset-group { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
     .preset-btn {
       background: #141f33;
       border: 1px dashed var(--border-bright);
@@ -342,11 +372,7 @@
       cursor: pointer;
       transition: all 0.15s;
     }
-    .preset-btn:hover {
-      border-color: var(--accent-cyan);
-      color: var(--accent-cyan);
-      background: #1a2842;
-    }
+    .preset-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); background: #1a2842; }
 
     /* Video Deck */
     .video-grid {
@@ -366,16 +392,12 @@
       align-items: center;
       justify-content: center;
     }
-    .video-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
+    .video-box img { width: 100%; height: 100%; object-fit: contain; }
     .video-badge-title {
       position: absolute;
       top: 4px;
       left: 4px;
-      background: rgba(6, 10, 18, 0.86);
+      background: rgba(6, 10, 18, 0.88);
       border: 1px solid var(--border-subtle);
       padding: 2px 6px;
       border-radius: 3px;
@@ -388,29 +410,20 @@
       position: absolute;
       top: 4px;
       right: 4px;
-      background: rgba(6, 10, 18, 0.86);
+      background: rgba(6, 10, 18, 0.88);
       border: 1px solid var(--border-subtle);
       padding: 2px 6px;
       border-radius: 3px;
-      font-size: 0.62rem;
+      font-size: 0.60rem;
       font-weight: 700;
       color: var(--accent-green);
       pointer-events: none;
+      font-family: monospace;
     }
 
     /* Telemetry & Metrics Table */
-    .metric-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 3px 12px;
-    }
-    .metric-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.72rem;
-      padding: 1px 0;
-    }
+    .metric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px 12px; }
+    .metric-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; padding: 1px 0; }
     .metric-label { color: var(--text-muted); }
     .metric-val { font-weight: 700; color: #f1f5f9; font-family: monospace; }
 
@@ -432,50 +445,36 @@
     }
 
     /* Confidence Progress Bars */
-    .progress-bar-bg {
-      background: #141d2f;
-      height: 6px;
-      border-radius: 3px;
-      overflow: hidden;
-      margin-top: 1px;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      background: var(--accent-green);
-      transition: width 0.25s ease;
-    }
+    .progress-bar-bg { background: #141d2f; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 1px; }
+    .progress-bar-fill { height: 100%; background: var(--accent-green); transition: width 0.25s ease; }
 
     /* Real-Time Event Log */
     .event-log-container {
       background: #05080e;
-      border: 1px solid var(--border-subtle);
       border-radius: 4px;
-      height: 110px;
+      border: 1px solid var(--border-subtle);
+      height: 120px;
       overflow-y: auto;
-      padding: 6px 8px;
-      display: flex;
-      flex-direction: column-reverse;
-      gap: 3px;
-      font-size: 0.68rem;
+      padding: 4px 8px;
       font-family: monospace;
-    }
-    .log-row {
+      font-size: 0.68rem;
       display: flex;
-      gap: 6px;
-      line-height: 1.3;
+      flex-direction: column;
+      gap: 2px;
     }
-    .log-time { color: var(--text-muted); }
-    .log-tag { font-weight: 700; }
-    .log-msg { color: #e2e8f0; }
+    .log-row { display: flex; gap: 8px; border-bottom: 1px dotted #18263d; padding: 1px 0; }
+    .log-time { color: var(--text-muted); font-size: 0.62rem; min-width: 50px; }
+    .log-tag { font-weight: 700; min-width: 65px; }
+    .log-msg { color: #cbd5e1; word-break: break-all; }
   </style>
 </head>
 <body>
 
-  <!-- 1. TACTICAL HEADER -->
+  <!-- 1. TACTICAL COMMAND HEADER -->
   <header>
     <div class="header-brand">
       <span class="brand-title">NAVIGUARD</span>
-      <span class="brand-sub">AUTONOMOUS VISION UGV &bull; SIH 2026</span>
+      <span class="brand-sub">SIH 2026 OUTDOOR UGV AUTONOMY &middot; HIGH-RELIABILITY GCS</span>
     </div>
 
     <div class="header-badges">
@@ -483,7 +482,7 @@
       <span class="badge" id="badgeMission">MISSION: IDLE</span>
       <span class="badge badge-cyan" id="badgeConfidence">CONF: 1.00</span>
       <span class="badge badge-green" id="badgeRecovery">RECOVERY: NORMAL</span>
-      <span class="badge badge-amber">RELLIS-INSPIRED SYNTHETIC ENVIRONMENT</span>
+      <span class="badge badge-amber">RELLIS-INSPIRED SYNTHETIC</span>
       <span class="badge" id="badgePose" style="font-family: monospace;">X: +0.00m | Y: +0.00m</span>
     </div>
   </header>
@@ -494,19 +493,23 @@
     <!-- ================= LEFT COLUMN: MISSION PLANNING & INTERACTIVE MAP ================= -->
     <div style="display: flex; flex-direction: column; gap: 10px;">
 
-      <!-- Interactive Map Card -->
+      <!-- Interactive Map Card with 11-Layer Architecture -->
       <div class="gcs-card">
         <div class="gcs-card-header">
-          <span>INTERACTIVE MAP & LOCALIZATION</span>
-          <div style="display: flex; gap: 4px;">
+          <span>LAYERED SPATIAL MAP (11 ARCHITECTURAL LAYERS)</span>
+          <div style="display: flex; gap: 3px; flex-wrap: wrap;">
             <button class="btn-toggle active" id="layerBase" onclick="toggleLayer('base')">BASE</button>
             <button class="btn-toggle active" id="layerSlam" onclick="toggleLayer('slam')">SLAM</button>
+            <button class="btn-toggle active" id="layerTrav" onclick="toggleLayer('trav')">TRAV</button>
             <button class="btn-toggle active" id="layerPath" onclick="toggleLayer('path')">PATH</button>
             <button class="btn-toggle active" id="layerTraj" onclick="toggleLayer('traj')">TRAJ</button>
+            <button class="btn-toggle active" id="layerObst" onclick="toggleLayer('obst')">OBST</button>
+            <button class="btn-toggle active" id="layerCkpt" onclick="toggleLayer('ckpt')">CKPT</button>
+            <button class="btn-toggle active" id="layerEvents" onclick="toggleLayer('events')">EVENTS</button>
             <button class="btn-toggle active" id="btnFollow" onclick="toggleFollowRobot()">FOLLOW: ON</button>
             <button class="btn-toggle" onclick="zoomMap(1.2)">+ ZOOM</button>
             <button class="btn-toggle" onclick="zoomMap(0.8)">- ZOOM</button>
-            <button class="btn-toggle" onclick="resetMapView()">↺ RESET</button>
+            <button class="btn-toggle" onclick="resetLayers()">↺ RESET LAYERS</button>
           </div>
         </div>
 
@@ -527,10 +530,15 @@
           </div>
         </div>
 
-        <div style="padding: 6px 12px; background: #080d16; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-muted);">
-          <span>LEGEND: <b style="color: #00d2ff;">● UGV</b> | <b style="color: #05f187;">― Planned Path</b> | <b style="color: #f59e0b;">┈ Trajectory</b> | <b style="color: #ff3366;">⚑ Goal</b> | <b style="color: #38bdf8;">🎯 Target Crosshair</b></span>
+        <div style="padding: 6px 10px; background: #080d16; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.66rem; color: var(--text-muted); flex-wrap: wrap; gap: 4px;">
+          <span>LAYERS: <b style="color: #00d2ff;">● Robot</b> | <b style="color: #05f187;">― Path</b> | <b style="color: #f59e0b;">┈ Traj</b> | <b style="color: #ff3366;">⚑ Goal</b> | <b style="color: #38bdf8;">🎯 Target</b> | <b style="color: #ef4444;">◼ Obstacles</b> | <b style="color: #00ffff;">◆ Checkpoints</b></span>
           <span>Click anywhere to target &bull; Double-click to instant-dispatch</span>
         </div>
+      </div>
+
+      <!-- Dedicated Compact Mission Status & Explanation Panel (Mandatory Parts 10-15 & 40-41) -->
+      <div class="mission-status-box" id="missionStatusBox">
+        <!-- Rendered dynamically via renderMissionStatusPanel() -->
       </div>
 
       <!-- Unified Mission Dispatch Command Deck -->
@@ -553,7 +561,7 @@
 
           <div style="display: flex; gap: 6px; align-items: center;">
             <button class="btn btn-dispatch" id="btnDispatchGoal" onclick="dispatchCurrentGoal()" disabled>
-              🚀 DISPATCH GOAL TO UGV
+              🚀 DISPATCH GOAL
             </button>
             <button class="btn btn-secondary btn-sm" onclick="clearTargetSelection()">
               ✕ CLEAR
@@ -564,7 +572,7 @@
           </div>
         </div>
 
-        <!-- Manual Coordinate Inputs & Step Adjustments -->
+        <!-- Manual Coordinate Inputs & Presets -->
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
           <div class="coord-inputs">
             <span style="font-size: 0.70rem; font-weight: 700; color: var(--text-muted);">COORDINATES:</span>
@@ -597,7 +605,7 @@
           </div>
         </div>
 
-        <!-- Navigation Metrics & Replan Diagnostics -->
+        <!-- Navigation Metrics & Dynamic Replan Diagnostics -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding-top: 6px; border-top: 1px solid var(--border-subtle);">
           <div class="metric-grid">
             <div class="metric-row"><span class="metric-label">Dist to Goal:</span><span class="metric-val" id="navDistGoal">0.00 m</span></div>
@@ -614,8 +622,8 @@
       <!-- Real-Time Operational Event Log -->
       <div class="gcs-card">
         <div class="gcs-card-header">
-          <span>OPERATIONAL MISSION & TELEMETRY LOG</span>
-          <span style="font-size: 0.68rem; color: var(--text-muted);">Autonomous Decision Stream</span>
+          <span>OPERATIONAL MISSION & TELEMETRY EVENT LOG</span>
+          <span style="font-size: 0.68rem; color: var(--text-muted);">Autonomy Event Stream</span>
         </div>
         <div class="event-log-container" id="eventLogContainer">
           <!-- Populated in real-time -->
@@ -627,7 +635,7 @@
     <!-- ================= RIGHT COLUMN: MULTI-SPECTRAL VISION & HEALTH ================= -->
     <div style="display: flex; flex-direction: column; gap: 10px;">
 
-      <!-- 5-Stream Vision Deck Card -->
+      <!-- 5-Stream Vision Deck Card with Bounded Latest-Frame Buffer -->
       <div class="gcs-card">
         <div class="gcs-card-header">
           <span>MULTI-SPECTRAL AUTONOMOUS VISION STREAMS</span>
@@ -645,35 +653,35 @@
             <div class="video-box" id="boxRaw">
               <img id="camRaw" alt="Raw RGB Stream">
               <div class="video-badge-title">RAW RGB (/camera/image_raw)</div>
-              <div class="video-badge-fps" id="fpsRaw">15 FPS</div>
+              <div class="video-badge-fps" id="fpsRaw">[LIVE] 15 FPS</div>
             </div>
 
             <!-- Feed 2: Classical OpenCV Segmentation -->
             <div class="video-box" id="boxSeg">
               <img id="camSeg" alt="Classical Segmentation Stream">
               <div class="video-badge-title" style="color: var(--accent-green);">SEGMENTATION (TRAVERSABILITY)</div>
-              <div class="video-badge-fps" id="fpsSeg">30 FPS</div>
+              <div class="video-badge-fps" id="fpsSeg">[LIVE] 10 FPS</div>
             </div>
 
             <!-- Feed 3: Perception / Traversability Debug -->
             <div class="video-box" id="boxPercept">
               <img id="camPercept" alt="Perception Stream">
               <div class="video-badge-title">PERCEPTION (CORRIDOR/EDGES)</div>
-              <div class="video-badge-fps" id="fpsPercept">15 FPS</div>
+              <div class="video-badge-fps" id="fpsPercept">[LIVE] 10 FPS</div>
             </div>
 
             <!-- Feed 4: Visual Odometry Optical Flow -->
             <div class="video-box" id="boxVO">
               <img id="camVO" alt="VO HUD Stream">
               <div class="video-badge-title">VISUAL ODOMETRY (OPTICAL FLOW)</div>
-              <div class="video-badge-fps" id="fpsVO">15 FPS</div>
+              <div class="video-badge-fps" id="fpsVO">[LIVE] 10 FPS</div>
             </div>
 
             <!-- Feed 5: Gazebo Harmonic Chase 3D View (Spans 2 columns if in grid) -->
             <div class="video-box" id="boxChase" style="grid-column: span 2; height: 165px;">
               <img id="camChase" alt="Third-Person Chase Stream">
               <div class="video-badge-title" style="color: var(--accent-cyan);">CHASE 3D VIEW (GAZEBO HARMONIC)</div>
-              <div class="video-badge-fps" id="fpsChase">15 FPS</div>
+              <div class="video-badge-fps" id="fpsChase">[LIVE] 15 FPS</div>
             </div>
 
           </div>
@@ -689,7 +697,7 @@
         </div>
       </div>
 
-      <!-- System Health Monitor (All 12 Nodes) -->
+      <!-- System Health Monitor (All 12 Subsystems) -->
       <div class="gcs-card">
         <div class="gcs-card-header">
           <span>SYSTEM HEALTH MONITOR</span>
@@ -713,7 +721,6 @@
           <span id="lblPrimaryReason" style="font-size: 0.68rem; color: var(--accent-amber);">NOMINAL</span>
         </div>
         <div class="gcs-card-body">
-          <!-- 6 Confidence Dimension Progress Bars -->
           <div id="confidenceBarsContainer" style="display: flex; flex-direction: column; gap: 3px;">
             <!-- Populated dynamically -->
           </div>
@@ -746,25 +753,28 @@
        Authoritative Map, Multi-Spectral Streams & Goal Dispatch
        ========================================================================== */
 
-    // 1. Core State & Metadata (Fully Hoisted at Script Top)
+    // 1. Core State & Metadata
     let mapMeta = {
       width: 600,
       height: 600,
       resolution: 0.05,
       origin_x: -15.0,
-      origin_y: -15.0,
-      has_data: false
+      origin_y: -15.0
     };
 
     let latestTelemetry = null;
     let currentTarget = null; // { x, y, valid, reason }
 
-    // Layers Visibility
+    // 11-Layer Architectural Model Visibility
     const layers = {
       base: true,
       slam: true,
+      trav: true,
       path: true,
-      traj: true
+      traj: true,
+      obst: true,
+      ckpt: true,
+      events: true
     };
 
     // Canvas & Viewport State
@@ -775,7 +785,7 @@
     let viewPanY = 0;
     let followRobot = true;
 
-    // Basemap & SLAM Images (Declared at top before any renderMap() call!)
+    // Basemap & SLAM Images
     const basemapImg = new Image();
     let basemapLoaded = false;
     basemapImg.src = '/api/basemap';
@@ -797,10 +807,21 @@
     function toggleLayer(name) {
       if (layers.hasOwnProperty(name)) {
         layers[name] = !layers[name];
-        const btn = document.getElementById('layer' + name.charAt(0).toUpperCase() + name.slice(1));
+        const btnId = 'layer' + name.charAt(0).toUpperCase() + name.slice(1);
+        const btn = document.getElementById(btnId);
         if (btn) btn.classList.toggle('active', layers[name]);
         renderMap();
       }
+    }
+
+    function resetLayers() {
+      for (const k in layers) {
+        layers[k] = true;
+        const btnId = 'layer' + k.charAt(0).toUpperCase() + k.slice(1);
+        const btn = document.getElementById(btnId);
+        if (btn) btn.classList.add('active');
+      }
+      renderMap();
     }
 
     function zoomMap(factor) {
@@ -831,45 +852,42 @@
       if (followRobot) renderMap();
     }
 
-    function resizeCanvas() {
-      const container = document.getElementById('mapContainer');
-      if (container && canvas) {
-        canvas.width = container.clientWidth || 600;
-        canvas.height = container.clientHeight || 440;
-        renderMap();
-      }
-    }
-
-    /* --------------------------------------------------------------------------
-       Coordinate Transforms: World (meters) <--> Canvas (pixels)
-       -------------------------------------------------------------------------- */
     function worldToCanvas(wx, wy) {
-      const col = (wx - mapMeta.origin_x) / mapMeta.resolution;
-      const row = (wy - mapMeta.origin_y) / mapMeta.resolution;
-      const u = col * (canvas.width / mapMeta.width);
-      const v = (mapMeta.height - 1 - row) * (canvas.height / mapMeta.height);
+      const u = (wx - mapMeta.origin_x) / mapMeta.resolution;
+      const v = (mapMeta.height - 1) - ((wy - mapMeta.origin_y) / mapMeta.resolution);
       return [u, v];
     }
 
     function canvasToWorld(u, v) {
-      const col = u * (mapMeta.width / canvas.width);
-      const row = (canvas.height - 1 - v) * (mapMeta.height / canvas.height);
-      const wx = mapMeta.origin_x + (col + 0.5) * mapMeta.resolution;
-      const wy = mapMeta.origin_y + (row + 0.5) * mapMeta.resolution;
+      const wx = mapMeta.origin_x + u * mapMeta.resolution;
+      const wy = mapMeta.origin_y + (mapMeta.height - 1 - v) * mapMeta.resolution;
       return [wx, wy];
     }
 
     /* --------------------------------------------------------------------------
-       Canvas Mouse Event Handlers
+       Interactive Map Interaction (Click, Drag, Pan, Goal Selection)
        -------------------------------------------------------------------------- */
-    canvas.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const factor = e.deltaY < 0 ? 1.15 : 0.87;
-      zoomMap(factor);
-    }, { passive: false });
+    function getEventCanvasCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      const screenX = (e.clientX - rect.left) * scaleX;
+      const screenY = (e.clientY - rect.top) * scaleY;
+
+      const normX = screenX - (canvas.width / 2 + viewPanX);
+      const normY = screenY - (canvas.height / 2 + viewPanY);
+
+      const unscaledX = normX / viewZoom;
+      const unscaledY = normY / viewZoom;
+
+      const u = unscaledX + canvas.width / 2;
+      const v = unscaledY + canvas.height / 2;
+
+      return [u, v];
+    }
 
     canvas.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return;
       isMouseDown = true;
       isDragging = false;
       mouseDownX = e.clientX;
@@ -882,11 +900,13 @@
       const dy = e.clientY - mouseDownY;
       if (Math.hypot(dx, dy) > DRAG_THRESHOLD) {
         isDragging = true;
-        followRobot = false;
-        const btn = document.getElementById('btnFollow');
-        if (btn) {
-          btn.classList.remove('active');
-          btn.textContent = "FOLLOW: OFF";
+        if (followRobot) {
+          followRobot = false;
+          const btn = document.getElementById('btnFollow');
+          if (btn) {
+            btn.classList.remove('active');
+            btn.textContent = "FOLLOW: OFF";
+          }
         }
         viewPanX += dx;
         viewPanY += dy;
@@ -896,212 +916,141 @@
       }
     });
 
-    window.addEventListener('mouseup', () => {
-      isMouseDown = false;
-      setTimeout(() => { isDragging = false; }, 50);
+    window.addEventListener('mouseup', () => { isMouseDown = false; });
+
+    canvas.addEventListener('mousemove', (e) => {
+      const [u, v] = getEventCanvasCoords(e);
+      const [wx, wy] = canvasToWorld(u, v);
+      const signX = wx >= 0 ? '+' : '';
+      const signY = wy >= 0 ? '+' : '';
+      document.getElementById('mapHoverCoords').textContent = `CURSOR: ${signX}${wx.toFixed(2)}m, ${signY}${wy.toFixed(2)}m`;
     });
 
     canvas.addEventListener('click', (e) => {
       if (isDragging) return;
-      handleCanvasTargetSelection(e);
+      const [u, v] = getEventCanvasCoords(e);
+      validateAndSelectTarget(u, v);
     });
 
     canvas.addEventListener('dblclick', (e) => {
-      handleCanvasTargetSelection(e);
-      setTimeout(() => {
-        dispatchCurrentGoal();
-      }, 100);
+      if (isDragging) return;
+      const [u, v] = getEventCanvasCoords(e);
+      validateAndSelectTarget(u, v, true);
     });
 
-    function handleCanvasTargetSelection(e) {
-      const rect = canvas.getBoundingClientRect();
-      const clickPxX = (e.clientX - rect.left) * (canvas.width / rect.width);
-      const clickPxY = (e.clientY - rect.top) * (canvas.height / rect.height);
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+      zoomMap(zoomFactor);
+    }, { passive: false });
 
-      const baseU = (clickPxX - (canvas.width / 2 + viewPanX)) / viewZoom + canvas.width / 2;
-      const baseV = (clickPxY - (canvas.height / 2 + viewPanY)) / viewZoom + canvas.height / 2;
-
-      let [wx, wy] = canvasToWorld(baseU, baseV);
-      wx = Math.max(-14.5, Math.min(14.5, wx));
-      wy = Math.max(-14.5, Math.min(14.5, wy));
-
-      setTargetCandidate(wx, wy);
-    }
-
-    canvas.addEventListener('mousemove', (e) => {
-      if (isMouseDown) return;
-      const rect = canvas.getBoundingClientRect();
-      const pxX = (e.clientX - rect.left) * (canvas.width / rect.width);
-      const pxY = (e.clientY - rect.top) * (canvas.height / rect.height);
-      const baseU = (pxX - (canvas.width / 2 + viewPanX)) / viewZoom + canvas.width / 2;
-      const baseV = (pxY - (canvas.height / 2 + viewPanY)) / viewZoom + canvas.height / 2;
-      const [wx, wy] = canvasToWorld(baseU, baseV);
-      const hoverEl = document.getElementById('mapHoverCoords');
-      if (hoverEl) {
-        const signX = wx >= 0 ? '+' : '';
-        const signY = wy >= 0 ? '+' : '';
-        hoverEl.textContent = `CURSOR: (${signX}${wx.toFixed(2)}m, ${signY}${wy.toFixed(2)}m)`;
-      }
-    });
-
-    /* --------------------------------------------------------------------------
-       Target Candidate Staging & Safety Validation
-       -------------------------------------------------------------------------- */
-    function setTargetCandidate(wx, wy) {
-      const xVal = parseFloat(wx.toFixed(2));
-      const yVal = parseFloat(wy.toFixed(2));
-
-      currentTarget = {
-        x: xVal,
-        y: yVal,
-        valid: true,
-        reason: 'Target within valid map boundaries.'
-      };
-
-      document.getElementById('inputCoordX').value = xVal.toFixed(2);
-      document.getElementById('inputCoordY').value = yVal.toFixed(2);
-
-      updateTargetUI();
-      renderMap();
-
-      const [u, v] = worldToCanvas(xVal, yVal);
-      fetch(`/api/validate_goal_click?u=${u}&v=${v}&cw=${canvas.width}&ch=${canvas.height}`)
+    function validateAndSelectTarget(u, v, autoDispatch = false) {
+      fetch(`/api/validate_goal_click?u=${u.toFixed(1)}&v=${v.toFixed(1)}&cw=${canvas.width}&ch=${canvas.height}`)
         .then(res => res.json())
         .then(data => {
-          if (currentTarget && currentTarget.x === xVal && currentTarget.y === yVal) {
-            currentTarget.valid = data.valid;
-            currentTarget.reason = data.reason;
-            updateTargetUI();
-            renderMap();
+          currentTarget = {
+            x: data.x,
+            y: data.y,
+            valid: data.valid,
+            reason: data.reason
+          };
+
+          const pill = document.getElementById('targetValidationPill');
+          const coordsText = document.getElementById('targetCoordsText');
+          const distText = document.getElementById('targetDistText');
+          const bearingText = document.getElementById('targetBearingText');
+          const btnDispatch = document.getElementById('btnDispatchGoal');
+
+          const signX = data.x >= 0 ? '+' : '';
+          const signY = data.y >= 0 ? '+' : '';
+          coordsText.textContent = `X: ${signX}${data.x.toFixed(2)} m, Y: ${signY}${data.y.toFixed(2)} m`;
+          document.getElementById('inputCoordX').value = data.x.toFixed(2);
+          document.getElementById('inputCoordY').value = data.y.toFixed(2);
+
+          if (latestTelemetry && latestTelemetry.robot_pose) {
+            const rx = latestTelemetry.robot_pose.x;
+            const ry = latestTelemetry.robot_pose.y;
+            const d = Math.hypot(data.x - rx, data.y - ry);
+            distText.textContent = `${d.toFixed(2)} m`;
+
+            const angleRad = Math.atan2(data.y - ry, data.x - rx);
+            const deg = (angleRad * 180 / Math.PI);
+            bearingText.textContent = `${deg >= 0 ? '+' : ''}${deg.toFixed(1)}°`;
           }
+
+          if (data.valid) {
+            pill.className = "badge badge-green";
+            pill.textContent = "SAFE TRAVERSABLE DESTINATION";
+            btnDispatch.disabled = false;
+            if (autoDispatch) dispatchCurrentGoal();
+          } else {
+            pill.className = "badge badge-red";
+            pill.textContent = `REJECTED: ${data.reason}`;
+            btnDispatch.disabled = true;
+          }
+
+          renderMap();
         })
-        .catch(err => {
-          console.warn("Validation note:", err);
-        });
-    }
-
-    function updateTargetUI() {
-      const pill = document.getElementById('targetValidationPill');
-      const coordsText = document.getElementById('targetCoordsText');
-      const distText = document.getElementById('targetDistText');
-      const bearingText = document.getElementById('targetBearingText');
-      const dispatchBtn = document.getElementById('btnDispatchGoal');
-
-      if (!currentTarget) {
-        pill.className = "badge";
-        pill.textContent = "NO TARGET SELECTED";
-        coordsText.textContent = "Click map to choose destination";
-        coordsText.style.color = "var(--text-muted)";
-        distText.textContent = "0.00 m";
-        bearingText.textContent = "+0.0°";
-        dispatchBtn.disabled = true;
-        return;
-      }
-
-      const signX = currentTarget.x >= 0 ? '+' : '';
-      const signY = currentTarget.y >= 0 ? '+' : '';
-      coordsText.textContent = `X: ${signX}${currentTarget.x.toFixed(2)} m, Y: ${signY}${currentTarget.y.toFixed(2)} m`;
-
-      let dist = 0.0;
-      let bearing = 0.0;
-      if (latestTelemetry && latestTelemetry.robot_pose) {
-        const rx = latestTelemetry.robot_pose.x;
-        const ry = latestTelemetry.robot_pose.y;
-        const rYaw = latestTelemetry.robot_pose.yaw;
-        const dx = currentTarget.x - rx;
-        const dy = currentTarget.y - ry;
-        dist = Math.hypot(dx, dy);
-        let ang = Math.atan2(dy, dx) - rYaw;
-        while (ang > Math.PI) ang -= 2 * Math.PI;
-        while (ang < -Math.PI) ang += 2 * Math.PI;
-        bearing = (ang * 180 / Math.PI);
-      }
-
-      distText.textContent = `${dist.toFixed(2)} m`;
-      bearingText.textContent = `${bearing >= 0 ? '+' : ''}${bearing.toFixed(1)}°`;
-
-      if (currentTarget.valid) {
-        pill.className = "badge badge-green";
-        pill.textContent = "✓ READY TO DISPATCH";
-        coordsText.style.color = "var(--accent-green)";
-        dispatchBtn.disabled = false;
-      } else {
-        pill.className = "badge badge-red";
-        pill.textContent = "⚠️ " + currentTarget.reason;
-        coordsText.style.color = "var(--accent-red)";
-        dispatchBtn.disabled = true;
-      }
+        .catch(err => console.error("Validation fetch failed:", err));
     }
 
     function clearTargetSelection() {
       currentTarget = null;
-      updateTargetUI();
+      document.getElementById('targetValidationPill').className = "badge badge-cyan";
+      document.getElementById('targetValidationPill').textContent = "NO TARGET SELECTED";
+      document.getElementById('targetCoordsText').textContent = "X: +0.00 m, Y: +0.00 m";
+      document.getElementById('targetDistText').textContent = "0.00 m";
+      document.getElementById('targetBearingText').textContent = "+0.0°";
+      document.getElementById('btnDispatchGoal').disabled = true;
       renderMap();
     }
 
     function stepCoord(axis, delta) {
-      const el = document.getElementById(axis === 'x' ? 'inputCoordX' : 'inputCoordY');
-      let val = parseFloat(el.value) || 0.0;
-      val = Math.max(-14.5, Math.min(14.5, val + delta));
-      el.value = val.toFixed(2);
+      const input = document.getElementById(axis === 'x' ? 'inputCoordX' : 'inputCoordY');
+      let val = parseFloat(input.value) || 0.0;
+      val = Math.round((val + delta) * 10) / 10;
+      input.value = val.toFixed(2);
       applyManualCoordinates();
     }
 
     function applyManualCoordinates() {
       const x = parseFloat(document.getElementById('inputCoordX').value) || 0.0;
       const y = parseFloat(document.getElementById('inputCoordY').value) || 0.0;
-      setTargetCandidate(x, y);
+      const [u, v] = worldToCanvas(x, y);
+      validateAndSelectTarget(u, v);
     }
 
     function quickPreset(x, y, autoDispatch = false) {
-      setTargetCandidate(x, y);
-      if (autoDispatch) {
-        setTimeout(() => {
-          dispatchCurrentGoal();
-        }, 120);
-      }
+      document.getElementById('inputCoordX').value = x.toFixed(2);
+      document.getElementById('inputCoordY').value = y.toFixed(2);
+      const [u, v] = worldToCanvas(x, y);
+      validateAndSelectTarget(u, v, autoDispatch);
     }
 
-    /* --------------------------------------------------------------------------
-       Goal Dispatch API (Submits to /api/set_goal -> /goal_pose)
-       -------------------------------------------------------------------------- */
     function dispatchCurrentGoal() {
-      if (!currentTarget) {
-        alert("Please click on the map to choose a destination first.");
-        return;
-      }
-
-      const payload = {
-        x: currentTarget.x,
-        y: currentTarget.y,
-        yaw: 0.0
-      };
-
-      console.log("[DISPATCH_GOAL]", payload);
+      if (!currentTarget || !currentTarget.valid) return;
       const pill = document.getElementById('targetValidationPill');
-      pill.className = "badge badge-cyan";
-      pill.textContent = "TRANSMITTING TO UGV...";
+      pill.className = "badge badge-amber";
+      pill.textContent = "DISPATCHING GOAL...";
 
-      fetch('/api/set_goal', {
+      fetch('/api/goal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ x: currentTarget.x, y: currentTarget.y, yaw: 0.0 })
       })
       .then(res => res.json())
       .then(data => {
-        console.log("[DISPATCH_RESPONSE]", data);
         if (data.success) {
           pill.className = "badge badge-green";
-          pill.textContent = "🚀 DISPATCHED TO UGV — ACTIVE";
-          appendLog("MISSION", `Operator dispatched target: X=${payload.x.toFixed(2)}m, Y=${payload.y.toFixed(2)}m`);
+          pill.textContent = "DISPATCH CONFIRMED";
+          appendLog("MISSION", `Dispatched target: (${currentTarget.x.toFixed(2)}, ${currentTarget.y.toFixed(2)})`);
         } else {
           pill.className = "badge badge-red";
-          pill.textContent = `REJECTED: ${data.message}`;
+          pill.textContent = `DISPATCH FAILED: ${data.message}`;
           appendLog("REJECT", data.message);
         }
       })
       .catch(err => {
-        console.error("[DISPATCH_ERROR]", err);
         pill.className = "badge badge-red";
         pill.textContent = `NETWORK ERROR: ${err.message}`;
       });
@@ -1110,8 +1059,17 @@
     function cancelNavigationMission() {
       fetch('/api/cancel_goal', { method: 'POST' })
         .then(res => res.json())
-        .then(data => {
+        .then(() => {
           appendLog("MISSION", "Operator triggered mission cancellation.");
+          clearTargetSelection();
+        });
+    }
+
+    function resetMissionState() {
+      fetch('/api/reset_mission', { method: 'POST' })
+        .then(res => res.json())
+        .then(() => {
+          appendLog("MISSION", "Mission state reset to IDLE.");
           clearTargetSelection();
         });
     }
@@ -1119,52 +1077,108 @@
     function triggerRecoveryFault() {
       fetch('/api/fault/trigger', { method: 'POST' })
         .then(res => res.json())
-        .then(d => appendLog("FAULT", "Controlled test recovery fault injected."));
+        .then(() => appendLog("FAULT", "Controlled test recovery fault injected."));
     }
 
     function resetRecoveryBudget() {
       fetch('/api/fault/reset', { method: 'POST' })
         .then(res => res.json())
-        .then(d => appendLog("RECOVERY", "Recovery attempt budget reset to nominal."));
+        .then(() => appendLog("RECOVERY", "Recovery attempt budget reset to nominal."));
     }
 
     /* --------------------------------------------------------------------------
-       Sequential Non-Blocking Camera Stream Loaders
+       High-Efficiency Visual Stream Loaders (Latest-Frame Bounded Buffer)
        -------------------------------------------------------------------------- */
     const cameraStreams = [
-      { id: 'camRaw', type: 'raw', fpsEl: 'fpsRaw', rate: 15 },
-      { id: 'camSeg', type: 'segmentation', fpsEl: 'fpsSeg', rate: 30 },
-      { id: 'camPercept', type: 'perception', fpsEl: 'fpsPercept', rate: 15 },
-      { id: 'camVO', type: 'vo', fpsEl: 'fpsVO', rate: 15 },
-      { id: 'camChase', type: 'chase', fpsEl: 'fpsChase', rate: 15 },
+      { id: 'camRaw', type: 'raw', fpsEl: 'fpsRaw', targetFps: 15, periodMs: 66 },
+      { id: 'camSeg', type: 'segmentation', fpsEl: 'fpsSeg', targetFps: 10, periodMs: 100 },
+      { id: 'camPercept', type: 'perception', fpsEl: 'fpsPercept', targetFps: 10, periodMs: 100 },
+      { id: 'camVO', type: 'vo', fpsEl: 'fpsVO', targetFps: 10, periodMs: 100 },
+      { id: 'camChase', type: 'chase', fpsEl: 'fpsChase', targetFps: 15, periodMs: 66 },
     ];
+
+    let currentVisionMode = 'all';
 
     function initCameraStreams() {
       cameraStreams.forEach(stream => {
         const img = document.getElementById(stream.id);
+        const fpsEl = document.getElementById(stream.fpsEl);
         if (!img) return;
-        let isFetching = false;
 
-        function loadNext() {
-          if (isFetching) return;
-          isFetching = true;
-          const nextImg = new Image();
-          nextImg.src = `/api/camera?type=${stream.type}&t=${Date.now()}`;
-          nextImg.onload = () => {
-            img.src = nextImg.src;
-            isFetching = false;
-            setTimeout(loadNext, 180);
-          };
-          nextImg.onerror = () => {
-            isFetching = false;
-            setTimeout(loadNext, 400);
-          };
+        let inFlight = false;
+        let lastSec = performance.now();
+        let frameCount = 0;
+        let dispFps = stream.targetFps;
+
+        async function fetchFrame() {
+          // Pause streams that are hidden in focus mode to conserve CPU/network
+          if (currentVisionMode === 'chase' && stream.type !== 'chase') {
+            setTimeout(fetchFrame, 300);
+            return;
+          }
+          if (currentVisionMode === 'seg' && stream.type !== 'segmentation') {
+            setTimeout(fetchFrame, 300);
+            return;
+          }
+
+          if (inFlight) {
+            setTimeout(fetchFrame, 30);
+            return;
+          }
+
+          inFlight = true;
+          const t0 = performance.now();
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 350);
+
+          try {
+            const resp = await fetch(`/api/camera?type=${stream.type}&t=${Date.now()}`, {
+              signal: controller.signal,
+              cache: 'no-store'
+            });
+            clearTimeout(timeoutId);
+
+            if (resp.ok) {
+              const ageMs = parseFloat(resp.headers.get('X-Frame-Age-Ms') || '0');
+              const status = resp.headers.get('X-Stream-Status') || (ageMs < 350 ? 'LIVE' : 'DEGRADED');
+              const blob = await resp.blob();
+              const objectUrl = URL.createObjectURL(blob);
+
+              const prevUrl = img.src;
+              img.src = objectUrl;
+              if (prevUrl && prevUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(prevUrl);
+              }
+
+              frameCount++;
+              const now = performance.now();
+              if (now - lastSec >= 1000) {
+                dispFps = Math.round((frameCount * 1000) / (now - lastSec));
+                frameCount = 0;
+                lastSec = now;
+              }
+
+              if (fpsEl) {
+                const badgeColor = status === 'LIVE' ? '#05f187' : '#ffb703';
+                fpsEl.innerHTML = `<span style="color:${badgeColor}">[${status}]</span> ${dispFps} FPS | ${Math.round(ageMs)}ms`;
+              }
+            }
+          } catch (e) {
+            clearTimeout(timeoutId);
+          } finally {
+            inFlight = false;
+            const elapsed = performance.now() - t0;
+            const sleepMs = Math.max(10, stream.periodMs - elapsed);
+            setTimeout(fetchFrame, sleepMs);
+          }
         }
-        loadNext();
+
+        fetchFrame();
       });
     }
 
     function setVisionView(mode) {
+      currentVisionMode = mode;
       document.getElementById('tabFeedsAll').classList.toggle('active', mode === 'all');
       document.getElementById('tabFeedsFocus').classList.toggle('active', mode === 'chase');
       document.getElementById('tabFeedsSeg').classList.toggle('active', mode === 'seg');
@@ -1221,6 +1235,9 @@
         const signX = p.x >= 0 ? '+' : '';
         const signY = p.y >= 0 ? '+' : '';
         document.getElementById('badgePose').textContent = `X: ${signX}${p.x.toFixed(2)}m | Y: ${signY}${p.y.toFixed(2)}m`;
+
+        // Render Dedicated Mission Status Panel (Failure / Success / Normal)
+        renderMissionStatusPanel(data);
 
         // 12 Subsystems Health Grid
         const gridEl = document.getElementById('subsystemsGrid');
@@ -1285,6 +1302,112 @@
       }
     }
 
+    /* --------------------------------------------------------------------------
+       Mission Status & Failure Explanation Rendering (Mandatory Parts 10-15)
+       -------------------------------------------------------------------------- */
+    function renderMissionStatusPanel(data) {
+      const box = document.getElementById('missionStatusBox');
+      if (!box) return;
+
+      const mstate = data.mission_state || 'IDLE';
+
+      // 1. Mission Failed Card
+      if (mstate === 'MISSION_FAILED' || mstate === 'FAILED' || data.failure_record) {
+        const f = data.failure_record || {};
+        const code = f.failure_code || 'NO_SAFE_PATH';
+        const reason = f.human_reason || 'No safe path to goal exists under current constraints.';
+        const detail = f.detail || 'All candidate paths violate vehicle clearance or traversability limits.';
+        const recAtt = f.recovery_attempts !== undefined ? f.recovery_attempts : data.recovery_attempts;
+        const recMax = f.recovery_max_attempts !== undefined ? f.recovery_max_attempts : data.recovery_max_attempts;
+        const lastP = f.robot_pose || data.robot_pose || { x: 0, y: 0 };
+        const goalP = f.goal || data.active_goal || { x: 0, y: 0 };
+
+        box.innerHTML = `
+          <div class="status-failure-card">
+            <div class="failure-header">
+              <span class="badge badge-red" style="font-size: 0.80rem; padding: 4px 10px;">⚠️ MISSION FAILED</span>
+              <span style="font-family: monospace; font-size: 0.72rem; color: #ff8fa3; font-weight: 800;">CODE: ${code}</span>
+            </div>
+            <div class="failure-reason-line">REASON: ${reason}</div>
+            <div class="failure-detail-line">DETAIL: ${detail}</div>
+            <div class="failure-metrics-grid">
+              <div>RECOVERY: <b>${recAtt} / ${recMax} exhausted</b></div>
+              <div>LAST POSITION: <b>X=${lastP.x >= 0 ? '+' : ''}${lastP.x.toFixed(2)}, Y=${lastP.y >= 0 ? '+' : ''}${lastP.y.toFixed(2)}m</b></div>
+              <div>GOAL: <b>X=${goalP.x >= 0 ? '+' : ''}${goalP.x.toFixed(2)}, Y=${goalP.y >= 0 ? '+' : ''}${goalP.y.toFixed(2)}m</b></div>
+              <div>REPLANS: <b>${f.replan_count || data.nav_stats.replan_count || 0}</b></div>
+              <div>CONFIDENCE: <b>Overall ${data.confidence_scores.overall.toFixed(2)} | Loc ${data.confidence_scores.localization.toFixed(2)}</b></div>
+              <div>STATUS: <b>FAILED_SAFE (ROBOT HALTED)</b></div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center; justify-content: flex-end; margin-top: 4px;">
+              <span style="font-size: 0.68rem; color: var(--text-muted);">NEXT ACTION:</span>
+              <button class="btn btn-secondary btn-sm" onclick="resetMissionState()">↺ RESET MISSION</button>
+              <button class="btn btn-dispatch btn-sm" onclick="clearTargetSelection()">🎯 CHOOSE NEW GOAL</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      // 2. Goal Reached Card
+      if (mstate === 'GOAL_REACHED' || mstate === 'COMPLETED' || data.success_record) {
+        const s = data.success_record || {};
+        const dist = s.travel_distance_m || 0.0;
+        const dur = s.duration_sec || 0.0;
+        const replans = s.replan_count || data.nav_stats.replan_count || 0;
+        const err = s.final_error_m || data.nav_stats.dist_to_goal_m || 0.0;
+
+        box.innerHTML = `
+          <div class="status-success-card">
+            <div class="failure-header">
+              <span class="badge badge-green" style="font-size: 0.80rem; padding: 4px 10px;">🏁 GOAL REACHED — MISSION COMPLETE</span>
+              <span style="font-family: monospace; font-size: 0.72rem; color: var(--accent-green); font-weight: 800;">STATUS: NOMINAL</span>
+            </div>
+            <div style="font-size: 0.74rem; color: #cbd5e1;">Target reached safely within tolerance with closed-loop verification.</div>
+            <div class="failure-metrics-grid" style="border-color: rgba(5, 241, 135, 0.2);">
+              <div>TRAVEL DIST: <b>${dist.toFixed(2)} m</b></div>
+              <div>MISSION TIME: <b>${dur.toFixed(1)} s</b></div>
+              <div>REPLANS: <b>${replans}</b></div>
+              <div>FINAL ERROR: <b>${err.toFixed(3)} m</b></div>
+              <div>RECOVERIES: <b>${data.recovery_attempts}</b></div>
+              <div>CONFIDENCE: <b>${data.confidence_scores.overall.toFixed(2)}</b></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+              <button class="btn btn-dispatch btn-sm" onclick="resetMissionState()">🚀 NEW MISSION</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      // 3. Normal Active Mission Status Card
+      const navReason = data.nav_stats.nav_reason || "Following safest available route";
+      const clearance = data.nav_stats.clearance_m || 1.0;
+      const terrainCost = data.nav_stats.terrain_cost || 0.0;
+      const speedScale = data.nav_stats.speed_scale || 1.0;
+      const vx = data.nav_stats.cmd_vx || 0.0;
+
+      let badgeClass = 'badge-green';
+      if (mstate === 'PLANNING' || mstate === 'REPLANNING') badgeClass = 'badge-amber';
+      else if (mstate === 'RECOVERY_WAIT') badgeClass = 'badge-red';
+
+      box.innerHTML = `
+        <div class="status-normal-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 0.70rem; color: var(--text-muted); font-weight: 800;">MISSION STATUS:</span>
+              <span class="badge ${badgeClass}">${mstate}</span>
+            </div>
+            <div style="font-size: 0.72rem; color: var(--accent-cyan);">
+              <b>BEHAVIOR:</b> ${navReason}
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px 8px; font-size: 0.68rem; color: var(--text-muted); margin-top: 2px;">
+            <div>Clearance: <b style="color: var(--text-main);">${clearance.toFixed(2)}m</b></div>
+            <div>Terrain Cost: <b style="color: var(--text-main);">${terrainCost.toFixed(0)}</b></div>
+            <div>Adaptive Speed: <b style="color: var(--text-main);">${vx.toFixed(2)} m/s (${Math.round(speedScale * 100)}%)</b></div>
+            <div>Recovery: <b style="color: var(--text-main);">${data.recovery_attempts}/${data.recovery_max_attempts}</b></div>
+          </div>
+        </div>`;
+    }
+
     function updateBadge(id, text, state) {
       const el = document.getElementById(id);
       if (!el) return;
@@ -1321,7 +1444,7 @@
         let col = 'var(--accent-cyan)';
         if (e.category === 'MISSION') col = 'var(--accent-green)';
         else if (e.category === 'RECOVERY') col = 'var(--accent-amber)';
-        else if (e.category === 'REPLAN') col = 'var(--accent-red)';
+        else if (e.category === 'REPLAN' || e.category === 'FAILURE') col = 'var(--accent-red)';
         logEl.innerHTML += `
           <div class="log-row">
             <span class="log-time">${e.time}</span>
@@ -1332,7 +1455,7 @@
     }
 
     /* --------------------------------------------------------------------------
-       Procedural RELLIS Terrain Basemap
+       Procedural RELLIS Terrain Basemap Fallback
        -------------------------------------------------------------------------- */
     function drawProceduralBasemap() {
       ctx.fillStyle = '#1e331c';
@@ -1348,68 +1471,17 @@
         ctx.beginPath(); ctx.moveTo(u1, v1); ctx.lineTo(u2, v2); ctx.stroke();
         ctx.fillText(`${x >= 0 ? '+' : ''}${x}m`, u1 + 2, canvas.height - 4);
       }
+
       for (let y = -15; y <= 15; y += 5) {
         const [u1, v1] = worldToCanvas(-15, y);
         const [u2, v2] = worldToCanvas(15, y);
         ctx.beginPath(); ctx.moveTo(u1, v1); ctx.lineTo(u2, v2); ctx.stroke();
         ctx.fillText(`${y >= 0 ? '+' : ''}${y}m`, 4, v1 - 2);
       }
-
-      drawTrailSegment([[-1, 0], [4, 0], [11, 0]], 3.2);
-      drawTrailSegment([[11, 0], [14, 2.5], [17, 6]], 3.0);
-
-      const [mu1, mv1] = worldToCanvas(-4.0, 5.5);
-      const [mu2, mv2] = worldToCanvas(0.0, 2.5);
-      ctx.fillStyle = '#3a2d1d';
-      ctx.beginPath();
-      ctx.ellipse((mu1 + mu2) / 2, (mv1 + mv2) / 2, Math.abs(mu2 - mu1) / 2, Math.abs(mv2 - mv1) / 2, -0.2, 0, Math.PI * 2);
-      ctx.fill();
-
-      const trees = [[3.0, 2.8, 1.4], [5.5, -2.7, 1.5], [9.0, 3.5, 1.6], [-3.0, -3.5, 1.3], [12.0, -2.5, 1.5]];
-      trees.forEach(([tx, ty, tr]) => {
-        const [tu, tv] = worldToCanvas(tx, ty);
-        const [ru] = worldToCanvas(tx + tr, ty);
-        const rad = Math.abs(ru - tu);
-        ctx.fillStyle = '#16381a';
-        ctx.beginPath(); ctx.arc(tu, tv, rad, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#225026';
-        ctx.beginPath(); ctx.arc(tu - rad * 0.2, tv - rad * 0.2, rad * 0.6, 0, Math.PI * 2); ctx.fill();
-      });
-
-      const [su, sv] = worldToCanvas(0.0, 0.0);
-      ctx.strokeStyle = '#00d2ff';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.arc(su, sv, 7, 0, Math.PI * 2); ctx.stroke();
-      ctx.fillStyle = '#00d2ff';
-      ctx.font = 'bold 9px monospace';
-      ctx.fillText('START (0,0)', su + 10, sv + 3);
-    }
-
-    function drawTrailSegment(pts, widthM) {
-      if (pts.length < 2) return;
-      const [u0] = worldToCanvas(0, 0);
-      const [uW] = worldToCanvas(widthM, 0);
-      const pxWidth = Math.abs(uW - u0);
-
-      ctx.strokeStyle = '#6e563b';
-      ctx.lineWidth = pxWidth;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      pts.forEach(([x, y], idx) => {
-        const [u, v] = worldToCanvas(x, y);
-        if (idx === 0) ctx.moveTo(u, v);
-        else ctx.lineTo(u, v);
-      });
-      ctx.stroke();
-
-      ctx.strokeStyle = '#85694a';
-      ctx.lineWidth = pxWidth * 0.75;
-      ctx.stroke();
     }
 
     /* --------------------------------------------------------------------------
-       Authoritative Map Renderer
+       11-Layer Authoritative Map Renderer (Parts 31-34)
        -------------------------------------------------------------------------- */
     function renderMap() {
       try {
@@ -1429,25 +1501,54 @@
         ctx.scale(viewZoom, viewZoom);
         ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
-        // 1. RELLIS Terrain Basemap
+        // Layer 1 — RELLIS / Terrain Base
         if (layers.base) {
           if (basemapLoaded && basemapImg.width > 0) {
             ctx.drawImage(basemapImg, 0, 0, canvas.width, canvas.height);
           } else {
             drawProceduralBasemap();
           }
+          // Truthful synthetic labeling watermark
+          ctx.save();
+          ctx.font = '10px monospace';
+          ctx.fillStyle = 'rgba(255, 183, 3, 0.65)';
+          ctx.fillText("RELLIS-INSPIRED SYNTHETIC", 14, canvas.height - 14);
+          ctx.restore();
         }
 
-        // 2. SLAM Occupancy Overlay
+        // Layer 2 — SLAM Map
         if (layers.slam && slamLoaded && slamImg.width > 0) {
           ctx.save();
-          ctx.globalAlpha = 0.60;
+          ctx.globalAlpha = 0.55;
           ctx.drawImage(slamImg, 0, 0, canvas.width, canvas.height);
           ctx.restore();
         }
 
+        // Layer 3 — Traversability Corridor Overlay
+        if (layers.trav) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(5, 241, 135, 0.08)';
+          ctx.strokeStyle = 'rgba(5, 241, 135, 0.25)';
+          ctx.lineWidth = 1.5;
+
+          // Main trail corridor visualization
+          const [t1u, t1v] = worldToCanvas(-1.0, 1.6);
+          const [t2u, t2v] = worldToCanvas(11.0, -1.6);
+          ctx.fillRect(Math.min(t1u, t2u), Math.min(t1v, t2v), Math.abs(t2u - t1u), Math.abs(t2v - t1v));
+          ctx.strokeRect(Math.min(t1u, t2u), Math.min(t1v, t2v), Math.abs(t2u - t1u), Math.abs(t2v - t1v));
+
+          // Mud slip zone visualization (amber caution)
+          const [mu, mv] = worldToCanvas(6.0, 0.5);
+          const mRad = 1.2 / mapMeta.resolution;
+          ctx.fillStyle = 'rgba(255, 183, 3, 0.18)';
+          ctx.beginPath(); ctx.arc(mu, mv, mRad, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 183, 3, 0.5)';
+          ctx.stroke();
+          ctx.restore();
+        }
+
         if (latestTelemetry) {
-          // 3. Past Trajectory (Yellow dashed)
+          // Layer 5 — Trajectory (Where have I actually been?)
           if (layers.traj && latestTelemetry.trajectory && latestTelemetry.trajectory.length > 1) {
             ctx.strokeStyle = '#f59e0b';
             ctx.lineWidth = 1.8;
@@ -1462,7 +1563,7 @@
             ctx.setLineDash([]);
           }
 
-          // 4. Global Planned Path (Solid Emerald Green)
+          // Layer 6 — Global Planned Path
           if (layers.path && latestTelemetry.nav_path && latestTelemetry.nav_path.length > 1) {
             ctx.strokeStyle = '#05f187';
             ctx.lineWidth = 2.8;
@@ -1474,22 +1575,81 @@
             });
             ctx.stroke();
 
-            ctx.fillStyle = '#05f187';
-            latestTelemetry.nav_path.forEach(pt => {
-              const [u, v] = worldToCanvas(pt.x, pt.y);
-              ctx.beginPath(); ctx.arc(u, v, 2.5, 0, Math.PI * 2); ctx.fill();
+            // Layer 8 — Waypoints
+            latestTelemetry.nav_path.forEach((pt, idx) => {
+              if (idx % 3 === 0) {
+                const [u, v] = worldToCanvas(pt.x, pt.y);
+                ctx.fillStyle = '#05f187';
+                ctx.beginPath(); ctx.arc(u, v, 2.5, 0, Math.PI * 2); ctx.fill();
+              }
             });
           }
 
-          // 5. Active Navigation Goal Marker (Red flag)
+          // Layer 9 — Detected Obstacles & Persistent Blockages
+          if (layers.obst && latestTelemetry.persistent_obstacles) {
+            ctx.save();
+            latestTelemetry.persistent_obstacles.forEach(ob => {
+              const [ou, ov] = worldToCanvas(ob.x, ob.y);
+              const rPx = Math.max(5, (ob.radius_m || 0.45) / mapMeta.resolution);
+              ctx.fillStyle = 'rgba(255, 51, 102, 0.35)';
+              ctx.strokeStyle = '#ff3366';
+              ctx.lineWidth = 1.8;
+              ctx.beginPath(); ctx.arc(ou, ov, rPx, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+              ctx.fillStyle = '#ffffff';
+              ctx.font = 'bold 9px monospace';
+              ctx.fillText("BLOCK", ou - 14, ov + 3);
+            });
+            ctx.restore();
+          }
+
+          // Layer 10 — Recovery Checkpoints
+          if (layers.ckpt && latestTelemetry.checkpoints) {
+            ctx.save();
+            latestTelemetry.checkpoints.forEach(ck => {
+              const [cu, cv] = worldToCanvas(ck.x, ck.y);
+              ctx.fillStyle = '#00ffff';
+              ctx.strokeStyle = '#003366';
+              ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.moveTo(cu, cv - 6);
+              ctx.lineTo(cu + 6, cv);
+              ctx.lineTo(cu, cv + 6);
+              ctx.lineTo(cu - 6, cv);
+              ctx.closePath();
+              ctx.fill(); ctx.stroke();
+              ctx.font = 'bold 8px monospace';
+              ctx.fillText(`CKPT ${ck.id || ''}`, cu + 8, cv + 3);
+            });
+            ctx.restore();
+          }
+
+          // Layer 11 — Events (Markers for Failure, Replan, Recovery)
+          if (layers.events && latestTelemetry.events) {
+            ctx.save();
+            latestTelemetry.events.slice(0, 3).forEach((ev, idx) => {
+              if (ev.category === 'FAILURE' || ev.category === 'REPLAN') {
+                const rx = latestTelemetry.robot_pose.x;
+                const ry = latestTelemetry.robot_pose.y;
+                const [eu, ev_pos] = worldToCanvas(rx, ry);
+                ctx.fillStyle = ev.category === 'FAILURE' ? '#ff3366' : '#ffb703';
+                ctx.beginPath(); ctx.arc(eu, ev_pos - (idx * 14), 4, 0, Math.PI * 2); ctx.fill();
+              }
+            });
+            ctx.restore();
+          }
+
+          // Layer 7 — Active Navigation Goal Marker (Always Visible)
           if (latestTelemetry.active_goal) {
             const [gu, gv] = worldToCanvas(latestTelemetry.active_goal.x, latestTelemetry.active_goal.y);
             ctx.fillStyle = '#ff3366';
-            ctx.beginPath(); ctx.arc(gu, gv, 6.0, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.beginPath(); ctx.arc(gu, gv, 6.5, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8; ctx.stroke();
+            ctx.fillStyle = '#ff3366';
+            ctx.font = 'bold 10px monospace';
+            ctx.fillText("GOAL", gu + 9, gv - 4);
           }
 
-          // 6. Interactive Target Reticle & Bearing Vector
+          // Interactive Target Reticle & Bearing Vector
           if (currentTarget) {
             const [tu, tv] = worldToCanvas(currentTarget.x, currentTarget.y);
             const [ru, rv] = worldToCanvas(latestTelemetry.robot_pose.x, latestTelemetry.robot_pose.y);
@@ -1506,33 +1666,45 @@
 
             ctx.beginPath();
             ctx.moveTo(tu - 16, tv); ctx.lineTo(tu + 16, tv);
-            ctx.moveTo(tu, tv - 16); ctx.lineTo(tu + 16, tv);
+            ctx.moveTo(tu, tv - 16); ctx.lineTo(tu, tv + 16);
             ctx.stroke();
 
             ctx.beginPath(); ctx.arc(tu, tv, 8, 0, Math.PI * 2); ctx.stroke();
             ctx.beginPath(); ctx.arc(tu, tv, 16, 0, Math.PI * 2); ctx.stroke();
 
             ctx.fillStyle = col;
-            ctx.font = 'bold 11px monospace';
+            ctx.font = 'bold 10px monospace';
             const signX = currentTarget.x >= 0 ? '+' : '';
             const signY = currentTarget.y >= 0 ? '+' : '';
             ctx.fillText(`TARGET (${signX}${currentTarget.x.toFixed(2)}, ${signY}${currentTarget.y.toFixed(2)})`, tu + 18, tv - 10);
           }
 
-          // 7. Robot Marker & Heading Vector
+          // Layer 4 — Robot Footprint, Position & Heading (Always Visible)
           const p = latestTelemetry.robot_pose;
           const [ru, rv] = worldToCanvas(p.x, p.y);
 
-          ctx.fillStyle = '#00d2ff';
-          ctx.beginPath(); ctx.arc(ru, rv, 6.5, 0, Math.PI * 2); ctx.fill();
-          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8; ctx.stroke();
-
-          const arrowLen = 16;
-          const headU = ru + arrowLen * Math.cos(-p.yaw);
-          const headV = rv + arrowLen * Math.sin(-p.yaw);
+          // Real physical UGV footprint box: length=0.65m, width=0.48m
+          const fpL = 0.65 / mapMeta.resolution;
+          const fpW = 0.48 / mapMeta.resolution;
+          ctx.save();
+          ctx.translate(ru, rv);
+          ctx.rotate(-p.yaw);
+          ctx.fillStyle = 'rgba(0, 210, 255, 0.25)';
           ctx.strokeStyle = '#00d2ff';
-          ctx.lineWidth = 2.8;
-          ctx.beginPath(); ctx.moveTo(ru, rv); ctx.lineTo(headU, headV); ctx.stroke();
+          ctx.lineWidth = 1.5;
+          ctx.fillRect(-fpL / 2, -fpW / 2, fpL, fpW);
+          ctx.strokeRect(-fpL / 2, -fpW / 2, fpL, fpW);
+
+          // Center circle
+          ctx.fillStyle = '#00d2ff';
+          ctx.beginPath(); ctx.arc(0, 0, 4.5, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
+
+          // Heading arrow
+          ctx.strokeStyle = '#00d2ff';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(fpL * 0.7, 0); ctx.stroke();
+          ctx.restore();
         }
 
         ctx.restore();
@@ -1542,16 +1714,30 @@
     }
 
     /* --------------------------------------------------------------------------
-       Application Initialization (Guaranteed Clean Order)
+       Application Initialization
        -------------------------------------------------------------------------- */
-    window.addEventListener('resize', resizeCanvas);
-    initCameraStreams();
-    setInterval(fetchSlamImage, 1000);
-    setInterval(pollTelemetry, 100);
+    function resizeCanvas() {
+      const container = document.getElementById('mapContainer');
+      if (!container) return;
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+      renderMap();
+    }
 
-    // Initial Trigger
-    resizeCanvas();
-    pollTelemetry();
+    window.addEventListener('resize', resizeCanvas);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      resizeCanvas();
+      initCameraStreams();
+
+      // Poll Telemetry at 10 Hz
+      setInterval(pollTelemetry, 100);
+
+      // Poll SLAM Occupancy PNG at 1 Hz
+      setInterval(fetchSlamImage, 1000);
+      fetchSlamImage();
+    });
+
   </script>
 </body>
 </html>

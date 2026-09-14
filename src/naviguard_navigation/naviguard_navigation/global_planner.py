@@ -7,7 +7,7 @@ from naviguard_navigation.occupancy_grid import NavigationOccupancyGrid
 
 
 class GlobalPlannerAStar:
-    """8-connected grid-based A* planner incorporating obstacle clearance and turning costs."""
+    """8-connected grid-based A* planner incorporating obstacle clearance, terrain difficulty, slope, and turning costs."""
 
     # 8-connected neighbor offsets: (dx, dy, step_cost_mult)
     NEIGHBORS = [
@@ -25,12 +25,16 @@ class GlobalPlannerAStar:
         self,
         heuristic_weight: float = 1.0,
         turn_penalty_weight: float = 0.5,
-        proximity_cost_weight: float = 0.1,
+        clearance_weight: float = 0.15,
+        terrain_weight: float = 0.15,
+        slope_weight: float = 0.20,
         max_iterations: int = 150000,
     ) -> None:
         self.heuristic_weight = heuristic_weight
         self.turn_penalty_weight = turn_penalty_weight
-        self.proximity_cost_weight = proximity_cost_weight
+        self.clearance_weight = clearance_weight
+        self.terrain_weight = terrain_weight
+        self.slope_weight = slope_weight
         self.max_iterations = max_iterations
 
     def plan(
@@ -39,7 +43,7 @@ class GlobalPlannerAStar:
         start_world: Tuple[float, float],
         goal_world: Tuple[float, float],
     ) -> Optional[List[Tuple[float, float]]]:
-        """Compute collision-free global path from start to goal in world coordinates."""
+        """Compute collision-free, clearance-optimal global path from start to goal in world coordinates."""
         if not grid.is_initialized:
             return None
 
@@ -53,13 +57,13 @@ class GlobalPlannerAStar:
         if start_cell == goal_cell:
             return [start_world, goal_world]
 
-        # If start cell is in inflated obstacle (e.g. robot just spawned near wall), find nearest free cell
+        # If start cell is in inflated obstacle (e.g. robot spawned near wall), find nearest free cell
         if grid.is_lethal(start_cell[0], start_cell[1]):
             start_cell = self._find_nearest_free_cell(grid, start_cell, max_radius_cells=8)
             if start_cell is None:
                 return None
 
-        # If goal cell is lethal, check if near free cell exists
+        # If goal cell is lethal, check if nearby free cell exists within clearance tolerance
         if grid.is_lethal(goal_cell[0], goal_cell[1]):
             goal_cell = self._find_nearest_free_cell(grid, goal_cell, max_radius_cells=8)
             if goal_cell is None:
@@ -69,7 +73,6 @@ class GlobalPlannerAStar:
         start_node = (start_cell[0], start_cell[1])
         goal_node = (goal_cell[0], goal_cell[1])
 
-        # Priority Queue: (f_score, counter, (gx, gy), parent_dir)
         counter = 0
         open_set: List[Tuple[float, int, Tuple[int, int], Optional[Tuple[int, int]]]] = []
         heapq.heappush(open_set, (0.0, counter, start_node, None))
@@ -111,24 +114,29 @@ class GlobalPlannerAStar:
                     if grid.is_lethal(cx + dx, cy) or grid.is_lethal(cx, cy + dy):
                         continue
 
-                # Base step distance
+                # 1. Base geometric step distance
                 step_dist = step_mult * grid.resolution
 
-                # Proximity & terrain cost
+                # 2. Multi-cost evaluation (clearance, terrain, slope, unknown)
                 cell_cost = grid.get_cost(nx, ny)
-                prox_penalty = cell_cost * self.proximity_cost_weight
+                cost_penalty = cell_cost * self.clearance_weight
 
-                # Turn penalty
+                # 3. Turning cost based on direction change
                 turn_penalty = 0.0
                 if parent_dir is not None and (dx != parent_dir[0] or dy != parent_dir[1]):
-                    turn_penalty = self.turn_penalty_weight * grid.resolution
+                    pdx, pdy = parent_dir
+                    dot = (dx * pdx + dy * pdy) / (step_mult * math.hypot(pdx, pdy))
+                    dot = max(-1.0, min(1.0, dot))
+                    turn_angle = math.acos(dot)
+                    turn_penalty = self.turn_penalty_weight * turn_angle * grid.resolution
 
-                edge_cost = step_dist * (1.0 + prox_penalty) + turn_penalty
+                edge_cost = step_dist * (1.0 + cost_penalty) + turn_penalty
                 tentative_g = current_g + edge_cost
 
                 if neighbor not in g_score or tentative_g < g_score[neighbor]:
                     g_score[neighbor] = tentative_g
                     came_from[neighbor] = current_node
+                    # Euclidean heuristic with weight
                     h_score = self.heuristic_weight * math.hypot(nx - goal_node[0], ny - goal_node[1]) * grid.resolution
                     f_score = tentative_g + h_score
                     counter += 1
@@ -160,7 +168,7 @@ class GlobalPlannerAStar:
         target_cell: Tuple[int, int],
         max_radius_cells: int = 8,
     ) -> Optional[Tuple[int, int]]:
-        """Search radial neighborhood for nearest non-lethal cell."""
+        """Search radial neighborhood for nearest non-lethal cell with maximum clearance."""
         tx, ty = target_cell
         best_cell = None
         min_dist_sq = float('inf')

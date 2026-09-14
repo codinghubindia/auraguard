@@ -1,1 +1,0 @@
-/home/maxx/naviguard_ws/src/naviguard_visual_odometry/launch/visual_odometry.launch.py

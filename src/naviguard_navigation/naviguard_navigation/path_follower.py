@@ -1,4 +1,4 @@
-"""Pure pursuit path following controller for differential-drive UGV."""
+"""Pure pursuit path following controller with environmental adaptive speed for NAVIGUARD."""
 
 import math
 from typing import List, Tuple, Optional
@@ -15,7 +15,7 @@ def normalize_angle(angle: float) -> float:
 
 
 class PathFollower:
-    """Computes bounded linear and angular velocities to track waypoint path."""
+    """Computes bounded linear and angular velocities with multi-factor adaptive speed scaling."""
 
     def __init__(
         self,
@@ -48,8 +48,10 @@ class PathFollower:
         robot_yaw: float,
         waypoints: List[Waypoint],
         speed_scale: float = 1.0,
+        terrain_factor: float = 1.0,
+        clearance_factor: float = 1.0,
     ) -> Tuple[float, float, Optional[Waypoint], float]:
-        """Compute (vx, wz, lookahead_waypoint, cross_track_error)."""
+        """Compute (vx, wz, lookahead_waypoint, cross_track_error) with adaptive environmental speed scaling."""
         if not waypoints:
             return 0.0, 0.0, None, 0.0
 
@@ -84,18 +86,23 @@ class PathFollower:
         curr_wp = waypoints[self.current_waypoint_idx]
         dx = robot_x - curr_wp.x
         dy = robot_y - curr_wp.y
-        # Vector along path
         path_yaw = curr_wp.yaw
         cross_track_error = -math.sin(path_yaw) * dx + math.cos(path_yaw) * dy
 
-        # 5. Controller calculations
-        # Angular control
+        # 5. Angular control
         wz = self.kp_heading * heading_error - self.kp_cross_track * cross_track_error
         wz = max(-self.max_angular_velocity, min(self.max_angular_velocity, wz))
 
-        # Linear control
+        # 6. Adaptive Linear Speed Policy:
+        # speed = base_speed * confidence_factor * terrain_factor * clearance_factor
+        adaptive_scale = (
+            max(0.2, min(1.0, speed_scale)) *
+            max(0.35, min(1.0, terrain_factor)) *
+            max(0.40, min(1.0, clearance_factor))
+        )
+        v_limit = self.max_linear_velocity * adaptive_scale
+
         dist_to_goal = math.hypot(waypoints[-1].x - robot_x, waypoints[-1].y - robot_y)
-        v_limit = self.max_linear_velocity * max(0.2, min(1.0, speed_scale))
 
         if abs(heading_error) > self.turn_in_place_angle_threshold:
             # Turn in place to align with path
@@ -105,11 +112,12 @@ class PathFollower:
             cos_factor = max(0.0, math.cos(heading_error))
             vx = v_limit * cos_factor
 
-            # Slow down on final approach (within 1.0 m)
+            # Smooth deceleration on final approach (within 1.0 m)
             if dist_to_goal < 1.0:
                 slowdown = max(0.3, dist_to_goal / 1.0)
                 vx *= slowdown
 
+            # Enforce non-zero crawling speed above minimum velocity
             vx = max(self.min_linear_velocity, min(v_limit, vx))
 
         return float(vx), float(wz), lookahead_wp, float(abs(cross_track_error))

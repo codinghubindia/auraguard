@@ -1,1 +1,0 @@
-/home/maxx/naviguard_ws/src/naviguard_confidence/launch/confidence.launch.py

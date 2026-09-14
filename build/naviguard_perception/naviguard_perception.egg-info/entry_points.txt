@@ -1,2 +1,0 @@
-[console_scripts]
-naviguard_perception_node = naviguard_perception.perception_node:main

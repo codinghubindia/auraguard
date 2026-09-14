@@ -1,2 +1,0 @@
-[console_scripts]
-confidence_node = naviguard_confidence.confidence_node:main
