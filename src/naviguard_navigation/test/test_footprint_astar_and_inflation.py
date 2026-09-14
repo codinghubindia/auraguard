@@ -101,3 +101,31 @@ def test_narrow_corridor_below_tight_limit_rejected():
     path = planner.plan(grid, (1.5, 2.5), (3.5, 2.5))
     # Path must be None because corridor clearance fails the tight passage constraint
     assert path is None
+
+
+def test_small_passage_wide_enough_succeeds():
+    """Verify A* planner successfully finds path through a small passage wide enough for the vehicle (0.65m > 0.48m)."""
+    grid = create_test_grid(width=100, height=100, resolution=0.05)
+    # Create dividing wall at x=50 (x=2.5m)
+    for y_idx in range(0, 100):
+        grid.base_raw_grid[y_idx, 50] = 100
+    # Open a 0.65m passage: 13 cells * 0.05m = 0.65m centered at y=50 (y_idx 44 to 56 inclusive is 13 cells)
+    for y_idx in range(44, 57):
+        grid.base_raw_grid[y_idx, 50] = 0
+    grid._compute_cost_grid()
+
+    planner = GlobalPlannerAStar()
+    # Plan from left side to right side through the 0.65m small passage
+    path = planner.plan(grid, (1.5, 2.5), (3.5, 2.5))
+    assert path is not None
+    assert len(path) > 0
+    # Destination reached near (3.5, 2.5)
+    assert math.hypot(path[-1][0] - 3.5, path[-1][1] - 2.5) < 0.25
+    # Verify the vehicle footprint remains collision free along the path through the narrow passage
+    mid_point = None
+    for pt in path:
+        if abs(pt[0] - 2.5) < 0.1:
+            mid_point = pt
+            break
+    assert mid_point is not None
+    assert grid.is_footprint_collision_free(mid_point[0], mid_point[1], yaw=0.0) is True

@@ -82,7 +82,7 @@ def launch_setup(context, *args, **kwargs):
 
 def generate_launch_description():
     pkg_naviguard = get_package_share_directory('naviguard_description')
-    default_world = os.path.join(pkg_naviguard, 'worlds', 'naviguard_world.sdf')
+    default_world = os.path.join(pkg_naviguard, 'worlds', 'rellis_outdoor_world.sdf')
 
     return LaunchDescription([
         DeclareLaunchArgument(

@@ -215,6 +215,7 @@ class StateCache:
             "vo": StreamBuffer("vo", target_fps=10.0),
             "chase": StreamBuffer("chase", target_fps=15.0),
             "yolo": StreamBuffer("yolo", target_fps=10.0),
+            "panorama": StreamBuffer("panorama", target_fps=15.0),
         }
 
         # 9. Rolling Event Log

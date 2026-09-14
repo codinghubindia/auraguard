@@ -76,8 +76,9 @@ class VisualOdometryNode(Node):
         self.declare_parameter('geom_min_inliers', 15)
         self.declare_parameter('geom_min_baseline_disp_px', 0.6)
 
-        # Periodic logging parameter
         self.declare_parameter('diag_period_sec', 3.0)
+        self.declare_parameter('panorama_topic', '/camera/panorama_image')
+        self.declare_parameter('panorama_debug_topic', '/visual_odometry/panorama_debug')
 
         # Retrieve parameter values
         image_topic = self.get_parameter('image_topic').get_parameter_value().string_value
@@ -85,6 +86,8 @@ class VisualOdometryNode(Node):
         odom_topic = self.get_parameter('odom_topic').get_parameter_value().string_value
         debug_image_topic = self.get_parameter('debug_image_topic').get_parameter_value().string_value
         telemetry_topic = self.get_parameter('telemetry_topic').get_parameter_value().string_value
+        panorama_topic = self.get_parameter('panorama_topic').get_parameter_value().string_value
+        panorama_debug_topic = self.get_parameter('panorama_debug_topic').get_parameter_value().string_value
 
         lk_win = self.get_parameter('lk_win_size').get_parameter_value().integer_value
         self.diag_period_sec = self.get_parameter('diag_period_sec').get_parameter_value().double_value
@@ -115,6 +118,10 @@ class VisualOdometryNode(Node):
 
         # 2. Components Initialization
         self.tracker = FeatureTracker(tracker_config)
+        self.surround_tracker = FeatureTracker(tracker_config)
+        self.surround_tracks_count = 0
+        self.surround_inliers_count = 0
+        self.surround_status = "AWAITING_PANORAMA"
         self.geom_estimator = GeometricMotionEstimator(geom_config)
         self.bridge = CvBridge()
 
@@ -179,9 +186,22 @@ class VisualOdometryNode(Node):
             odom_qos,
         )
 
+        self.panorama_sub = self.create_subscription(
+            Image,
+            panorama_topic,
+            self.panorama_callback,
+            sub_sensor_qos,
+        )
+
         self.debug_image_pub = self.create_publisher(
             Image,
             debug_image_topic,
+            10,
+        )
+
+        self.panorama_debug_pub = self.create_publisher(
+            Image,
+            panorama_debug_topic,
             10,
         )
 
@@ -196,7 +216,9 @@ class VisualOdometryNode(Node):
             f"  Subscribing image:       {image_topic} (Best-Effort)\n"
             f"  Subscribing camera_info: {camera_info_topic} (Best-Effort)\n"
             f"  Subscribing odom:        {odom_topic} (Reliable)\n"
+            f"  Subscribing panorama:    {panorama_topic} (360-deg Surround)\n"
             f"  Publishing debug image:  {debug_image_topic}\n"
+            f"  Publishing panorama dbg: {panorama_debug_topic}\n"
             f"  Publishing telemetry:    {telemetry_topic}\n"
             f"  Max features:            {tracker_config.max_features}\n"
             f"  FB error threshold:      {tracker_config.fb_err_threshold} px\n"
@@ -412,10 +434,46 @@ class VisualOdometryNode(Node):
             ),
             KeyValue(key='camera_fx', value=f"{self.fx:.2f}" if self.fx is not None else "nan"),
             KeyValue(key='camera_fy', value=f"{self.fy:.2f}" if self.fy is not None else "nan"),
+            # 360-Degree Surround Panoramic Visual Odometry
+            KeyValue(key='surround_tracks', value=str(self.surround_tracks_count)),
+            KeyValue(key='surround_inliers', value=str(self.surround_inliers_count)),
+            KeyValue(key='surround_status', value=self.surround_status),
         ]
 
         diag_msg.status.append(diag_status)
         self.telemetry_pub.publish(diag_msg)
+
+    def panorama_callback(self, msg: Image) -> None:
+        """Process 360-degree panoramic camera frame: surround tracking & wide-angle optical flow."""
+        try:
+            cv_img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+        except CvBridgeError:
+            return
+
+        gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
+        tracks, stats = self.surround_tracker.track(gray)
+        inliers = [t for t in tracks if t.is_inlier]
+        self.surround_tracks_count = len(tracks)
+        self.surround_inliers_count = len(inliers)
+        self.surround_status = "TRACKING_360" if len(inliers) >= 15 else "SURROUND_SEARCH"
+
+        meta = {
+            'frame_idx': self.frame_idx,
+            'stamp_sec': msg.header.stamp.sec,
+            'stamp_nanosec': msg.header.stamp.nanosec,
+            'frame_id': 'camera_360_link',
+            'input_fps': self.input_fps,
+            'proc_latency_ms': self.proc_latency_ms,
+            'proc_fps': self.proc_fps,
+            'wheel_vx': self.latest_odom_vx,
+            'wheel_wz': self.latest_odom_wz,
+            'geom_status': f"360_SURROUND_{self.surround_status}",
+            'geom_num_inliers': len(inliers),
+        }
+        debug_canvas = self.surround_tracker.render_debug_canvas(cv_img, tracks, stats, meta)
+        debug_msg = self.bridge.cv2_to_imgmsg(debug_canvas, encoding='bgr8')
+        debug_msg.header = msg.header
+        self.panorama_debug_pub.publish(debug_msg)
 
 
 def main(args=None) -> None:

@@ -102,8 +102,19 @@ class NavigationOccupancyGrid:
 
         self.clearance_grid = dist_m.astype(np.float32)
 
-        # 1. Lethal obstacle inflation (hard collision boundary)
-        cost[dist_m <= self.inflation_radius_m] = 100.0
+        # 1. Hard Lethal obstacle collision boundary (physical chassis inscribed radius = 0.24m)
+        # Any distance <= inscribed radius is physically impassable by the robot chassis.
+        inscribed_r = VehicleGeometry.INSCRIBED_RADIUS_M
+        cost[dist_m <= inscribed_r] = 100.0
+
+        # Tight passage buffer: between inscribed radius (0.24m) and inflation radius (0.34m)
+        # Allows A* to navigate through small passages (e.g. 0.58m - 0.68m wide) if wide enough to fit the vehicle,
+        # while penalizing tight corridors (70.0 - 95.0) relative to open terrain.
+        tight_mask = (dist_m > inscribed_r) & (dist_m <= self.inflation_radius_m)
+        if np.any(tight_mask):
+            tight_span = max(0.01, self.inflation_radius_m - inscribed_r)
+            tight_norm = (self.inflation_radius_m - dist_m[tight_mask]) / tight_span
+            cost[tight_mask] = np.maximum(cost[tight_mask], 70.0 + tight_norm * 25.0)
 
         # 2. Continuous Proximity & Clearance Decay Cost
         # Smooth quadratic decay from inflation edge up to proximity_radius_m
@@ -260,6 +271,14 @@ class NavigationOccupancyGrid:
         if not (0 <= gx < self.width_cells and 0 <= gy < self.height_cells):
             return True
         return bool(self.cost_grid[gy, gx] >= 100.0)
+
+    def is_raw_obstacle(self, gx: int, gy: int) -> bool:
+        """Check if grid cell contains a raw uninflated obstacle."""
+        if not self.is_initialized:
+            return True
+        if not (0 <= gx < self.width_cells and 0 <= gy < self.height_cells):
+            return True
+        return bool(self.raw_grid[gy, gx] >= self.obstacle_threshold)
 
     def get_cost(self, gx: int, gy: int) -> float:
         """Return composite cost of grid cell [0.0, 100.0]."""

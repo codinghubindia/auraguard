@@ -122,7 +122,14 @@ class VehicleGeometry:
         return global_pts
 
     @classmethod
-    def is_footprint_collision_free(cls, x: float, y: float, yaw: float, grid: Any) -> bool:
+    def is_footprint_collision_free(
+        cls,
+        x: float,
+        y: float,
+        yaw: float,
+        grid: Any,
+        margin_m: float = 0.02,
+    ) -> bool:
         """Verify whether the complete physical UGV footprint at (x, y, yaw) is collision-free."""
         if not grid.is_initialized:
             return False
@@ -132,8 +139,14 @@ class VehicleGeometry:
             pt = grid.world_to_map(gx, gy)
             if pt is None:
                 return False  # Footprint extends outside map
-            if grid.is_lethal(pt[0], pt[1]):
-                return False  # Collision detected with footprint
+            if hasattr(grid, "get_clearance") and grid.clearance_grid.size > 0:
+                if grid.get_clearance(pt[0], pt[1]) < margin_m:
+                    return False
+            elif hasattr(grid, "is_raw_obstacle"):
+                if grid.is_raw_obstacle(pt[0], pt[1]):
+                    return False
+            elif grid.is_lethal(pt[0], pt[1]):
+                return False
 
         return True
 

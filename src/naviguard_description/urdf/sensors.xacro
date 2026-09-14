@@ -208,5 +208,112 @@
     </sensor>
   </gazebo>
 
+  <!-- ==================== 360 DEGREE PANORAMIC SURROUND CAMERA ==================== -->
+  <xacro:property name="camera_360_mass" value="0.15"/>
+
+  <link name="camera_360_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${camera_360_mass}"/>
+      <inertia
+        ixx="5e-5" ixy="0.0" ixz="0.0"
+        iyy="5e-5" iyz="0.0"
+        izz="5e-5"/>
+    </inertial>
+
+    <!-- Mast Riser Pole -->
+    <visual name="mast_riser">
+      <origin xyz="0 0 -0.06" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.012" length="0.12"/>
+      </geometry>
+      <material name="sensor_mast_black"/>
+    </visual>
+
+    <!-- 360 Panoramic Sensor Base -->
+    <visual name="camera_360_base">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.032" length="0.024"/>
+      </geometry>
+      <material name="camera_blue"/>
+    </visual>
+
+    <!-- 360 Glass Dome Optics -->
+    <visual name="camera_360_dome">
+      <origin xyz="0 0 0.015" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.028"/>
+      </geometry>
+      <material name="lens_glass"/>
+    </visual>
+
+    <!-- 4 Surround Optical Lens Facets (Visual) -->
+    <visual name="lens_front">
+      <origin xyz="0.030 0 0.005" rpy="0 ${pi/2} 0"/>
+      <geometry>
+        <cylinder radius="0.008" length="0.008"/>
+      </geometry>
+      <material name="sensor_mast_black"/>
+    </visual>
+    <visual name="lens_back">
+      <origin xyz="-0.030 0 0.005" rpy="0 ${pi/2} 0"/>
+      <geometry>
+        <cylinder radius="0.008" length="0.008"/>
+      </geometry>
+      <material name="sensor_mast_black"/>
+    </visual>
+    <visual name="lens_left">
+      <origin xyz="0 0.030 0.005" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="0.008" length="0.008"/>
+      </geometry>
+      <material name="sensor_mast_black"/>
+    </visual>
+    <visual name="lens_right">
+      <origin xyz="0 -0.030 0.005" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="0.008" length="0.008"/>
+      </geometry>
+      <material name="sensor_mast_black"/>
+    </visual>
+  </link>
+
+  <joint name="camera_360_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_360_link"/>
+    <origin xyz="0.0 0.0 0.28" rpy="0 0 0"/>
+  </joint>
+
+  <gazebo reference="camera_360_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="camera_360_link">
+    <material>
+      <ambient>0.08 0.22 0.45 1.0</ambient>
+      <diffuse>0.10 0.30 0.60 1.0</diffuse>
+      <specular>0.6 0.6 0.6 1.0</specular>
+    </material>
+    <sensor name="naviguard_360_camera" type="camera">
+      <camera>
+        <horizontal_fov>3.14159265</horizontal_fov>
+        <image>
+          <width>1024</width>
+          <height>256</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.05</near>
+          <far>100.0</far>
+        </clip>
+      </camera>
+      <always_on>1</always_on>
+      <update_rate>20</update_rate>
+      <visualize>false</visualize>
+      <topic>/camera/panorama_image</topic>
+    </sensor>
+  </gazebo>
+
 </robot>
 

@@ -132,28 +132,39 @@ def generate_rellis_basemap(
     lu, lv = world_to_px(8.0, -0.8, origin_x, origin_y, resolution, height)
     cv2.putText(img, "LOG", (lu - 12, lv - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.30, (230, 180, 100), 1, cv2.LINE_AA)
 
-    # Rock Cairn 1: center (2.0, -2.2), size 0.8m x 0.7m, yaw 0.5 rad
+    # Rock Cairn 1: center (2.0, -2.4), size 0.9m x 0.8m, yaw 0.45 rad
     rock_color = (140, 140, 145)
-    corners_rock = get_rotated_box_corners(2.0, -2.2, 0.8, 0.7, 0.5, origin_x, origin_y, resolution, height)
+    corners_rock = get_rotated_box_corners(2.0, -2.4, 0.9, 0.8, 0.45, origin_x, origin_y, resolution, height)
     cv2.fillPoly(img, [corners_rock], rock_color)
     cv2.polylines(img, [corners_rock], True, (95, 95, 100), 1)
-    rk_u, rk_v = world_to_px(2.0, -2.2, origin_x, origin_y, resolution, height)
+    rk_u, rk_v = world_to_px(2.0, -2.4, origin_x, origin_y, resolution, height)
     cv2.putText(img, "ROCK", (rk_u - 15, rk_v - 6), cv2.FONT_HERSHEY_SIMPLEX, 0.28, (210, 210, 215), 1, cv2.LINE_AA)
 
-    # Rock Cluster 2: center (7.0, 1.8), size 0.9m x 0.8m, yaw 0.2 rad
-    corners_rock2 = get_rotated_box_corners(7.0, 1.8, 0.9, 0.8, 0.2, origin_x, origin_y, resolution, height)
+    # Rock Cluster 2: center (11.0, -2.2), size 1.1m x 0.9m, yaw 0.8 rad
+    corners_rock2 = get_rotated_box_corners(11.0, -2.2, 1.1, 0.9, 0.8, origin_x, origin_y, resolution, height)
     cv2.fillPoly(img, [corners_rock2], rock_color)
     cv2.polylines(img, [corners_rock2], True, (95, 95, 100), 1)
 
-    # Post Barrier: center (7.5, 2.2), cylinder radius 0.12m
-    post_u, post_v = world_to_px(7.5, 2.2, origin_x, origin_y, resolution, height)
-    cv2.circle(img, (post_u, post_v), int(0.14 / resolution), (45, 140, 160), -1)
+    # Side Boulder (Impassable gap on shoulder): center (8.5, 1.35), radius 0.18m
+    sb_u, sb_v = world_to_px(8.5, 1.35, origin_x, origin_y, resolution, height)
+    cv2.circle(img, (sb_u, sb_v), int(0.18 / resolution), rock_color, -1)
+    cv2.circle(img, (sb_u, sb_v), int(0.18 / resolution), (95, 95, 100), 1)
+
+    # Trail Border Post Markers
+    post_u1, post_v1 = world_to_px(6.5, 1.6, origin_x, origin_y, resolution, height)
+    cv2.circle(img, (post_u1, post_v1), int(0.10 / resolution), (45, 140, 160), -1)
+    post_u2, post_v2 = world_to_px(10.5, -1.5, origin_x, origin_y, resolution, height)
+    cv2.circle(img, (post_u2, post_v2), int(0.10 / resolution), (45, 140, 160), -1)
 
     # Trees (Foliage canopy + trunk center)
     trees = [
-        (3.0, 2.8, 1.4, 0.28, "Tree 1"),
-        (5.5, -2.7, 1.6, 0.32, "Tree 2"),
-        (10.5, 1.5, 1.5, 0.30, "Tree 3"),
+        (3.5, 2.6, 1.5, 0.28, "Live Oak"),
+        (4.2, -2.5, 1.1, 0.26, "Cedar"),
+        # Twin Gateway Trees forming dedicated 0.66m narrow passage at x=8.5m:
+        (8.5, 0.57, 1.3, 0.24, "Gateway L"),
+        (8.5, -0.57, 1.3, 0.24, "Gateway R"),
+        (12.2, 2.8, 1.6, 0.30, "Live Oak"),
+        (16.0, 5.2, 1.2, 0.25, "Cedar"),
     ]
     foliage_color = (36, 122, 50)
     foliage_border = (26, 92, 38)
@@ -167,6 +178,10 @@ def generate_rellis_basemap(
         cv2.circle(img, (tu, tv), f_px, foliage_border, 2)
         cv2.circle(img, (tu, tv), t_px, trunk_color, -1)
         cv2.putText(img, "TREE", (tu - 14, tv - f_px - 3), cv2.FONT_HERSHEY_SIMPLEX, 0.26, (160, 210, 160), 1, cv2.LINE_AA)
+
+    # Narrow Gateway Passage Annotation
+    gw_u, gw_v = world_to_px(8.5, 0.0, origin_x, origin_y, resolution, height)
+    cv2.putText(img, "PASSAGE 0.66m", (gw_u - 35, gw_v + 4), cv2.FONT_HERSHEY_SIMPLEX, 0.28, (5, 241, 135), 1, cv2.LINE_AA)
 
     # Start marker (X=0, Y=0)
     start_u, start_v = world_to_px(0.0, 0.0, origin_x, origin_y, resolution, height)

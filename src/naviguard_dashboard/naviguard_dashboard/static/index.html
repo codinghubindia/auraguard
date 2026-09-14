@@ -668,9 +668,10 @@
         <div class="gcs-card-header">
           <span>MULTI-SPECTRAL AUTONOMOUS VISION STREAMS</span>
           <div style="display: flex; gap: 4px;">
-            <button class="btn-toggle active" id="tabFeedsAll" onclick="setVisionView('all')">ALL 6 FEEDS</button>
-            <button class="btn-toggle" id="tabFeedsYolo" onclick="setVisionView('yolo')">YOLOv8 DETECTIONS</button>
-            <button class="btn-toggle" id="tabFeedsChase" onclick="setVisionView('chase')">FOCUS CHASE</button>
+            <button class="btn-toggle active" id="tabFeedsAll" onclick="setVisionView('all')">ALL FEEDS</button>
+            <button class="btn-toggle" id="tabFeedsPano" onclick="setVisionView('panorama')">360° PANORAMA</button>
+            <button class="btn-toggle" id="tabFeedsYolo" onclick="setVisionView('yolo')">YOLOv8</button>
+            <button class="btn-toggle" id="tabFeedsChase" onclick="setVisionView('chase')">CHASE 3D</button>
             <button class="btn-toggle" id="tabFeedsSeg" onclick="setVisionView('seg')">SEGMENTATION</button>
           </div>
         </div>
@@ -713,7 +714,14 @@
               <div class="video-badge-fps" id="fpsVO">[LIVE] 10 FPS</div>
             </div>
 
-            <!-- Feed 6: Gazebo Harmonic Chase 3D View (Spans 2 columns if in grid) -->
+            <!-- Feed 6: 360-Degree Panoramic Surround Camera -->
+            <div class="video-box" id="boxPanorama">
+              <img id="camPanorama" alt="360 Panoramic Surround Stream">
+              <div class="video-badge-title" style="color: var(--accent-cyan);">360° SURROUND PANORAMA (/camera/panorama_image)</div>
+              <div class="video-badge-fps" id="fpsPanorama">[LIVE] 15 FPS</div>
+            </div>
+
+            <!-- Feed 7: Gazebo Harmonic Chase 3D View (Spans 2 columns) -->
             <div class="video-box" id="boxChase" style="grid-column: span 2; height: 165px;">
               <img id="camChase" alt="Third-Person Chase Stream">
               <div class="video-badge-title" style="color: var(--accent-cyan);">CHASE 3D VIEW (GAZEBO HARMONIC)</div>
@@ -1214,6 +1222,7 @@
       { id: 'camVO', type: 'vo', fpsEl: 'fpsVO', targetFps: 10, periodMs: 100 },
       { id: 'camChase', type: 'chase', fpsEl: 'fpsChase', targetFps: 15, periodMs: 66 },
       { id: 'camYolo', type: 'yolo', fpsEl: 'fpsYolo', targetFps: 10, periodMs: 100 },
+      { id: 'camPanorama', type: 'panorama', fpsEl: 'fpsPanorama', targetFps: 15, periodMs: 66 },
     ];
 
     let currentVisionMode = 'all';
@@ -1232,6 +1241,10 @@
         async function fetchFrame() {
           // Pause streams that are hidden in focus mode to conserve CPU/network
           if (currentVisionMode === 'chase' && stream.type !== 'chase') {
+            setTimeout(fetchFrame, 300);
+            return;
+          }
+          if (currentVisionMode === 'panorama' && stream.type !== 'panorama') {
             setTimeout(fetchFrame, 300);
             return;
           }
@@ -1299,15 +1312,17 @@
     function setVisionView(mode) {
       currentVisionMode = mode;
       const tabAll = document.getElementById('tabFeedsAll');
+      const tabPano = document.getElementById('tabFeedsPano');
       const tabYolo = document.getElementById('tabFeedsYolo');
       const tabChase = document.getElementById('tabFeedsChase');
       const tabSeg = document.getElementById('tabFeedsSeg');
       if (tabAll) tabAll.classList.toggle('active', mode === 'all');
+      if (tabPano) tabPano.classList.toggle('active', mode === 'panorama');
       if (tabYolo) tabYolo.classList.toggle('active', mode === 'yolo');
       if (tabChase) tabChase.classList.toggle('active', mode === 'chase');
       if (tabSeg) tabSeg.classList.toggle('active', mode === 'seg');
 
-      const boxes = ['boxRaw', 'boxYolo', 'boxSeg', 'boxPercept', 'boxVO', 'boxChase'];
+      const boxes = ['boxRaw', 'boxYolo', 'boxSeg', 'boxPercept', 'boxVO', 'boxPanorama', 'boxChase'];
       if (mode === 'all') {
         boxes.forEach(b => {
           const el = document.getElementById(b);
@@ -1317,6 +1332,16 @@
             el.style.height = (b === 'boxChase') ? '165px' : '';
           }
         });
+      } else if (mode === 'panorama') {
+        boxes.forEach(b => {
+          const el = document.getElementById(b);
+          if (el) el.style.display = (b === 'boxPanorama') ? '' : 'none';
+        });
+        const p = document.getElementById('boxPanorama');
+        if (p) {
+          p.style.gridColumn = 'span 2';
+          p.style.height = '340px';
+        }
       } else if (mode === 'yolo') {
         boxes.forEach(b => {
           const el = document.getElementById(b);
