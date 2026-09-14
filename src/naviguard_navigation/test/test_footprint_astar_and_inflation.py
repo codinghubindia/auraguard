@@ -129,3 +129,22 @@ def test_small_passage_wide_enough_succeeds():
             break
     assert mid_point is not None
     assert grid.is_footprint_collision_free(mid_point[0], mid_point[1], yaw=0.0) is True
+
+
+def test_tight_passage_above_inscribed_width_succeeds():
+    """Verify A* planner successfully traverses a 0.52m passage (>0.48m vehicle width, <0.58m nominal tight limit)."""
+    grid = create_test_grid(width=100, height=100, resolution=0.05)
+    # Dividing wall at x=50 (x=2.5m)
+    for y_idx in range(0, 100):
+        grid.base_raw_grid[y_idx, 50] = 100
+    # Open 0.52m passage: ~10 cells (0.50m) to 11 cells (0.55m) centered at y=50
+    for y_idx in range(45, 56):
+        grid.base_raw_grid[y_idx, 50] = 0
+    grid._compute_cost_grid()
+
+    planner = GlobalPlannerAStar()
+    path = planner.plan(grid, (1.5, 2.5), (3.5, 2.5))
+    assert path is not None
+    assert len(path) > 0
+    assert math.hypot(path[-1][0] - 3.5, path[-1][1] - 2.5) < 0.25
+

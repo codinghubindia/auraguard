@@ -160,7 +160,7 @@ class MissionManager:
     VALID_TRANSITIONS = {
         MissionState.IDLE: {MissionState.GOAL_SET, MissionState.MISSION_FAILED},
         MissionState.GOAL_SET: {MissionState.PLANNING, MissionState.IDLE},
-        MissionState.PLANNING: {MissionState.NAVIGATING, MissionState.MISSION_FAILED, MissionState.IDLE},
+        MissionState.PLANNING: {MissionState.NAVIGATING, MissionState.RECOVERY_WAIT, MissionState.MISSION_FAILED, MissionState.IDLE},
         MissionState.NAVIGATING: {
             MissionState.GOAL_REACHED,
             MissionState.REPLANNING,

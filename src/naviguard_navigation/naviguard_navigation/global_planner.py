@@ -60,13 +60,13 @@ class GlobalPlannerAStar:
 
         # If start cell is in inflated obstacle (e.g. robot spawned near wall), find nearest free cell
         if grid.is_lethal(start_cell[0], start_cell[1]):
-            start_cell = self._find_nearest_free_cell(grid, start_cell, max_radius_cells=8)
+            start_cell = self._find_nearest_free_cell(grid, start_cell, max_radius_cells=20)
             if start_cell is None:
                 return None
 
         # If goal cell is lethal, check if nearby free cell exists within clearance tolerance
         if grid.is_lethal(goal_cell[0], goal_cell[1]):
-            goal_cell = self._find_nearest_free_cell(grid, goal_cell, max_radius_cells=8)
+            goal_cell = self._find_nearest_free_cell(grid, goal_cell, max_radius_cells=20)
             if goal_cell is None:
                 return None
 
@@ -121,7 +121,7 @@ class GlobalPlannerAStar:
                 # 2. Footprint-derived corridor width feasibility
                 if grid.clearance_grid.size > 0:
                     clr = grid.get_clearance(nx, ny)
-                    min_required_clearance = (VehicleGeometry.WIDTH_M / 2.0) + VehicleGeometry.MINIMUM_CLEARANCE_M
+                    min_required_clearance = VehicleGeometry.INSCRIBED_RADIUS_M
                     # Reject cells where physical vehicle width cannot fit
                     if clr < min_required_clearance and clr > 0.0:
                         continue
@@ -189,7 +189,7 @@ class GlobalPlannerAStar:
         self,
         grid: NavigationOccupancyGrid,
         target_cell: Tuple[int, int],
-        max_radius_cells: int = 8,
+        max_radius_cells: int = 20,
     ) -> Optional[Tuple[int, int]]:
         """Search radial neighborhood for nearest non-lethal cell with maximum clearance."""
         tx, ty = target_cell

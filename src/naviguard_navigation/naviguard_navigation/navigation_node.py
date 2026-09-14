@@ -361,14 +361,46 @@ class NavigationNode(Node):
         elif self.mission_mgr.state == MissionState.PLANNING:
             self.cmd_ownership = "PLANNING"
             self.nav_reason = "Computing optimal multi-cost path"
+            if self.robot_pose is None or not self.occ_grid.is_initialized:
+                self.cmd_ownership = "PLANNING_WAIT"
+                self.nav_reason = "Waiting for SLAM occupancy map and robot pose before planning"
+                self._publish_telemetry(now_sec)
+                return
+
             success = self._compute_and_set_path(now_sec)
             if success:
                 self.mission_mgr.transition_to(MissionState.NAVIGATING, now_sec)
             else:
-                ctx = self._build_context(now_sec)
-                can_fit = self.last_passage_eval.get("can_fit", True)
-                fail_code = FailureCode.INSUFFICIENT_CLEARANCE if not can_fit else FailureCode.NO_SAFE_PATH
-                self.mission_mgr.record_planning_failure(now_sec, fail_code, context=ctx)
+                # 360-degree survey for open corridors and small passages
+                if self.robot_pose is not None and self.occ_grid.is_initialized:
+                    rx, ry, ryaw = self.robot_pose
+                    goal = self.goal_mgr.get_goal()
+                    gx = goal.x if goal else None
+                    gy = goal.y if goal else None
+                    lookaround_res = self.occ_grid.evaluate_360_passages(rx, ry, gx, gy)
+                    passages = lookaround_res.get("passages", [])
+                    if passages:
+                        best_deg = lookaround_res.get("best_heading_deg", 0.0)
+                        widest_m = lookaround_res.get("widest_corridor_m", 0.0)
+                        self.nav_reason = (
+                            f"360° Survey: {len(passages)} passages identified "
+                            f"(best: {best_deg:+.1f}°, width {widest_m:.2f}m)"
+                        )
+
+                # Retry mechanism: trigger 360 lookaround recovery if budget remains
+                if self.recovery_attempts_count < 3 and self.mission_mgr.replan_count < self.mission_mgr.max_replan_retries:
+                    self.get_logger().warn(
+                        f"Initial plan blocked. Triggering 360° lookaround retry mechanism (attempt {self.recovery_attempts_count + 1}/3)..."
+                    )
+                    if hasattr(self, 'fault_cli') and self.fault_cli.service_is_ready():
+                        self.fault_cli.call_async(Trigger.Request())
+                    self.mission_mgr.transition_to(MissionState.RECOVERY_WAIT, now_sec, "PLAN_BLOCKED_WAIT_360_LOOKAROUND")
+                    self.cmd_ownership = "YIELDED_TO_RECOVERY"
+                else:
+                    ctx = self._build_context(now_sec)
+                    can_fit = self.last_passage_eval.get("can_fit", True)
+                    fail_code = FailureCode.INSUFFICIENT_CLEARANCE if not can_fit else FailureCode.NO_SAFE_PATH
+                    self.mission_mgr.record_planning_failure(now_sec, fail_code, context=ctx)
 
         elif self.mission_mgr.state == MissionState.NAVIGATING:
             # 1. Check recovery integration & mutual exclusion
@@ -500,10 +532,19 @@ class NavigationNode(Node):
             if success:
                 self.mission_mgr.transition_to(MissionState.NAVIGATING, now_sec)
             else:
-                ctx = self._build_context(now_sec)
-                can_fit = self.last_passage_eval.get("can_fit", True)
-                fail_code = FailureCode.INSUFFICIENT_CLEARANCE if not can_fit else FailureCode.PATH_BLOCKED
-                self.mission_mgr.record_planning_failure(now_sec, fail_code, context=ctx)
+                if self.recovery_attempts_count < 3 and self.mission_mgr.replan_count < self.mission_mgr.max_replan_retries:
+                    self.get_logger().warn(
+                        f"Replan blocked. Triggering 360° lookaround retry mechanism (attempt {self.recovery_attempts_count + 1}/3)..."
+                    )
+                    if hasattr(self, 'fault_cli') and self.fault_cli.service_is_ready():
+                        self.fault_cli.call_async(Trigger.Request())
+                    self.mission_mgr.transition_to(MissionState.RECOVERY_WAIT, now_sec, "REPLAN_BLOCKED_WAIT_360_LOOKAROUND")
+                    self.cmd_ownership = "YIELDED_TO_RECOVERY"
+                else:
+                    ctx = self._build_context(now_sec)
+                    can_fit = self.last_passage_eval.get("can_fit", True)
+                    fail_code = FailureCode.INSUFFICIENT_CLEARANCE if not can_fit else FailureCode.PATH_BLOCKED
+                    self.mission_mgr.record_planning_failure(now_sec, fail_code, context=ctx)
 
         elif self.mission_mgr.state == MissionState.RECOVERY_WAIT:
             # Strictly do not publish /cmd_vel; yield to recovery

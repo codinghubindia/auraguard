@@ -54,8 +54,8 @@ class RecoveryPlanner:
         if "NAN_OR_INF" in reason or "SHOCK" in reason:
             return RecoveryStrategy.STOP_AND_RELOCALIZE
 
-        # Rule 2: Path blocked / no safe path -> 360 Lookaround to find open passages
-        if "PATH_BLOCKED" in reason or "NO_SAFE_PATH" in reason or "CLEARANCE" in reason:
+        # Rule 2: Path blocked / no safe path / lookaround trigger -> 360 Lookaround to find open passages
+        if any(k in reason for k in ("PATH_BLOCKED", "NO_SAFE_PATH", "CLEARANCE", "LOOKAROUND", "PLAN", "OPERATOR", "MANUAL", "TRIGGER")):
             return RecoveryStrategy.LOOKAROUND_360_SCAN
 
         # Rule 3: Obstacle proximity -> backtrack away if checkpoint exists on attempt 1,

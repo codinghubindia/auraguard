@@ -59,6 +59,7 @@ EOF
   echo -e "   ${C_DIM}│${C_RESET}  ${C_BOLD}Perception:${C_RESET} YOLOv8 (CPU/ONNX)  ${C_DIM}│${C_RESET}  ${C_BOLD}Costmap:${C_RESET}   11-Layer Model     ${C_DIM}│${C_RESET}"
   echo -e "   ${C_DIM}│${C_RESET}  ${C_BOLD}Footprint:${C_RESET}  0.56m x 0.48m       ${C_DIM}│${C_RESET}  ${C_BOLD}Inflation:${C_RESET} 0.34m (Inscribed)   ${C_DIM}│${C_RESET}"
   echo -e "   ${C_DIM}│${C_RESET}  ${C_BOLD}Authority:${C_RESET}  Single /cmd_vel     ${C_DIM}│${C_RESET}  ${C_BOLD}Dashboard:${C_RESET} http://localhost:8080 ${C_DIM}│${C_RESET}"
+  echo -e "   ${C_DIM}│${C_RESET}  ${C_BOLD}Graphics:${C_RESET}   NVIDIA RTX 2050     ${C_DIM}│${C_RESET}  ${C_BOLD}Pipeline:${C_RESET}  D3D12 Gallium (GPU)${C_DIM}│${C_RESET}"
   echo -e "   ${C_DIM}└──────────────────────────────────────────────────────────────────┘${C_RESET}"
   echo ""
 }
@@ -224,8 +225,16 @@ else
   exit 1
 fi
 
-# Set Gazebo Harmonic resource path for models & worlds
-export GZ_SIM_RESOURCE_PATH="$WS_ROOT/src/naviguard_description/models:$WS_ROOT/src/naviguard_description/worlds:${GZ_SIM_RESOURCE_PATH:-}"
+# Enable GPU / Hardware Acceleration via NVIDIA RTX 2050 (D3D12 WSL2)
+if [ -d "/usr/lib/wsl/lib" ] && command -v nvidia-smi &>/dev/null; then
+  export GALLIUM_DRIVER=d3d12
+  export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
+  export LD_LIBRARY_PATH="/usr/lib/wsl/lib:${LD_LIBRARY_PATH:-}"
+  export LIBGL_ALWAYS_SOFTWARE=0
+fi
+
+# Set Gazebo Harmonic resource path for models, materials, & worlds
+export GZ_SIM_RESOURCE_PATH="$WS_ROOT/src/naviguard_description/models:$WS_ROOT/src/naviguard_description/materials:$WS_ROOT/src/naviguard_description/worlds:${GZ_SIM_RESOURCE_PATH:-}"
 
 # Prepare launch arguments
 LAUNCH_ARGS=(

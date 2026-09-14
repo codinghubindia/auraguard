@@ -114,6 +114,14 @@
             <ambient>0.28 0.42 0.20 1.0</ambient>
             <diffuse>0.32 0.48 0.24 1.0</diffuse>
             <specular>0.03 0.03 0.03 1.0</specular>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/wild_grass.png</albedo_map>
+                <roughness>0.85</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
       </link>
@@ -377,6 +385,14 @@
             <ambient>0.34 0.21 0.12 1.0</ambient>
             <diffuse>0.39 0.25 0.15 1.0</diffuse>
             <specular>0.02 0.02 0.02 1.0</specular>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/tree_bark.png</albedo_map>
+                <roughness>0.92</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
         <!-- Layer 1 Lower Foliage -->
@@ -390,6 +406,14 @@
           <material>
             <ambient>0.16 0.38 0.13 1.0</ambient>
             <diffuse>0.21 0.48 0.17 1.0</diffuse>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/foliage.png</albedo_map>
+                <roughness>0.88</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
         <!-- Layer 2 Crown Foliage -->
@@ -403,6 +427,14 @@
           <material>
             <ambient>0.19 0.44 0.15 1.0</ambient>
             <diffuse>0.25 0.54 0.20 1.0</diffuse>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/foliage.png</albedo_map>
+                <roughness>0.88</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
       </link>
@@ -434,6 +466,14 @@
             <ambient>0.32 0.20 0.11 1.0</ambient>
             <diffuse>0.37 0.24 0.14 1.0</diffuse>
             <specular>0.02 0.02 0.02 1.0</specular>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/tree_bark.png</albedo_map>
+                <roughness>0.92</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
         <!-- Layer 1 Lower Foliage -->
@@ -447,6 +487,14 @@
           <material>
             <ambient>0.15 0.36 0.12 1.0</ambient>
             <diffuse>0.20 0.46 0.16 1.0</diffuse>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/foliage.png</albedo_map>
+                <roughness>0.88</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
         <!-- Layer 2 Crown Foliage -->
@@ -460,6 +508,14 @@
           <material>
             <ambient>0.18 0.42 0.14 1.0</ambient>
             <diffuse>0.24 0.52 0.19 1.0</diffuse>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/foliage.png</albedo_map>
+                <roughness>0.88</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
       </link>
@@ -522,6 +578,14 @@
           <material>
             <ambient>0.36 0.22 0.13 1.0</ambient>
             <diffuse>0.42 0.27 0.16 1.0</diffuse>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/tree_bark.png</albedo_map>
+                <roughness>0.92</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
         <visual name="visual_foliage">
@@ -534,6 +598,14 @@
           <material>
             <ambient>0.17 0.40 0.13 1.0</ambient>
             <diffuse>0.22 0.50 0.17 1.0</diffuse>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/foliage.png</albedo_map>
+                <roughness>0.88</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
       </link>
@@ -564,6 +636,14 @@
           <material>
             <ambient>0.33 0.20 0.10 1.0</ambient>
             <diffuse>0.38 0.24 0.13 1.0</diffuse>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/tree_bark.png</albedo_map>
+                <roughness>0.92</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
         <visual name="visual_foliage">
@@ -577,6 +657,14 @@
           <material>
             <ambient>0.12 0.32 0.14 1.0</ambient>
             <diffuse>0.16 0.42 0.18 1.0</diffuse>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/foliage.png</albedo_map>
+                <roughness>0.88</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
       </link>
@@ -662,6 +750,14 @@
           <material>
             <ambient>0.35 0.22 0.12 1.0</ambient>
             <diffuse>0.40 0.26 0.15 1.0</diffuse>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/tree_bark.png</albedo_map>
+                <roughness>0.92</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
         <visual name="visual_foliage">
@@ -674,6 +770,14 @@
           <material>
             <ambient>0.18 0.42 0.14 1.0</ambient>
             <diffuse>0.23 0.52 0.18 1.0</diffuse>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/foliage.png</albedo_map>
+                <roughness>0.88</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
       </link>
@@ -730,6 +834,14 @@
           <material>
             <ambient>0.32 0.20 0.10 1.0</ambient>
             <diffuse>0.38 0.24 0.13 1.0</diffuse>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/tree_bark.png</albedo_map>
+                <roughness>0.92</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
         <visual name="visual_foliage">
@@ -743,6 +855,14 @@
           <material>
             <ambient>0.14 0.34 0.15 1.0</ambient>
             <diffuse>0.18 0.45 0.20 1.0</diffuse>
+          
+            <pbr>
+              <metal>
+                <albedo_map>materials/textures/foliage.png</albedo_map>
+                <roughness>0.88</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
           </material>
         </visual>
       </link>

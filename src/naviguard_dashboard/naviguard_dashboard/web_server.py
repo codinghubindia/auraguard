@@ -88,6 +88,8 @@ class NaviguardRequestHandler(BaseHTTPRequestHandler):
                     'segmentation': '/perception/segmentation',
                     'vo': '/visual_odometry/debug_image',
                     'chase': '/camera/chase_image',
+                    'panorama': '/camera/panorama_image',
+                    'yolo': '/perception/yolo/debug_image',
                 }
                 topic = topic_map.get(frame_type, f'/{frame_type}')
                 cv2.rectangle(blank, (4, 4), (316, 236), (30, 30, 30), 1)

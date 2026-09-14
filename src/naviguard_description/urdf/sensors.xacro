@@ -297,10 +297,10 @@
     </material>
     <sensor name="naviguard_360_camera" type="camera">
       <camera>
-        <horizontal_fov>3.14159265</horizontal_fov>
+        <horizontal_fov>2.7925</horizontal_fov>
         <image>
           <width>1024</width>
-          <height>256</height>
+          <height>320</height>
           <format>R8G8B8</format>
         </image>
         <clip>

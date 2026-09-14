@@ -22,6 +22,13 @@ def generate_launch_description():
     pkg_nav = get_package_share_directory('naviguard_navigation')
     pkg_dashboard = get_package_share_directory('naviguard_dashboard')
 
+    # Enable D3D12 NVIDIA GPU acceleration in WSL2 if available
+    if os.path.exists('/usr/lib/wsl/lib'):
+        os.environ['GALLIUM_DRIVER'] = 'd3d12'
+        os.environ['MESA_D3D12_DEFAULT_ADAPTER_NAME'] = 'NVIDIA'
+        os.environ['LD_LIBRARY_PATH'] = f"/usr/lib/wsl/lib:{os.environ.get('LD_LIBRARY_PATH', '')}"
+        os.environ['LIBGL_ALWAYS_SOFTWARE'] = '0'
+
     default_rviz_config = os.path.join(pkg_naviguard_desc, 'config', 'naviguard_final.rviz')
     default_world = os.path.join(pkg_naviguard_desc, 'worlds', 'rellis_outdoor_world.sdf')
 
