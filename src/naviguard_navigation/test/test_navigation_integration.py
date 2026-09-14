@@ -119,3 +119,110 @@ def test_command_ownership_and_recovery_yield(rclpy_init):
     assert node.mission_mgr.state == MissionState.REPLANNING
 
     node.destroy_node()
+
+
+def test_panoramic_route_assistance_on_blocked_path(rclpy_init):
+    node = NavigationNode()
+
+    # 40x40 grid, res 0.1m, origin (0.0, 0.0)
+    grid_msg = OccupancyGrid()
+    meta = MapMetaData()
+    meta.resolution = 0.1
+    meta.width = 40
+    meta.height = 40
+    grid_msg.info = meta
+    arr = np.zeros((40, 40), dtype=np.int8)
+    # Wall from y=0.5 to y=1.5 at x=2.0 (blocking direct path from (1.0, 1.0) to (3.0, 1.0))
+    arr[5:16, 20] = 100
+    grid_msg.data = arr.flatten().tolist()
+    node._map_callback(grid_msg)
+
+    pose_msg = PoseStamped()
+    pose_msg.header.frame_id = "map"
+    pose_msg.pose.position.x = 1.0
+    pose_msg.pose.position.y = 1.0
+    node._pose_callback(pose_msg)
+
+    goal_msg = PoseStamped()
+    goal_msg.header.frame_id = "map"
+    goal_msg.pose.position.x = 3.0
+    goal_msg.pose.position.y = 1.0
+    node._goal_callback(goal_msg)
+
+    # Provide panoramic analysis with clear escape waypoint at (1.0, 2.5)
+    pano_msg = String()
+    pano_msg.data = json.dumps({
+        "panorama_available": True,
+        "clear_route_found": True,
+        "escape_point": [1.0, 2.5],
+        "best_heading_deg": 60.0
+    })
+    node._panorama_analysis_callback(pano_msg)
+
+    # Test path planning
+    ok = node._compute_and_set_path(now_sec=10.0)
+    assert ok is True
+    assert len(node.raw_planned_path) > 0
+
+    node.destroy_node()
+
+
+def test_lidar_scan_integration_and_collision_guard(rclpy_init):
+    """Verify LiDAR scan returns update forward obstacle proximity and trigger collision guard."""
+    from sensor_msgs.msg import LaserScan
+    node = NavigationNode()
+
+    # Create scan with obstacle directly ahead at 0.40m
+    scan = LaserScan()
+    scan.header.frame_id = "lidar_link"
+    scan.angle_min = -3.14159
+    scan.angle_max = 3.14159
+    n = 360
+    scan.angle_increment = (2 * 3.14159) / n
+    scan.range_min = 0.10
+    scan.range_max = 25.0
+    ranges = [10.0] * n
+    # Direct forward beam at index 180 (angle 0)
+    ranges[178] = 0.40
+    ranges[179] = 0.40
+    ranges[180] = 0.40
+    ranges[181] = 0.40
+    scan.ranges = ranges
+
+    node._scan_callback(scan)
+    assert node.min_forward_lidar_distance_m <= 0.44
+
+    # Test fused obstacles with x_base, y_base, and radius
+    fused_msg = String()
+    fused_msg.data = json.dumps({
+        "obstacles": [
+            {
+                "x_base": 1.2,
+                "y_base": 0.0,
+                "radius": 0.25,
+                "confirmed": True,
+                "traversable": False,
+            }
+        ]
+    })
+    pose_msg = PoseStamped()
+    pose_msg.header.frame_id = "map"
+    pose_msg.pose.position.x = 0.0
+    pose_msg.pose.position.y = 0.0
+    node._pose_callback(pose_msg)
+
+    # Initialize grid
+    grid_msg = OccupancyGrid()
+    meta = MapMetaData()
+    meta.resolution = 0.1
+    meta.width = 30
+    meta.height = 30
+    grid_msg.info = meta
+    grid_msg.data = [0] * (30 * 30)
+    node._map_callback(grid_msg)
+
+    node._fused_obstacles_callback(fused_msg)
+    assert len(node.occ_grid.persistent_blocked_regions) >= 1
+
+    node.destroy_node()
+

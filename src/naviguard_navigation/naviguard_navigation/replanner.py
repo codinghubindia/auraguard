@@ -23,17 +23,38 @@ class Replanner:
         waypoints: List[Waypoint],
         current_idx: int,
         grid: NavigationOccupancyGrid,
+        horizon_waypoints: int = 8,
     ) -> Optional[Tuple[float, float, int]]:
-        """Return (mid_x, mid_y, waypoint_index) of the first blocked segment if any."""
+        """Return (mid_x, mid_y, waypoint_index) of the first blocked segment if any within active lookahead horizon."""
         if not waypoints or not grid.is_initialized:
             return None
-        for i in range(current_idx, len(waypoints) - 1):
+
+        # Human-like driving: Focus monitoring on the upcoming horizon (next ~2.5m)
+        max_idx = min(len(waypoints) - 1, current_idx + horizon_waypoints) if horizon_waypoints > 0 else len(waypoints) - 1
+        for i in range(current_idx, max_idx):
             p1 = (waypoints[i].x, waypoints[i].y)
             p2 = (waypoints[i + 1].x, waypoints[i + 1].y)
-            if not grid.is_segment_collision_free(p1[0], p1[1], p2[0], p2[1]) or not grid.is_swept_footprint_collision_free(p1, p2):
+
+            # Check if direct line-of-sight intersects a lethal obstacle
+            if not grid.is_segment_collision_free(p1[0], p1[1], p2[0], p2[1]):
                 mx = 0.5 * (p1[0] + p2[0])
                 my = 0.5 * (p1[1] + p2[1])
                 return mx, my, i
+
+            # If corridor is narrow (0.58m - 0.68m), vehicle fits and can traverse via precision crawl
+            # Only trigger segment blockage if corridor is physically impassable (<0.52m) or footprint collides with raw obstacles
+            is_tight = False
+            if hasattr(grid, "get_corridor_width_at"):
+                cw1 = grid.get_corridor_width_at(p1[0], p1[1])
+                cw2 = grid.get_corridor_width_at(p2[0], p2[1])
+                if min(cw1, cw2) >= 0.58:
+                    is_tight = True
+
+            if not is_tight and not grid.is_swept_footprint_collision_free(p1, p2):
+                mx = 0.5 * (p1[0] + p2[0])
+                my = 0.5 * (p1[1] + p2[1])
+                return mx, my, i
+
         return None
 
     def should_replan_due_to_obstacle(
@@ -61,8 +82,13 @@ class Replanner:
         self,
         cross_track_error: float,
         now_sec: float,
+        is_maneuvering: bool = False,
     ) -> Tuple[bool, str]:
-        """Check if robot has deviated excessively from the planned path."""
+        """Check if robot has deviated excessively from the planned path without an active steering bypass."""
+        if is_maneuvering:
+            # Human-like driving: Suppress deviation replan while actively dodging obstacles or centering in a tight gap
+            return False, "MANEUVER_ACTIVE"
+
         if (now_sec - self.last_replan_time) < self.min_replan_interval_sec:
             return False, "COOLDOWN"
 

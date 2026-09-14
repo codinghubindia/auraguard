@@ -34,3 +34,22 @@ def test_goal_checker_dwell_resets_on_departure():
     assert checker.is_goal_reached(2.0, 1.0, 0.0, goal, now_sec=2.0) is False
     assert checker.is_goal_reached(2.0, 1.0, 0.0, goal, now_sec=2.5) is False
     assert checker.is_goal_reached(2.0, 1.0, 0.0, goal, now_sec=3.1) is True
+
+
+def test_goal_checker_obstructed_standoff_arrival():
+    """Verify robot safely concludes arrival at standoff distance when destination is obstructed."""
+    checker = GoalChecker(xy_tolerance_m=0.20, standoff_tolerance_m=0.85, required_dwell_sec=1.0)
+    goal = NavigationGoal(x=5.0, y=0.0, yaw=None, frame_id="map", timestamp=0.0)
+
+    # 1. Robot is at x=4.4m (dist=0.60m > normal xy_tolerance 0.20m).
+    # If is_obstructed=False -> NOT reached
+    assert checker.is_goal_reached(4.4, 0.0, 0.0, goal, now_sec=1.0, is_obstructed=False) is False
+
+    # 2. If is_obstructed=True -> Within standoff (0.60m <= 0.85m), starts dwell
+    assert checker.is_goal_reached(4.4, 0.0, 0.0, goal, now_sec=1.0, is_obstructed=True) is False
+    # Dwell timer elapses (0.5s > 0.4s required for obstructed standoff) -> Reached!
+    assert checker.is_goal_reached(4.4, 0.0, 0.0, goal, now_sec=1.5, is_obstructed=True) is True
+
+    # 3. Too far away even for standoff (e.g. x=3.5m, dist=1.5m > 0.85m) -> NOT reached
+    assert checker.is_goal_reached(3.5, 0.0, 0.0, goal, now_sec=2.0, is_obstructed=True) is False
+

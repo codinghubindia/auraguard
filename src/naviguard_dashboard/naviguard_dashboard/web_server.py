@@ -70,8 +70,10 @@ class NaviguardRequestHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-Length', str(len(data)))
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                self.send_header('Connection', 'close')
                 self.end_headers()
                 self._safe_write(data)
+                self.close_connection = True
             except Exception:
                 pass
             return
@@ -84,6 +86,8 @@ class NaviguardRequestHandler(BaseHTTPRequestHandler):
                 blank = np.zeros((240, 320, 3), dtype=np.uint8)
                 topic_map = {
                     'raw': '/camera/image_raw',
+                    'unified': '/perception/unified_image',
+                    'heatmap': '/perception/heatmap',
                     'perception': '/perception/debug_image',
                     'segmentation': '/perception/segmentation',
                     'vo': '/visual_odometry/debug_image',
@@ -109,14 +113,17 @@ class NaviguardRequestHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-Type', 'image/jpeg')
                 self.send_header('Content-Length', str(len(jpeg_bytes)))
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
                 self.send_header('Pragma', 'no-cache')
                 self.send_header('Expires', '0')
+                self.send_header('Connection', 'close')
                 self.send_header('X-Frame-Timestamp', f"{ts:.4f}")
                 self.send_header('X-Frame-Age-Ms', f"{age_ms:.1f}")
                 self.send_header('X-Stream-Status', status)
                 self.end_headers()
                 self._safe_write(jpeg_bytes)
+                self.close_connection = True
             except Exception:
                 pass
             return
@@ -142,8 +149,10 @@ class NaviguardRequestHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-Length', str(len(png_bytes)))
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                self.send_header('Connection', 'close')
                 self.end_headers()
                 self._safe_write(png_bytes)
+                self.close_connection = True
             except Exception:
                 pass
             return
@@ -163,8 +172,10 @@ class NaviguardRequestHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-Length', str(len(bmap_bytes)))
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.send_header('Cache-Control', 'public, max-age=3600')
+                self.send_header('Connection', 'close')
                 self.end_headers()
                 self._safe_write(bmap_bytes)
+                self.close_connection = True
             except Exception:
                 pass
             return
@@ -381,7 +392,17 @@ class NaviguardRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
             # Target display rates per requirement
-            fps_map = {'raw': 15.0, 'chase': 15.0, 'perception': 10.0, 'segmentation': 10.0, 'vo': 10.0}
+            fps_map = {
+                'raw': 15.0,
+                'chase': 15.0,
+                'unified': 10.0,
+                'heatmap': 10.0,
+                'perception': 10.0,
+                'segmentation': 10.0,
+                'vo': 10.0,
+                'panorama': 15.0,
+                'yolo': 10.0,
+            }
             target_fps = fps_map.get(frame_type, 12.0)
             frame_interval = 1.0 / target_fps
 

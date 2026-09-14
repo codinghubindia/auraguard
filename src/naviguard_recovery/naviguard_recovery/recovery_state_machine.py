@@ -69,10 +69,10 @@ class RecoveryAttemptRecord:
 @dataclass
 class RecoveryBudget:
     """Bounded resource budget per recovery mission episode."""
-    max_attempts: int = 3
-    max_total_duration_sec: float = 40.0
-    max_backtrack_dist_m: float = 3.5
-    max_rotation_deg: float = 400.0
+    max_attempts: int = 6
+    max_total_duration_sec: float = 90.0
+    max_backtrack_dist_m: float = 6.0
+    max_rotation_deg: float = 720.0
 
     attempt_count: int = 0
     total_recovery_time_sec: float = 0.0
@@ -306,7 +306,8 @@ class RecoveryStateMachine:
             self.transition_to(RecoveryState.RESUME, stamp_sec)
 
         elif self.state == RecoveryState.RESUME:
-            # Mission resumed back to normal
+            # Mission resumed back to normal after verified recovery
+            self.budget.attempt_count = 0
             self.transition_to(RecoveryState.NORMAL, stamp_sec, "MISSION_RESUMED")
 
         return self.state

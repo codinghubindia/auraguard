@@ -211,12 +211,38 @@ class StateCache:
         # 8. Visual Stream Buffers (Latest-Frame Bounded Buffers, size=1)
         self.streams: Dict[str, StreamBuffer] = {
             "raw": StreamBuffer("raw", target_fps=15.0),
+            "unified": StreamBuffer("unified", target_fps=10.0),
+            "heatmap": StreamBuffer("heatmap", target_fps=10.0),
             "perception": StreamBuffer("perception", target_fps=10.0),
             "segmentation": StreamBuffer("segmentation", target_fps=10.0),
             "vo": StreamBuffer("vo", target_fps=10.0),
             "chase": StreamBuffer("chase", target_fps=15.0),
             "yolo": StreamBuffer("yolo", target_fps=10.0),
             "panorama": StreamBuffer("panorama", target_fps=15.0),
+        }
+
+        # 8b. Real-Time Dynamic Trajectory & Clearance Telemetry
+        self.trajectory_status: Dict[str, Any] = {
+            "can_pass": True,
+            "status": "PASS",
+            "min_clearance_m": 1.0,
+            "steering_adjustment_rad": 0.0,
+            "in_small_gap": False,
+            "corridor_width_m": 0.68,
+        }
+
+        # 8c. Real-Time LiDAR & Radar Obstacle Telemetry
+        self.lidar_telemetry: Dict[str, Any] = {
+            "num_obstacles": 0,
+            "closest_distance_m": 99.0,
+            "critical_hazard": False,
+            "corridor_clearance": {
+                "left_clearance_m": 2.0,
+                "right_clearance_m": 2.0,
+                "available_gap_m": 4.0,
+                "centering_offset_m": 0.0,
+            },
+            "obstacles": [],
         }
 
         # 9. Rolling Event Log
@@ -315,6 +341,14 @@ class StateCache:
         with self._lock:
             self.yolo_diagnostics.update(diag)
 
+    def set_trajectory_status(self, status: Dict[str, Any]) -> None:
+        with self._lock:
+            self.trajectory_status.update(status)
+
+    def set_lidar_telemetry(self, data: Dict[str, Any]) -> None:
+        with self._lock:
+            self.lidar_telemetry.update(data)
+
     def get_snapshot(self) -> Dict[str, Any]:
         """Return full JSON-serializable snapshot of dashboard state."""
         with self._lock:
@@ -365,6 +399,8 @@ class StateCache:
                 "nav_stats": dict(self.nav_stats),
                 "replan_diagnostics": dict(self.replan_diagnostics),
                 "vehicle_diagnostics": dict(self.vehicle_diagnostics),
+                "trajectory_status": dict(self.trajectory_status),
+                "lidar_telemetry": dict(self.lidar_telemetry),
                 "yolo_diagnostics": dict(self.yolo_diagnostics),
                 "map_meta": dict(self.map_meta),
                 "subsystems": dict(self.subsystems),

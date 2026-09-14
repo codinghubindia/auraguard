@@ -6,6 +6,7 @@ and manages relocalization verification.
 """
 
 import json
+import math
 import time
 from typing import List, Optional, Tuple
 
@@ -20,15 +21,18 @@ from rclpy.qos import (
 )
 
 from diagnostic_msgs.msg import DiagnosticArray
-from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
+from geometry_msgs.msg import PoseWithCovarianceStamped, Twist, PoseStamped
 from nav_msgs.msg import OccupancyGrid, Odometry
+from sensor_msgs.msg import Image
 from std_msgs.msg import String
 from std_srvs.srv import Trigger
 from visualization_msgs.msg import MarkerArray
+from cv_bridge import CvBridge
 
 from naviguard_recovery.recovery_controller import RecoveryController
 from naviguard_recovery.recovery_diagnostics import RecoveryDiagnosticsBuilder
 from naviguard_recovery.recovery_planner import RecoveryPlanner, RecoveryStrategy
+from naviguard_recovery.panorama_path_analyzer import PanoramaPathAnalyzer
 from naviguard_recovery.recovery_state_machine import (
     RecoveryBudget,
     RecoveryState,
@@ -83,6 +87,9 @@ class NaviguardRecoveryNode(Node):
         self.controller = RecoveryController()
         self.reloc_mgr = RelocalizationManager(min_dwell_sec=fsm_cfg.verification_dwell_sec)
         self.diag_builder = RecoveryDiagnosticsBuilder()
+        self.panorama_analyzer = PanoramaPathAnalyzer()
+        self.bridge = CvBridge()
+        self.current_goal: Optional[Tuple[float, float]] = None
 
         # 3. State Variables
         self.current_pose_map: Tuple[float, float, float] = (0.0, 0.0, 0.0)  # (x, y, yaw)
@@ -126,6 +133,7 @@ class NaviguardRecoveryNode(Node):
         self.state_pub = self.create_publisher(String, '/recovery/state', 10)
         self.diag_pub = self.create_publisher(DiagnosticArray, '/recovery/diagnostics', 10)
         self.marker_pub = self.create_publisher(MarkerArray, '/recovery/visualization', 10)
+        self.panorama_analysis_pub = self.create_publisher(String, '/recovery/panorama_analysis', 10)
 
         # 5. Subscriptions
         reliable_qos = QoSProfile(
@@ -139,6 +147,12 @@ class NaviguardRecoveryNode(Node):
             history=HistoryPolicy.KEEP_LAST,
             depth=1,
             durability=DurabilityPolicy.TRANSIENT_LOCAL,
+        )
+        sensor_qos = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=1,
+            durability=DurabilityPolicy.VOLATILE,
         )
 
         self.decision_sub = self.create_subscription(
@@ -170,6 +184,18 @@ class NaviguardRecoveryNode(Node):
             '/slam/map',
             self.map_callback,
             transient_local_qos,
+        )
+        self.panorama_sub = self.create_subscription(
+            Image,
+            '/camera/panorama_image',
+            self.panorama_callback,
+            sensor_qos,
+        )
+        self.goal_sub = self.create_subscription(
+            PoseStamped,
+            '/goal_pose',
+            self.goal_callback,
+            reliable_qos,
         )
 
         # 6. Services
@@ -241,6 +267,23 @@ class NaviguardRecoveryNode(Node):
         self.grid_h = int(msg.info.height)
         self.grid_ox = float(msg.info.origin.position.x)
         self.grid_oy = float(msg.info.origin.position.y)
+
+    def panorama_callback(self, msg: Image) -> None:
+        try:
+            cv_img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+            analysis = self.panorama_analyzer.analyze_frame(
+                cv_img,
+                robot_pose=self.current_pose_map,
+                goal_point=self.current_goal,
+            )
+            pub_msg = String()
+            pub_msg.data = json.dumps(analysis)
+            self.panorama_analysis_pub.publish(pub_msg)
+        except Exception:
+            pass
+
+    def goal_callback(self, msg: PoseStamped) -> None:
+        self.current_goal = (float(msg.pose.position.x), float(msg.pose.position.y))
 
     def manual_trigger_callback(self, request, response) -> Trigger.Response:
         now_sec = self._get_now_sec()
@@ -416,35 +459,66 @@ class NaviguardRecoveryNode(Node):
                     self.action_in_progress = False
 
             elif self.active_strategy_enum == RecoveryStrategy.LOOKAROUND_360_SCAN:
-                cmd_vx, cmd_wz, self.lookaround_accum_rad, reached = self.controller.compute_lookaround_360_step(
-                    current_yaw=self.current_pose_map[2],
-                    last_yaw=self.lookaround_last_yaw,
-                    accumulated_yaw_rad=self.lookaround_accum_rad,
-                    target_total_rad=2.0 * np.pi,
-                    direction=self.lookaround_direction,
-                )
-                self.lookaround_last_yaw = self.current_pose_map[2]
-                self.fsm.budget.record_motion(0.0, float(np.degrees(abs(cmd_wz) * dt)))
+                # Fast Panoramic Recovery: Check if 360-surround panorama view has found a clear route
+                pano_data = self.panorama_analyzer.last_analysis
+                if pano_data.get("clear_route_found", False) and pano_data.get("selected_passage"):
+                    best_heading_rad = float(pano_data.get("best_heading_rad", 0.0))
+                    target_yaw = self.current_pose_map[2] + best_heading_rad
 
-                # Continuously survey 360-degree clear paths & narrow passages
-                self.lookaround_360_eval = self.planner.evaluate_360_passages(
-                    current_pose=self.current_pose_map,
-                    grid_data=self.grid_data,
-                    grid_res=self.grid_res,
-                    grid_w=self.grid_w,
-                    grid_h=self.grid_h,
-                    grid_ox=self.grid_ox,
-                    grid_oy=self.grid_oy,
-                )
-
-                # Retry mechanism WAITS until full 360-degree sweep is completely performed
-                if reached:
-                    self.get_logger().info(
-                        f"360-degree lookaround complete ({np.degrees(self.lookaround_accum_rad):.1f} deg). "
-                        f"Found {len(self.lookaround_360_eval.get('passages', []))} viable passages. "
-                        f"Best heading: {self.lookaround_360_eval.get('best_heading_deg', 0.0):.1f} deg."
+                    cmd_vx, cmd_wz, reached = self.controller.compute_rotation_step(
+                        self.current_pose_map[2], target_yaw
                     )
-                    self.action_in_progress = False
+                    self.fsm.budget.record_motion(0.0, float(np.degrees(abs(cmd_wz) * dt)))
+
+                    self.lookaround_360_eval = {
+                        "scan_complete": True,
+                        "best_heading_deg": pano_data.get("best_heading_deg", 0.0),
+                        "best_heading_rad": best_heading_rad,
+                        "passages": pano_data.get("passages", []),
+                        "widest_corridor_m": pano_data.get("widest_corridor_m", 0.0),
+                        "selected_passage": pano_data.get("selected_passage"),
+                        "escape_point": pano_data.get("escape_point"),
+                        "source": "PANORAMA_SURROUND_VIEW",
+                    }
+
+                    yaw_diff = abs(target_yaw - self.current_pose_map[2])
+                    yaw_diff = math.atan2(math.sin(yaw_diff), math.cos(yaw_diff))
+                    if reached or abs(yaw_diff) < 0.25:
+                        self.get_logger().info(
+                            f"Panorama view found clear route at {pano_data.get('best_heading_deg'):.1f} deg "
+                            f"(width {pano_data.get('widest_corridor_m'):.2f}m). Recovery complete faster!"
+                        )
+                        self.action_in_progress = False
+                else:
+                    cmd_vx, cmd_wz, self.lookaround_accum_rad, reached = self.controller.compute_lookaround_360_step(
+                        current_yaw=self.current_pose_map[2],
+                        last_yaw=self.lookaround_last_yaw,
+                        accumulated_yaw_rad=self.lookaround_accum_rad,
+                        target_total_rad=2.0 * np.pi,
+                        direction=self.lookaround_direction,
+                    )
+                    self.lookaround_last_yaw = self.current_pose_map[2]
+                    self.fsm.budget.record_motion(0.0, float(np.degrees(abs(cmd_wz) * dt)))
+
+                    # Continuously survey 360-degree clear paths & narrow passages
+                    self.lookaround_360_eval = self.planner.evaluate_360_passages(
+                        current_pose=self.current_pose_map,
+                        grid_data=self.grid_data,
+                        grid_res=self.grid_res,
+                        grid_w=self.grid_w,
+                        grid_h=self.grid_h,
+                        grid_ox=self.grid_ox,
+                        grid_oy=self.grid_oy,
+                    )
+
+                    # Retry mechanism WAITS until full 360-degree sweep is completely performed
+                    if reached:
+                        self.get_logger().info(
+                            f"360-degree lookaround complete ({np.degrees(self.lookaround_accum_rad):.1f} deg). "
+                            f"Found {len(self.lookaround_360_eval.get('passages', []))} viable passages. "
+                            f"Best heading: {self.lookaround_360_eval.get('best_heading_deg', 0.0):.1f} deg."
+                        )
+                        self.action_in_progress = False
             else:
                 self.action_in_progress = False
 

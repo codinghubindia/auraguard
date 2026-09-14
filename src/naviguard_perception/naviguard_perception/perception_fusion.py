@@ -92,8 +92,9 @@ class PerceptionFusion:
         timestamp: float = 0.0,
         detections: Optional[List[Dict[str, Any]]] = None,
         classical_contours: Optional[Any] = None,
+        lidar_obstacles: Optional[List[Dict[str, Any]]] = None,
     ) -> Tuple[np.ndarray, List[Dict[str, Any]], Dict[str, float]]:
-        """Fuse classical segmentation with YOLO detections, tracking obstacles over time.
+        """Fuse classical segmentation with YOLO detections and LiDAR/Radar measurements.
         
         Returns:
             fused_overlay (np.ndarray): Diagnostic RGB image.
@@ -131,19 +132,72 @@ class PerceptionFusion:
         confirmed_obstacles: List[Dict[str, Any]] = []
         for track in self.tracked_obstacles.values():
             if track.is_confirmed and track.ground_pos_m[0] > 0.10:
-                # Estimate physical radius from bounding box width at distance
                 dist = math.hypot(track.ground_pos_m[0], track.ground_pos_m[1])
-                # Conservative radius between 0.15m and 0.45m
                 radius_m = max(0.15, min(0.45, dist * 0.10))
                 confirmed_obstacles.append({
                     "track_id": track.track_id,
                     "class_name": track.class_name,
                     "confidence": track.confidence,
+                    "x_base": round(track.ground_pos_m[0], 2),
+                    "y_base": round(track.ground_pos_m[1], 2),
                     "x_m": round(track.ground_pos_m[0], 2),
                     "y_m": round(track.ground_pos_m[1], 2),
+                    "radius": round(radius_m, 2),
                     "radius_m": round(radius_m, 2),
+                    "distance_m": round(dist, 2),
+                    "confirmed": True,
+                    "traversable": False,
+                    "emergency": track.emergency,
                     "is_lethal": True,
+                    "source": "VISION_YOLO",
                 })
+
+        # Ingest LiDAR/Radar obstacles: Merge metric ranges with visual tracks or add direct detections
+        if lidar_obstacles:
+            for l_obs in lidar_obstacles:
+                lx = float(l_obs.get("x_base", l_obs.get("x_m", 0.0)))
+                ly = float(l_obs.get("y_base", l_obs.get("y_m", 0.0)))
+                lr = float(l_obs.get("radius", l_obs.get("radius_m", 0.24)))
+                ldist = float(l_obs.get("distance_m", math.hypot(lx, ly)))
+                lemergency = bool(l_obs.get("emergency", False))
+
+                # Check if matched with existing vision obstacle
+                matched = False
+                for c_obs in confirmed_obstacles:
+                    if math.hypot(c_obs["x_base"] - lx, c_obs["y_base"] - ly) < 0.60:
+                        # Refine with higher-precision LiDAR metric position
+                        c_obs["x_base"] = round(lx, 2)
+                        c_obs["y_base"] = round(ly, 2)
+                        c_obs["x_m"] = round(lx, 2)
+                        c_obs["y_m"] = round(ly, 2)
+                        c_obs["radius"] = max(c_obs["radius"], round(lr, 2))
+                        c_obs["radius_m"] = c_obs["radius"]
+                        c_obs["distance_m"] = round(ldist, 2)
+                        c_obs["source"] = "FUSED_LIDAR_VISION"
+                        c_obs["confidence"] = 1.0
+                        if lemergency:
+                            c_obs["emergency"] = True
+                        matched = True
+                        break
+
+                if not matched:
+                    confirmed_obstacles.append({
+                        "track_id": 1000 + len(confirmed_obstacles),
+                        "class_name": "obstacle",
+                        "confidence": 1.0,
+                        "x_base": round(lx, 2),
+                        "y_base": round(ly, 2),
+                        "x_m": round(lx, 2),
+                        "y_m": round(ly, 2),
+                        "radius": round(lr, 2),
+                        "radius_m": round(lr, 2),
+                        "distance_m": round(ldist, 2),
+                        "confirmed": True,
+                        "traversable": False,
+                        "emergency": lemergency,
+                        "is_lethal": True,
+                        "source": "LIDAR",
+                    })
 
         # 4. Calculate perception confidences
         self._calculate_confidences(bgr_image, yolo_detections, classical_traversability_mask)

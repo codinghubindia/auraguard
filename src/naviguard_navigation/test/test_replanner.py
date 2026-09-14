@@ -56,3 +56,18 @@ def test_replanner_detects_excessive_cross_track_deviation():
     should, reason = replanner.should_replan_due_to_deviation(0.65, now_sec=7.0)
     assert should is True
     assert "EXCESSIVE_CROSS_TRACK_DEVIATION" in reason
+
+
+def test_replanner_suppresses_deviation_during_active_maneuver():
+    """Verify replanner does NOT trigger deviation replan while actively maneuvering or bypassing obstacles."""
+    replanner = Replanner(min_replan_interval_sec=1.0, max_path_deviation_m=0.50)
+
+    # Large cross-track error (0.75m > 0.50m) but robot is actively maneuvering
+    should, reason = replanner.should_replan_due_to_deviation(0.75, now_sec=10.0, is_maneuvering=True)
+    assert should is False
+    assert reason == "MANEUVER_ACTIVE"
+
+    # Once maneuver completes, excessive deviation triggers replan
+    should, reason = replanner.should_replan_due_to_deviation(0.75, now_sec=12.0, is_maneuvering=False)
+    assert should is True
+    assert "EXCESSIVE_CROSS_TRACK_DEVIATION" in reason

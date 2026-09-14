@@ -7,8 +7,10 @@ from typing import Optional, List, Tuple
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDurabilityPolicy
+import numpy as np
 from geometry_msgs.msg import Twist, PoseStamped, Point, Quaternion, PoseArray, Pose, PoseWithCovarianceStamped
 from nav_msgs.msg import OccupancyGrid, Odometry, Path
+from sensor_msgs.msg import LaserScan
 from std_msgs.msg import String, Header
 from std_srvs.srv import Trigger
 from visualization_msgs.msg import Marker, MarkerArray
@@ -140,6 +142,14 @@ class NavigationNode(Node):
             "can_turn": True,
             "turning_diameter_available_m": 0.0,
         }
+        self.last_trajectory_info: dict = {
+            "can_pass": True,
+            "status": "SAFE",
+            "min_clearance_m": 1.0,
+            "steering_adjustment_rad": 0.0,
+            "in_small_gap": False,
+            "corridor_width_m": VehicleGeometry.NOMINAL_PASSAGE_WIDTH_M,
+        }
 
         # 4. QoS Profiles
         qos_map = QoSProfile(
@@ -163,6 +173,7 @@ class NavigationNode(Node):
         self.diag_pub = self.create_publisher(DiagnosticArray, '/navigation/diagnostics', 10)
         self.replan_diag_pub = self.create_publisher(String, '/navigation/replan_diagnostics', 10)
         self.vehicle_diag_pub = self.create_publisher(String, '/navigation/vehicle_diagnostics', 10)
+        self.trajectory_status_pub = self.create_publisher(String, '/navigation/trajectory_status', 10)
 
         # 6. Subscribers
         self.map_sub = self.create_subscription(
@@ -191,6 +202,22 @@ class NavigationNode(Node):
         )
         self.perception_conf_sub = self.create_subscription(
             String, '/perception/confidence', self._perception_confidence_callback, qos_reliable
+        )
+        self.last_panorama_analysis: Optional[dict] = None
+        self.panorama_sub = self.create_subscription(
+            String, '/recovery/panorama_analysis', self._panorama_analysis_callback, qos_reliable
+        )
+
+        # Real-time LiDAR & Radar sensing state
+        self.min_forward_lidar_distance_m: float = float('inf')
+        self.corridor_centering_offset_m: float = 0.0
+        self._traj_blocked_count: int = 0
+        self._collision_guard_count: int = 0
+        self.scan_sub = self.create_subscription(
+            LaserScan, '/scan', self._scan_callback, qos_reliable
+        )
+        self.lidar_obst_sub = self.create_subscription(
+            String, '/perception/lidar_obstacles', self._lidar_obstacles_callback, qos_reliable
         )
 
         # 7. Services
@@ -248,6 +275,8 @@ class NavigationNode(Node):
             self.get_logger().info(f"New navigation goal received: ({goal.x:.2f}, {goal.y:.2f})")
             self.mission_mgr.start_mission(now_sec)
             self._recovery_pending = False  # Reset for new mission
+            self._traj_blocked_count = 0
+            self._collision_guard_count = 0
             if self.mission_mgr.state in (MissionState.IDLE, MissionState.GOAL_REACHED, MissionState.MISSION_FAILED):
                 self.mission_mgr.transition_to(MissionState.GOAL_SET, now_sec)
             elif self.mission_mgr.state == MissionState.NAVIGATING:
@@ -258,11 +287,83 @@ class NavigationNode(Node):
         self.goal_mgr.clear_goal()
         self.occ_grid.clear_blocked_regions()
         self.mission_mgr.reset(now_sec)
+        self._traj_blocked_count = 0
+        self._collision_guard_count = 0
         self._stop_robot()
         resp.success = True
         resp.message = "Navigation goal canceled. Robot returned to IDLE."
         self.get_logger().info("Mission canceled by operator.")
         return resp
+
+    def _scan_callback(self, msg: LaserScan) -> None:
+        """Direct LiDAR / Radar range processing for real-time obstacle map and collision guard."""
+        try:
+            ranges = np.array(msg.ranges, dtype=np.float32)
+            n_points = len(ranges)
+            if n_points == 0:
+                return
+
+            angle_min = float(msg.angle_min)
+            angle_inc = float(msg.angle_increment)
+            r_min = max(0.12, float(msg.range_min))
+            r_max = min(25.0, float(msg.range_max))
+
+            angles = angle_min + np.arange(n_points) * angle_inc
+            valid_mask = (ranges >= r_min) & (ranges <= r_max) & np.isfinite(ranges)
+            valid_r = ranges[valid_mask]
+            valid_theta = angles[valid_mask]
+
+            xs = valid_r * np.cos(valid_theta)
+            ys = valid_r * np.sin(valid_theta)
+
+            # Compute min distance in forward vehicle corridor:
+            # Corridor: x in [0.28, 2.50] (front of bumper), |y| <= 0.26 (vehicle half-width + safety margin)
+            forward_mask = (xs >= 0.28) & (xs <= 2.50) & (np.abs(ys) <= 0.26)
+            if np.any(forward_mask):
+                self.min_forward_lidar_distance_m = float(np.min(xs[forward_mask]))
+            else:
+                self.min_forward_lidar_distance_m = 99.0
+        except Exception as e:
+            self.get_logger().warn(f"LiDAR scan callback error: {e}", throttle_duration_sec=3.0)
+
+    def _lidar_obstacles_callback(self, msg: String) -> None:
+        """Process structured LiDAR / Radar obstacle detections and passage centering recommendations."""
+        try:
+            data = json.loads(msg.data)
+            closest_m = data.get("closest_distance_m", 99.0)
+            if closest_m < self.min_forward_lidar_distance_m:
+                self.min_forward_lidar_distance_m = float(closest_m)
+
+            corridor = data.get("corridor_clearance", {})
+            self.corridor_centering_offset_m = float(corridor.get("centering_offset_m", 0.0))
+
+            # If critical hazard signaled by LiDAR detector, immediately update trajectory info
+            if data.get("critical_hazard", False):
+                self.last_trajectory_info["can_pass"] = False
+                self.last_trajectory_info["status"] = "BLOCKED"
+                self.last_trajectory_info["reason"] = "LIDAR_CRITICAL_HAZARD"
+
+            # Ingest clustered physical obstacles into occupancy grid in real-time
+            obstacles = data.get("obstacles", [])
+            if self.robot_pose is not None and self.occ_grid.is_initialized and obstacles:
+                rx, ry, ryaw = self.robot_pose
+                cos_yaw = math.cos(ryaw)
+                sin_yaw = math.sin(ryaw)
+                for obs in obstacles:
+                    xb = float(obs.get("x_base", obs.get("x_m", 0.0)))
+                    yb = float(obs.get("y_base", obs.get("y_m", 0.0)))
+                    radius = float(obs.get("radius", obs.get("radius_m", 0.24)))
+                    # Skip points inside or touching chassis envelope
+                    if abs(xb) < 0.29 and abs(yb) < 0.25:
+                        continue
+                    # Ignore obstacles outside active 8m sensing perimeter
+                    if math.hypot(xb, yb) > 8.0:
+                        continue
+                    xm = rx + xb * cos_yaw - yb * sin_yaw
+                    ym = ry + xb * sin_yaw + yb * cos_yaw
+                    self.occ_grid.mark_blocked_region(xm, ym, radius_m=max(0.20, radius))
+        except Exception as e:
+            self.get_logger().warn(f"Failed parsing LiDAR obstacles: {e}", throttle_duration_sec=3.0)
 
     def _fused_obstacles_callback(self, msg: String) -> None:
         """Integrate perception fused obstacles into navigation occupancy grid."""
@@ -275,17 +376,21 @@ class NavigationNode(Node):
             cos_yaw = math.cos(ryaw)
             sin_yaw = math.sin(ryaw)
             for obs in obstacles:
-                # Insert non-traversable confirmed obstacles or emergency obstacles
-                if not obs.get("traversable", False) and (obs.get("confirmed", False) or obs.get("emergency", False)):
-                    xb = float(obs.get("x_base", 0.0))
-                    yb = float(obs.get("y_base", 0.0))
-                    radius = float(obs.get("radius", 0.25))
+                # Accept non-traversable confirmed obstacles, lethal obstacles, or emergency obstacles
+                is_confirmed = obs.get("confirmed", False) or obs.get("is_lethal", False) or (obs.get("confidence", 0.0) >= 0.5)
+                is_non_trav = not obs.get("traversable", False) or obs.get("is_lethal", False)
+                if is_non_trav and (is_confirmed or obs.get("emergency", False)):
+                    xb = float(obs.get("x_base", obs.get("x_m", 0.0)))
+                    yb = float(obs.get("y_base", obs.get("y_m", 0.0)))
+                    radius = float(obs.get("radius", obs.get("radius_m", 0.24)))
+                    if abs(xb) < 0.10 and abs(yb) < 0.10:
+                        continue
                     # Transform from base_link to map
                     xm = rx + xb * cos_yaw - yb * sin_yaw
                     ym = ry + xb * sin_yaw + yb * cos_yaw
                     self.occ_grid.mark_blocked_region(xm, ym, radius_m=max(0.20, radius))
         except Exception as e:
-            self.get_logger().warn(f"Failed parsing fused obstacles: {e}")
+            self.get_logger().warn(f"Failed parsing fused obstacles: {e}", throttle_duration_sec=3.0)
 
     def _perception_confidence_callback(self, msg: String) -> None:
         """Update confidence metrics from perception confidence pipeline."""
@@ -315,6 +420,13 @@ class NavigationNode(Node):
             self.recovery_attempts_count = int(data.get("attempts", data.get("budget", {}).get("attempt_count", 0)))
         except Exception:
             self.recovery_state = msg.data.strip()
+
+    def _panorama_analysis_callback(self, msg: String) -> None:
+        """Store latest panorama view route and corridor escape analysis."""
+        try:
+            self.last_panorama_analysis = json.loads(msg.data)
+        except Exception:
+            pass
 
     def _build_context(self, now_sec: float) -> dict:
         """Construct rich telemetry context for failure explanation."""
@@ -436,13 +548,29 @@ class NavigationNode(Node):
                 self._publish_telemetry(now_sec)
                 return
 
-            # 2. Check if goal is reached
+            # 2. Check if goal is reached (standard tolerance or standoff distance if target is obstructed)
             goal = self.goal_mgr.get_goal()
             rx, ry, ryaw = self.robot_pose
             dist_to_goal = math.hypot(goal.x - rx, goal.y - ry) if goal else 0.0
 
-            if self.goal_checker.is_goal_reached(rx, ry, ryaw, goal, now_sec):
-                self.get_logger().info(f"Goal successfully reached at ({rx:.2f}, {ry:.2f})!")
+            is_goal_obstructed = False
+            if goal and dist_to_goal <= self.goal_checker.standoff_tolerance_m:
+                gpt = self.occ_grid.world_to_map(goal.x, goal.y)
+                goal_blocked = (
+                    gpt is not None and (
+                        self.occ_grid.is_lethal(gpt[0], gpt[1])
+                        or self.occ_grid.get_clearance(gpt[0], gpt[1]) < 0.35
+                    )
+                )
+                forward_blocked = (
+                    not self.last_trajectory_info.get("can_pass", True)
+                    or self.min_forward_lidar_distance_m <= 0.70
+                )
+                is_goal_obstructed = goal_blocked or forward_blocked
+
+            if self.goal_checker.is_goal_reached(rx, ry, ryaw, goal, now_sec, is_obstructed=is_goal_obstructed):
+                status_msg = "Goal reached at safe standoff distance!" if is_goal_obstructed else "Goal successfully reached!"
+                self.get_logger().info(f"{status_msg} ({rx:.2f}, {ry:.2f}) [dist_error={dist_to_goal:.2f}m]")
                 path_len = sum(
                     math.hypot(self.raw_planned_path[i+1][0] - self.raw_planned_path[i][0],
                                self.raw_planned_path[i+1][1] - self.raw_planned_path[i][1])
@@ -451,28 +579,39 @@ class NavigationNode(Node):
                 self.mission_mgr.trigger_success(now_sec, final_error_m=dist_to_goal, path_length_m=path_len)
                 self._stop_robot()
                 self.cmd_ownership = "GOAL_REACHED_STOP"
-                self.nav_reason = "Goal reached within tolerance"
+                self.nav_reason = f"Goal reached ({'standoff arrival' if is_goal_obstructed else 'within tolerance'})"
                 self._publish_telemetry(now_sec)
                 return
 
             # 3. Check dynamic replanning triggers
-            should_replan, reason = self.replanner.should_replan_due_to_obstacle(
-                self.waypoints, self.follower.current_waypoint_idx, self.occ_grid, now_sec
-            )
+            # If robot is already within arrival proximity of the goal (<= standoff tolerance), do not trigger replanning detours
+            should_replan = False
+            reason = "CLEAR"
+            if dist_to_goal > self.goal_checker.standoff_tolerance_m:
+                should_replan, reason = self.replanner.should_replan_due_to_obstacle(
+                    self.waypoints, self.follower.current_waypoint_idx, self.occ_grid, now_sec
+                )
             if should_replan:
                 blocked = self.replanner.find_blocked_segment(
                     self.waypoints, self.follower.current_waypoint_idx, self.occ_grid
                 )
                 if blocked is not None:
-                    self.occ_grid.mark_blocked_region(blocked[0], blocked[1], radius_m=0.45)
+                    # Mark as high-cost terrain patch rather than lethal disc so A* detours around it without bricking the trail
+                    self.occ_grid.mark_terrain_patch(blocked[0], blocked[1], radius_m=0.30, terrain_cost=70.0)
                 self.get_logger().warn(f"Replanning triggered by obstacle: {reason}")
                 self.mission_mgr.transition_to(MissionState.REPLANNING, now_sec, reason)
                 self._publish_telemetry(now_sec)
                 return
 
             if not should_replan:
+                is_maneuvering = (
+                    getattr(self.follower, 'is_turning_in_place', False)
+                    or self.last_trajectory_info.get("in_small_gap", False)
+                    or abs(self.last_trajectory_info.get("steering_adjustment_rad", 0.0)) > 0.03
+                    or abs(self.last_cmd_wz) > 0.20
+                )
                 should_replan, reason = self.replanner.should_replan_due_to_deviation(
-                    self.cross_track_error, now_sec
+                    self.cross_track_error, now_sec, is_maneuvering=is_maneuvering
                 )
                 if should_replan:
                     self.get_logger().warn(f"Replanning triggered by deviation: {reason}")
@@ -498,9 +637,10 @@ class NavigationNode(Node):
             speed_scale = 0.50 if self.confidence_decision == "VERIFY" else (0.0 if self.confidence_decision == "RECOVER" else 1.0)
             self.current_speed_scale = speed_scale * clearance_factor * terrain_factor
 
-            # Execute Adaptive Path Following
-            vx, wz, lookahead_wp, cross_err = self.follower.compute_commands(
+            # Execute Adaptive Path Following with Forward Trajectory Rollout & Small-Gap Centering
+            vx, wz, lookahead_wp, cross_err, traj_info = self.follower.compute_commands_with_trajectory_adjustment(
                 rx, ry, ryaw, self.waypoints,
+                occ_grid=self.occ_grid,
                 speed_scale=speed_scale,
                 terrain_factor=terrain_factor,
                 clearance_factor=clearance_factor,
@@ -509,10 +649,54 @@ class NavigationNode(Node):
             self.cross_track_error = cross_err
             self.last_cmd_vx = vx
             self.last_cmd_wz = wz
+            self.last_trajectory_info = traj_info
+
+            # Check if forward trajectory is blocked by obstacles with debouncing
+            if not traj_info.get("can_pass", True):
+                if goal and dist_to_goal <= self.goal_checker.standoff_tolerance_m:
+                    self.get_logger().info(
+                        f"Forward trajectory obstructed near destination ({dist_to_goal:.2f}m <= {self.goal_checker.standoff_tolerance_m}m). "
+                        "Safely declaring goal reached at standoff!"
+                    )
+                    path_len = sum(
+                        math.hypot(self.raw_planned_path[i+1][0] - self.raw_planned_path[i][0],
+                                   self.raw_planned_path[i+1][1] - self.raw_planned_path[i][1])
+                        for i in range(len(self.raw_planned_path) - 1)
+                    ) if len(self.raw_planned_path) > 1 else 0.0
+                    self.mission_mgr.trigger_success(now_sec, final_error_m=dist_to_goal, path_length_m=path_len)
+                    self._stop_robot()
+                    self.cmd_ownership = "GOAL_REACHED_STOP"
+                    self.nav_reason = f"Goal reached at safe standoff distance ({dist_to_goal:.2f}m)"
+                    self._publish_telemetry(now_sec)
+                    return
+
+                self._traj_blocked_count += 1
+                if self._traj_blocked_count >= 5:  # Sustained block for >= 0.5s at 10Hz
+                    self.get_logger().warn(
+                        f"Forward trajectory persistently blocked ({self._traj_blocked_count} ticks): "
+                        f"min_clearance={traj_info.get('min_clearance_m', 0.0):.2f}m. Halting and replanning."
+                    )
+                    self._stop_robot()
+                    self.cmd_ownership = "TRAJECTORY_BLOCKED_STOP"
+                    self.nav_reason = "Forward trajectory blocked: replanning collision-free detour"
+                    self.mission_mgr.transition_to(MissionState.REPLANNING, now_sec, "FORWARD_TRAJECTORY_BLOCKED")
+                    self._traj_blocked_count = 0
+                    self._publish_telemetry(now_sec)
+                    return
+                else:
+                    # Debouncing: pause forward drive while allowing heading adjustment
+                    vx = 0.0
+            else:
+                self._traj_blocked_count = 0
+
             self.cmd_ownership = "NAVIGATING_ACTIVE"
 
             # Formulate clear operator explanation
-            if speed_scale < 1.0:
+            if traj_info.get("in_small_gap", False):
+                self.nav_reason = f"Navigating small gap ({traj_info.get('corridor_width_m', 0.6):.2f}m): precision alignment & crawl speed ({vx:.2f} m/s)"
+            elif abs(traj_info.get("steering_adjustment_rad", 0.0)) > 0.05:
+                self.nav_reason = f"Trajectory direction adjusted: steering away from obstacle ({traj_info.get('min_clearance_m', 0.5):.2f}m clearance)"
+            elif speed_scale < 1.0:
                 self.nav_reason = "Visual confidence degraded: slow for verification"
             elif terrain_factor < 0.70:
                 self.nav_reason = f"High terrain cost: reduced speed ({vx:.2f} m/s)"
@@ -520,6 +704,68 @@ class NavigationNode(Node):
                 self.nav_reason = f"Narrow obstacle clearance: cautious speed ({vx:.2f} m/s)"
             else:
                 self.nav_reason = "Following safest available route"
+
+            # ACTIVE COLLISION PREVENTION SHIELD (Human-Like Progressive Deceleration & Zero-Collision Hard Safety Guard)
+            if vx > 0.0:
+                # 1. Progressive Deceleration when approaching obstacle ahead (1.25m down to 0.44m):
+                if 0.44 < self.min_forward_lidar_distance_m <= 1.25:
+                    prog_scale = max(0.25, (self.min_forward_lidar_distance_m - 0.44) / (1.25 - 0.44))
+                    cautious_vx = max(self.follower.min_linear_velocity, vx * prog_scale)
+                    vx = min(vx, cautious_vx)
+                    self.nav_reason = f"Approaching obstacle ({self.min_forward_lidar_distance_m:.2f}m): human-like deceleration ({vx:.2f} m/s)"
+
+                # 2. Direct Forward LiDAR Range Check (Hard AEB):
+                # Front bumper is at x=+0.28m. If LiDAR senses return <= 0.44m (<= 16cm from front bumper):
+                if self.min_forward_lidar_distance_m <= 0.44:
+                    self.get_logger().warn(
+                        f"Active Collision Guard engaged: obstacle detected {self.min_forward_lidar_distance_m:.2f}m directly ahead! Halting forward drive."
+                    )
+                    vx = 0.0
+                    self.cmd_ownership = "COLLISION_PREVENTION_STOP"
+                    self.nav_reason = f"Collision Guard: direct obstacle detected {self.min_forward_lidar_distance_m:.2f}m ahead! Emergency stop."
+
+                # 2. Footprint collision check at forward step (next 0.15m):
+                step_d = max(0.12, vx * 0.4)
+                fwd_x = rx + step_d * math.cos(ryaw)
+                fwd_y = ry + step_d * math.sin(ryaw)
+                if not VehicleGeometry.is_footprint_collision_free(fwd_x, fwd_y, ryaw, self.occ_grid, margin_m=0.04):
+                    self.get_logger().warn(
+                        "Active Collision Guard engaged: forward chassis footprint intersects obstacle! Halting forward drive."
+                    )
+                    vx = 0.0
+                    self.cmd_ownership = "COLLISION_PREVENTION_STOP"
+                    self.nav_reason = "Collision Guard: chassis footprint intersects obstacle! Emergency stop."
+
+                # If forward motion is completely blocked by emergency stop, check standoff or trigger replan with debouncing
+                if vx == 0.0 and abs(wz) < 0.05:
+                    if goal and dist_to_goal <= self.goal_checker.standoff_tolerance_m:
+                        self.get_logger().info(
+                            f"Collision guard engaged at destination ({dist_to_goal:.2f}m <= {self.goal_checker.standoff_tolerance_m}m). "
+                            "Safely declaring goal reached at standoff!"
+                        )
+                        path_len = sum(
+                            math.hypot(self.raw_planned_path[i+1][0] - self.raw_planned_path[i][0],
+                                       self.raw_planned_path[i+1][1] - self.raw_planned_path[i][1])
+                            for i in range(len(self.raw_planned_path) - 1)
+                        ) if len(self.raw_planned_path) > 1 else 0.0
+                        self.mission_mgr.trigger_success(now_sec, final_error_m=dist_to_goal, path_length_m=path_len)
+                        self._stop_robot()
+                        self.cmd_ownership = "GOAL_REACHED_STOP"
+                        self.nav_reason = f"Goal reached at safe standoff distance ({dist_to_goal:.2f}m)"
+                        self._publish_telemetry(now_sec)
+                        return
+
+                    self._collision_guard_count += 1
+                    if self._collision_guard_count >= 3:
+                        self._stop_robot()
+                        self.mission_mgr.transition_to(MissionState.REPLANNING, now_sec, "COLLISION_GUARD_BLOCKED")
+                        self._collision_guard_count = 0
+                        self._publish_telemetry(now_sec)
+                        return
+                    else:
+                        vx = 0.0
+                else:
+                    self._collision_guard_count = 0
 
             twist = Twist()
             twist.linear.x = float(vx)
@@ -592,8 +838,9 @@ class NavigationNode(Node):
                     "360° lookaround recovery completed — clearing recovery guard and replanning."
                 )
                 self._recovery_pending = False
-                # Reset replan counter so the post-recovery plan attempt is not pre-failed
+                # Reset replan counter and relax stale blocked regions so post-recovery replanning succeeds
                 self.mission_mgr.replan_count = 0
+                self.occ_grid.relax_blocked_regions(reduction_factor=0.3)
                 self.mission_mgr.transition_to(MissionState.REPLANNING, now_sec, "RECOVERY_RESUME")
             elif rs == "FAILED_SAFE":
                 ctx = self._build_context(now_sec)
@@ -625,8 +872,71 @@ class NavigationNode(Node):
             )
 
         rx, ry, _ = self.robot_pose
+
+        # Tier 1: Nominal A* search with preference for wide open clearance
         raw_path = self.planner.plan(self.occ_grid, (rx, ry), (goal.x, goal.y))
+
+        # Tier 2: Resilient Tight-Corridor A* (allows vehicle to crawl through 0.58-0.68m gaps)
         if not raw_path:
+            raw_path = self.planner.plan(self.occ_grid, (rx, ry), (goal.x, goal.y), allow_tight_passages=True)
+            if raw_path:
+                self.get_logger().info("Nominal clearance tight; resilient planner found route through narrow gap passage!")
+
+        # Tier 3: Panoramic 360-degree surround escape route
+        if not raw_path and self.last_panorama_analysis and self.last_panorama_analysis.get("escape_point"):
+            esc_pt = self.last_panorama_analysis["escape_point"]
+            if isinstance(esc_pt, (list, tuple)) and len(esc_pt) == 2:
+                ex, ey = float(esc_pt[0]), float(esc_pt[1])
+                p_esc = self.planner.plan(self.occ_grid, (rx, ry), (ex, ey), allow_tight_passages=True)
+                if p_esc:
+                    p_to_goal = self.planner.plan(self.occ_grid, (ex, ey), (goal.x, goal.y), allow_tight_passages=True)
+                    if p_to_goal:
+                        raw_path = p_esc + p_to_goal[1:]
+                        self.get_logger().info(
+                            f"Direct path blocked; calculated detour route via panoramic escape point ({ex:.2f}, {ey:.2f})."
+                        )
+
+        # Tier 4: Relax stale/temporary dynamic blocked regions and retry
+        if not raw_path and len(self.occ_grid.persistent_blocked_regions) > 0:
+            self.get_logger().warn("Path blocked by temporary dynamic obstacles; relaxing stale blocked regions...")
+            self.occ_grid.relax_blocked_regions(reduction_factor=0.35)
+            raw_path = self.planner.plan(self.occ_grid, (rx, ry), (goal.x, goal.y), allow_tight_passages=True)
+
+        # Tier 5: Probe lateral bypass detour waypoints around obstruction
+        if not raw_path:
+            dx = goal.x - rx
+            dy = goal.y - ry
+            dist = math.hypot(dx, dy)
+            if dist > 0.8:
+                ux, uy = dx / dist, dy / dist
+                perp_x, perp_y = -uy, ux
+                for offset in [0.45, -0.45, 0.75, -0.75, 1.1, -1.1]:
+                    step_d = min(1.8, max(0.5, dist * 0.4))
+                    detour_x = rx + ux * step_d + perp_x * offset
+                    detour_y = ry + uy * step_d + perp_y * offset
+                    p1 = self.planner.plan(self.occ_grid, (rx, ry), (detour_x, detour_y), allow_tight_passages=True)
+                    if p1:
+                        p2 = self.planner.plan(self.occ_grid, (detour_x, detour_y), (goal.x, goal.y), allow_tight_passages=True)
+                        if p2:
+                            raw_path = p1 + p2[1:]
+                            self.get_logger().info(f"Resilient detour found via lateral bypass offset ({detour_x:.2f}, {detour_y:.2f})!")
+                            break
+
+        if not raw_path:
+            # If the robot is already within arrival proximity of the goal, declare success at standoff distance
+            dist_to_goal = math.hypot(goal.x - rx, goal.y - ry)
+            if dist_to_goal <= self.goal_checker.standoff_tolerance_m:
+                self.get_logger().info(
+                    f"Target obstructed at destination ({dist_to_goal:.2f}m <= {self.goal_checker.standoff_tolerance_m}m). "
+                    "Safely concluding goal reached at standoff!"
+                )
+                self.mission_mgr.trigger_success(now_sec, final_error_m=dist_to_goal, path_length_m=old_path_len)
+                self._stop_robot()
+                self.cmd_ownership = "GOAL_REACHED_STOP"
+                self.nav_reason = f"Goal reached at safe standoff distance ({dist_to_goal:.2f}m)"
+                self._publish_replan_diagnostics(now_sec, replan_reason, old_path_len, 0.0, 0.0, True)
+                return True
+
             self._publish_replan_diagnostics(now_sec, replan_reason, old_path_len, 0.0, 0.0, False)
             return False
 
@@ -780,9 +1090,23 @@ class NavigationNode(Node):
             "available_clear_width_m": round(self.last_passage_eval.get("available_width_m", 0.0), 3),
             "required_clear_width_m": round(self.last_passage_eval.get("required_width_m", VehicleGeometry.NOMINAL_PASSAGE_WIDTH_M), 3),
             "clearance_margin_m": round(self.last_passage_eval.get("clearance_margin_m", 0.0), 3),
+            "trajectory": self.last_trajectory_info,
         }
         v_diag_msg.data = json.dumps(v_diag_data)
         self.vehicle_diag_pub.publish(v_diag_msg)
+
+        # Publish dedicated trajectory status for HUD and Dashboard
+        traj_msg = String()
+        traj_msg.data = json.dumps({
+            "timestamp": now_sec,
+            "can_pass": self.last_trajectory_info.get("can_pass", True),
+            "status": self.last_trajectory_info.get("status", "SAFE"),
+            "min_clearance_m": self.last_trajectory_info.get("min_clearance_m", 1.0),
+            "steering_adjustment_rad": self.last_trajectory_info.get("steering_adjustment_rad", 0.0),
+            "in_small_gap": self.last_trajectory_info.get("in_small_gap", False),
+            "corridor_width_m": self.last_trajectory_info.get("corridor_width_m", VehicleGeometry.NOMINAL_PASSAGE_WIDTH_M),
+        })
+        self.trajectory_status_pub.publish(traj_msg)
 
         # 3. Diagnostic Array
         diag_msg = NavigationDiagnostics.build_diagnostic_array(

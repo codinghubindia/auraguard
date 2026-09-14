@@ -65,6 +65,11 @@ def test_http_index_html_contains_all_11_layers_and_mission_status(running_test_
         assert "EVENTS" in html
         assert "RESET LAYERS" in html
 
+        # Verify raw video panel is replaced by heatmap panel
+        assert "boxHeatmap" in html
+        assert "camHeatmap" in html
+        assert "boxRaw" not in html
+
 
 def test_http_api_status_snapshot(running_test_server):
     """Verify /api/status returns complete telemetry dictionary."""
@@ -78,10 +83,13 @@ def test_http_api_status_snapshot(running_test_server):
         assert "mission_state" in data
         assert "stream_metrics" in data
         assert "raw" in data["stream_metrics"]
+        assert "heatmap" in data["stream_metrics"]
         assert "perception" in data["stream_metrics"]
         assert "segmentation" in data["stream_metrics"]
         assert "vo" in data["stream_metrics"]
         assert "chase" in data["stream_metrics"]
+        assert "trajectory_status" in data
+        assert data["trajectory_status"]["can_pass"] is True
 
 
 def test_http_api_camera_headers_and_status(running_test_server):

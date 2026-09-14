@@ -20,8 +20,9 @@ from rclpy.qos import (
     QoSProfile,
     ReliabilityPolicy,
 )
-from sensor_msgs.msg import CameraInfo, Image
+from sensor_msgs.msg import CameraInfo, Image, LaserScan
 from std_msgs.msg import String
+from geometry_msgs.msg import Twist
 
 from naviguard_perception.image_processor import (
     ImageProcessor,
@@ -29,6 +30,7 @@ from naviguard_perception.image_processor import (
 )
 from naviguard_perception.yolo_detector import YOLODetector, YOLOConfig
 from naviguard_perception.perception_fusion import PerceptionFusion
+from naviguard_perception.lidar_obstacle_detector import LidarObstacleDetector
 
 
 class NaviguardPerceptionNode(Node):
@@ -91,6 +93,8 @@ class NaviguardPerceptionNode(Node):
         )
         self.yolo_detector = YOLODetector(yolo_cfg)
         self.fusion = PerceptionFusion()
+        self.lidar_detector = LidarObstacleDetector()
+        self.latest_lidar_obstacles: List[Dict[str, Any]] = []
 
         # ------------------- Camera Calibration State -------------------
         self.camera_info_received = False
@@ -149,6 +153,11 @@ class NaviguardPerceptionNode(Node):
             segmentation_topic,
             qos_profile=sensor_qos,
         )
+        self.unified_image_pub = self.create_publisher(
+            Image,
+            '/perception/unified_image',
+            qos_profile=sensor_qos,
+        )
         self.yolo_image_pub = self.create_publisher(
             Image,
             '/perception/yolo/debug_image',
@@ -177,6 +186,34 @@ class NaviguardPerceptionNode(Node):
         self.confidence_pub = self.create_publisher(
             String,
             '/perception/confidence',
+            qos_profile=10,
+        )
+        self.heatmap_pub = self.create_publisher(
+            Image,
+            '/perception/heatmap',
+            qos_profile=sensor_qos,
+        )
+        self.lidar_obstacles_pub = self.create_publisher(
+            String,
+            '/perception/lidar_obstacles',
+            qos_profile=10,
+        )
+
+        # LiDAR / Radar scan subscription
+        self.scan_sub = self.create_subscription(
+            LaserScan,
+            '/scan',
+            self._scan_callback,
+            qos_profile=sensor_qos,
+        )
+
+        # Steering & velocity subscription for dynamic trajectory overlay
+        self.latest_cmd_vx = 0.15
+        self.latest_cmd_wz = 0.0
+        self.cmd_vel_sub = self.create_subscription(
+            Twist,
+            '/cmd_vel',
+            self._cmd_vel_callback,
             qos_profile=10,
         )
 
@@ -216,6 +253,29 @@ class NaviguardPerceptionNode(Node):
                 f'  Intrinsics: fx={self.cam_fx:.2f}, fy={self.cam_fy:.2f}, '
                 f'cx={self.cam_cx:.2f}, cy={self.cam_cy:.2f}'
             )
+
+    def _scan_callback(self, msg: LaserScan) -> None:
+        """Process incoming LiDAR / Radar scan returns and publish detected obstacles."""
+        try:
+            res = self.lidar_detector.process_scan(msg)
+            self.latest_lidar_obstacles = res.get("obstacles", [])
+
+            lidar_msg = String()
+            lidar_msg.data = json.dumps({
+                "stamp": float(msg.header.stamp.sec) + float(msg.header.stamp.nanosec) * 1e-9,
+                "closest_distance_m": res.get("closest_distance_m", 99.0),
+                "critical_hazard": res.get("critical_hazard", False),
+                "corridor_clearance": res.get("corridor_clearance", {}),
+                "obstacles": self.latest_lidar_obstacles,
+            })
+            self.lidar_obstacles_pub.publish(lidar_msg)
+        except Exception as exc:
+            self.get_logger().warn(f'Failed to process LiDAR scan: {exc}', throttle_duration_sec=2.0)
+
+    def _cmd_vel_callback(self, msg: Twist) -> None:
+        """Track commanded velocities for dynamic trajectory projection."""
+        self.latest_cmd_vx = float(msg.linear.x)
+        self.latest_cmd_wz = float(msg.angular.z)
 
     def image_callback(self, msg: Image) -> None:
         """Handle incoming image message, process, and publish debug visualization."""
@@ -270,6 +330,8 @@ class NaviguardPerceptionNode(Node):
             'fy': self.cam_fy,
             'cx': self.cam_cx,
             'cy': self.cam_cy,
+            'cmd_vx': self.latest_cmd_vx,
+            'cmd_wz': self.latest_cmd_wz,
         }
 
         # 3. Process frame through modular perception pipeline
@@ -291,29 +353,7 @@ class NaviguardPerceptionNode(Node):
             )
             return
 
-        # 4. Generate and publish classical segmentation view
-        try:
-            seg_bgr, seg_diag = self.processor.generate_segmentation_view(cv_image, metadata)
-            seg_msg = self.bridge.cv2_to_imgmsg(seg_bgr, encoding='bgr8')
-            seg_msg.header.stamp = msg.header.stamp
-            seg_msg.header.frame_id = msg.header.frame_id
-            self.segmentation_pub.publish(seg_msg)
-        except Exception as exc:
-            self.get_logger().warn(f'Failed to publish segmentation image: {exc}', throttle_duration_sec=2.0)
-
-        # 5. Convert processed image back to ROS message preserving headers
-        try:
-            out_msg = self.bridge.cv2_to_imgmsg(processed_bgr, encoding='bgr8')
-            # Preserve original timestamp and frame_id exactly
-            out_msg.header.stamp = msg.header.stamp
-            out_msg.header.frame_id = msg.header.frame_id
-            self.debug_image_pub.publish(out_msg)
-            self.total_processed += 1
-        except Exception as exc:
-            self.total_dropped += 1
-            self.get_logger().warn(f'Failed to publish debug image: {exc}', throttle_duration_sec=2.0)
-
-        # 6. Real YOLO Visual Object Detection
+        # 4. Real YOLO Visual Object Detection
         detections = []
         try:
             detections, yolo_vis, yolo_diag = self.yolo_detector.detect(
@@ -342,13 +382,49 @@ class NaviguardPerceptionNode(Node):
         except Exception as exc:
             self.get_logger().warn(f'YOLO detection error: {exc}', throttle_duration_sec=2.0)
 
-        # 7. Perception Fusion (Classical Traversability + YOLO Semantics + Spatial Projection)
+        # 5. Generate and publish Unified Multi-Spectral Perception View (YOLO + Segmentation + Trajectory)
+        try:
+            unified_bgr, unified_diag = self.processor.generate_unified_perception_view(
+                cv_image, metadata, yolo_detections=detections
+            )
+            unified_msg = self.bridge.cv2_to_imgmsg(unified_bgr, encoding='bgr8')
+            unified_msg.header.stamp = msg.header.stamp
+            unified_msg.header.frame_id = msg.header.frame_id
+            self.unified_image_pub.publish(unified_msg)
+            # Also publish to segmentation topic for seamless backward compatibility
+            self.segmentation_pub.publish(unified_msg)
+        except Exception as exc:
+            self.get_logger().warn(f'Failed to publish unified perception image: {exc}', throttle_duration_sec=2.0)
+
+        # 5b. Generate and publish distance & proximity heatmap view
+        try:
+            heatmap_bgr, heatmap_diag = self.processor.generate_heatmap_view(cv_image, metadata)
+            heatmap_msg = self.bridge.cv2_to_imgmsg(heatmap_bgr, encoding='bgr8')
+            heatmap_msg.header.stamp = msg.header.stamp
+            heatmap_msg.header.frame_id = msg.header.frame_id
+            self.heatmap_pub.publish(heatmap_msg)
+        except Exception as exc:
+            self.get_logger().warn(f'Failed to publish heatmap image: {exc}', throttle_duration_sec=2.0)
+
+        # 5c. Convert processed image back to ROS message preserving headers
+        try:
+            out_msg = self.bridge.cv2_to_imgmsg(processed_bgr, encoding='bgr8')
+            out_msg.header.stamp = msg.header.stamp
+            out_msg.header.frame_id = msg.header.frame_id
+            self.debug_image_pub.publish(out_msg)
+            self.total_processed += 1
+        except Exception as exc:
+            self.total_dropped += 1
+            self.get_logger().warn(f'Failed to publish debug image: {exc}', throttle_duration_sec=2.0)
+
+        # 7. Perception Fusion (Classical Traversability + YOLO Semantics + LiDAR/Radar)
         try:
             fused_vis, confirmed_obstacles, confidences = self.fusion.update(
                 cv_image,
-                seg_bgr if 'seg_bgr' in locals() else None,
+                unified_bgr if 'unified_bgr' in locals() else processed_bgr,
                 detections,
                 timestamp=time.time(),
+                lidar_obstacles=self.latest_lidar_obstacles,
             )
             if fused_vis is not None:
                 fused_msg = self.bridge.cv2_to_imgmsg(fused_vis, encoding='bgr8')

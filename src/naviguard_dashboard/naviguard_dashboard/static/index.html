@@ -629,6 +629,8 @@
             <button class="preset-btn" onclick="quickPreset(5.0, 0.0, true)">⚡ FWD 5.0m</button>
             <button class="preset-btn" onclick="quickPreset(6.0, 1.0, true)">⚡ TRAIL (6, 1)</button>
             <button class="preset-btn" onclick="quickPreset(8.0, 2.5, true)">⚡ CLEARING (8, 2.5)</button>
+            <button class="preset-btn" onclick="quickPreset(14.0, 7.0, true)">⚡ NORTH RD (14, 7)</button>
+            <button class="preset-btn" onclick="quickPreset(14.0, -6.0, true)">⚡ SOUTH RD (14, -6)</button>
             <button class="preset-btn" onclick="quickPreset(0.0, 0.0, true)">⚡ HOME (0, 0)</button>
           </div>
         </div>
@@ -667,65 +669,77 @@
       <div class="gcs-card">
         <div class="gcs-card-header">
           <span>MULTI-SPECTRAL AUTONOMOUS VISION STREAMS</span>
-          <div style="display: flex; gap: 4px;">
+          <div style="display: flex; gap: 4px; flex-wrap: wrap;">
             <button class="btn-toggle active" id="tabFeedsAll" onclick="setVisionView('all')">ALL FEEDS</button>
+            <button class="btn-toggle" id="tabFeedsUnified" onclick="setVisionView('unified')">UNIFIED (ALL-IN-1)</button>
+            <button class="btn-toggle" id="tabFeedsHeatmap" onclick="setVisionView('heatmap')">HEATMAP</button>
             <button class="btn-toggle" id="tabFeedsPano" onclick="setVisionView('panorama')">360° PANORAMA</button>
-            <button class="btn-toggle" id="tabFeedsYolo" onclick="setVisionView('yolo')">YOLOv8</button>
             <button class="btn-toggle" id="tabFeedsChase" onclick="setVisionView('chase')">CHASE 3D</button>
-            <button class="btn-toggle" id="tabFeedsSeg" onclick="setVisionView('seg')">SEGMENTATION</button>
+            <button class="btn-toggle" id="tabFeedsVO" onclick="setVisionView('vo')">ODOMETRY</button>
+            <button class="btn-toggle" id="tabFeedsYolo" onclick="setVisionView('yolo')">YOLO</button>
+            <button class="btn-toggle" id="tabFeedsSeg" onclick="setVisionView('seg')">SEG</button>
           </div>
         </div>
 
         <div class="gcs-card-body">
           <div class="video-grid" id="videoGridContainer">
 
-            <!-- Feed 1: Monocular Raw RGB -->
-            <div class="video-box" id="boxRaw">
-              <img id="camRaw" alt="Raw RGB Stream">
-              <div class="video-badge-title">RAW RGB (/camera/image_raw)</div>
-              <div class="video-badge-fps" id="fpsRaw">[LIVE] 15 FPS</div>
+            <!-- Feed 1: Unified Multi-Spectral Perception (YOLO + Traversability Segmentation + Trajectory + Corridor) -->
+            <div class="video-box" id="boxUnified" style="grid-column: span 2; height: 260px;">
+              <img id="camUnified" alt="Unified Multi-Spectral Perception Stream">
+              <div class="video-badge-title" style="color: var(--accent-cyan);">UNIFIED MULTI-SPECTRAL PERCEPTION (YOLO + SEGMENTATION + TRAJECTORY) (/perception/unified_image)</div>
+              <div class="video-badge-fps" id="fpsUnified">[LIVE] 10 FPS</div>
+              <div id="badgeLidarSensing" style="position: absolute; bottom: 8px; left: 8px; font-size: 0.65rem; font-weight: 700; background: rgba(0,0,0,0.85); padding: 3px 6px; border-radius: 4px; border: 1px solid var(--accent-cyan); color: var(--accent-cyan);">LIDAR GUARD: ACTIVE</div>
+              <div id="badgeTrajectoryPass" style="position: absolute; bottom: 8px; right: 8px; font-size: 0.65rem; font-weight: 700; background: rgba(0,0,0,0.85); padding: 3px 6px; border-radius: 4px; border: 1px solid var(--accent-green); color: var(--accent-green);">TRAJECTORY: CLEAR</div>
             </div>
 
-            <!-- Feed 2: YOLOv8 Deep Vision Object Detections -->
-            <div class="video-box" id="boxYolo">
-              <img id="camYolo" alt="YOLO Detection Stream">
-              <div class="video-badge-title" style="color: var(--accent-amber);">YOLOv8 DETECTIONS (ONNX/CPU)</div>
-              <div class="video-badge-fps" id="fpsYolo">[LIVE] 10 FPS</div>
+            <!-- Feed 2: Real-Time Proximity Heatmap & Dynamic Trajectory -->
+            <div class="video-box" id="boxHeatmap">
+              <img id="camHeatmap" alt="Proximity Heatmap & Trajectory Stream">
+              <div class="video-badge-title" style="color: #ff007f;">PROXIMITY HEATMAP & DISTANCE (/perception/heatmap)</div>
+              <div class="video-badge-fps" id="fpsHeatmap">[LIVE] 10 FPS</div>
             </div>
 
-            <!-- Feed 3: Classical OpenCV Segmentation -->
-            <div class="video-box" id="boxSeg">
-              <img id="camSeg" alt="Classical Segmentation Stream">
-              <div class="video-badge-title" style="color: var(--accent-green);">SEGMENTATION (TRAVERSABILITY)</div>
-              <div class="video-badge-fps" id="fpsSeg">[LIVE] 10 FPS</div>
-            </div>
-
-            <!-- Feed 4: Perception / Traversability Debug -->
-            <div class="video-box" id="boxPercept">
-              <img id="camPercept" alt="Perception Stream">
-              <div class="video-badge-title">PERCEPTION (CORRIDOR/EDGES)</div>
-              <div class="video-badge-fps" id="fpsPercept">[LIVE] 10 FPS</div>
-            </div>
-
-            <!-- Feed 5: Visual Odometry Optical Flow -->
-            <div class="video-box" id="boxVO">
-              <img id="camVO" alt="VO HUD Stream">
-              <div class="video-badge-title">VISUAL ODOMETRY (OPTICAL FLOW)</div>
-              <div class="video-badge-fps" id="fpsVO">[LIVE] 10 FPS</div>
-            </div>
-
-            <!-- Feed 6: 360-Degree Panoramic Surround Camera -->
+            <!-- Feed 3: 360-Degree Panoramic Surround Camera -->
             <div class="video-box" id="boxPanorama">
               <img id="camPanorama" alt="360 Panoramic Surround Stream">
               <div class="video-badge-title" style="color: var(--accent-cyan);">360° SURROUND PANORAMA (/camera/panorama_image)</div>
               <div class="video-badge-fps" id="fpsPanorama">[LIVE] 15 FPS</div>
             </div>
 
-            <!-- Feed 7: Gazebo Harmonic Chase 3D View (Spans 2 columns) -->
-            <div class="video-box" id="boxChase" style="grid-column: span 2; height: 165px;">
+            <!-- Feed 4: Visual Odometry Optical Flow -->
+            <div class="video-box" id="boxVO">
+              <img id="camVO" alt="VO HUD Stream">
+              <div class="video-badge-title">VISUAL ODOMETRY (OPTICAL FLOW)</div>
+              <div class="video-badge-fps" id="fpsVO">[LIVE] 10 FPS</div>
+            </div>
+
+            <!-- Feed 5: Gazebo Harmonic Chase 3D View -->
+            <div class="video-box" id="boxChase">
               <img id="camChase" alt="Third-Person Chase Stream">
               <div class="video-badge-title" style="color: var(--accent-cyan);">CHASE 3D VIEW (GAZEBO HARMONIC)</div>
               <div class="video-badge-fps" id="fpsChase">[LIVE] 15 FPS</div>
+            </div>
+
+            <!-- Feed 6 (Legacy/Standby): YOLOv8 Deep Vision Object Detections -->
+            <div class="video-box" id="boxYolo" style="display: none;">
+              <img id="camYolo" alt="YOLO Detection Stream">
+              <div class="video-badge-title" style="color: var(--accent-amber);">YOLOv8 DETECTIONS (ONNX/CPU)</div>
+              <div class="video-badge-fps" id="fpsYolo">[LIVE] 10 FPS</div>
+            </div>
+
+            <!-- Feed 7 (Legacy/Standby): Classical OpenCV Segmentation -->
+            <div class="video-box" id="boxSeg" style="display: none;">
+              <img id="camSeg" alt="Classical Segmentation Stream">
+              <div class="video-badge-title" style="color: var(--accent-green);">SEGMENTATION (TRAVERSABILITY)</div>
+              <div class="video-badge-fps" id="fpsSeg">[LIVE] 10 FPS</div>
+            </div>
+
+            <!-- Feed 8 (Legacy/Standby): Perception / Traversability Debug -->
+            <div class="video-box" id="boxPercept" style="display: none;">
+              <img id="camPercept" alt="Perception Stream">
+              <div class="video-badge-title">PERCEPTION (CORRIDOR/EDGES)</div>
+              <div class="video-badge-fps" id="fpsPercept">[LIVE] 10 FPS</div>
             </div>
 
           </div>
@@ -1216,13 +1230,14 @@
        High-Efficiency Visual Stream Loaders (Latest-Frame Bounded Buffer)
        -------------------------------------------------------------------------- */
     const cameraStreams = [
-      { id: 'camRaw', type: 'raw', fpsEl: 'fpsRaw', targetFps: 15, periodMs: 66 },
-      { id: 'camSeg', type: 'segmentation', fpsEl: 'fpsSeg', targetFps: 10, periodMs: 100 },
-      { id: 'camPercept', type: 'perception', fpsEl: 'fpsPercept', targetFps: 10, periodMs: 100 },
-      { id: 'camVO', type: 'vo', fpsEl: 'fpsVO', targetFps: 10, periodMs: 100 },
-      { id: 'camChase', type: 'chase', fpsEl: 'fpsChase', targetFps: 15, periodMs: 66 },
-      { id: 'camYolo', type: 'yolo', fpsEl: 'fpsYolo', targetFps: 10, periodMs: 100 },
-      { id: 'camPanorama', type: 'panorama', fpsEl: 'fpsPanorama', targetFps: 15, periodMs: 66 },
+      { id: 'camUnified', type: 'unified', fpsEl: 'fpsUnified', targetFps: 10, periodMs: 100 },
+      { id: 'camHeatmap', type: 'heatmap', fpsEl: 'fpsHeatmap', targetFps: 5, periodMs: 200 },
+      { id: 'camPanorama', type: 'panorama', fpsEl: 'fpsPanorama', targetFps: 4, periodMs: 250 },
+      { id: 'camVO', type: 'vo', fpsEl: 'fpsVO', targetFps: 5, periodMs: 200 },
+      { id: 'camChase', type: 'chase', fpsEl: 'fpsChase', targetFps: 5, periodMs: 200 },
+      { id: 'camSeg', type: 'segmentation', fpsEl: 'fpsSeg', targetFps: 5, periodMs: 200 },
+      { id: 'camPercept', type: 'perception', fpsEl: 'fpsPercept', targetFps: 5, periodMs: 200 },
+      { id: 'camYolo', type: 'yolo', fpsEl: 'fpsYolo', targetFps: 5, periodMs: 200 },
     ];
 
     let currentVisionMode = 'all';
@@ -1237,31 +1252,24 @@
         let lastSec = performance.now();
         let frameCount = 0;
         let dispFps = stream.targetFps;
+        let backoffMs = stream.periodMs;
 
         async function fetchFrame() {
-          // Pause streams that are hidden in focus mode to conserve CPU/network
-          if (currentVisionMode === 'chase' && stream.type !== 'chase') {
-            setTimeout(fetchFrame, 300);
-            return;
-          }
-          if (currentVisionMode === 'panorama' && stream.type !== 'panorama') {
-            setTimeout(fetchFrame, 300);
-            return;
-          }
-          if (currentVisionMode === 'seg' && stream.type !== 'segmentation') {
-            setTimeout(fetchFrame, 300);
+          // Zero-overhead check: If this tile is not visible, do not poll network at all
+          const box = img.closest('.camera-box') || img;
+          if (!img.isConnected || img.offsetParent === null || (box && (box.style.display === 'none' || getComputedStyle(box).display === 'none'))) {
+            setTimeout(fetchFrame, 600);
             return;
           }
 
           if (inFlight) {
-            setTimeout(fetchFrame, 30);
+            setTimeout(fetchFrame, 50);
             return;
           }
 
           inFlight = true;
-          const t0 = performance.now();
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 350);
+          const timeoutId = setTimeout(() => controller.abort(), 600);
 
           try {
             const resp = await fetch(`/api/camera?type=${stream.type}&t=${Date.now()}`, {
@@ -1271,37 +1279,38 @@
             clearTimeout(timeoutId);
 
             if (resp.ok) {
+              backoffMs = stream.periodMs;
               const ageMs = parseFloat(resp.headers.get('X-Frame-Age-Ms') || '0');
-              const status = resp.headers.get('X-Stream-Status') || (ageMs < 350 ? 'LIVE' : 'DEGRADED');
+              const status = resp.headers.get('X-Stream-Status') || (ageMs < 450 ? 'LIVE' : 'DEGRADED');
               const blob = await resp.blob();
-              const objectUrl = URL.createObjectURL(blob);
-
-              const prevUrl = img.src;
-              img.src = objectUrl;
-              if (prevUrl && prevUrl.startsWith('blob:')) {
-                URL.revokeObjectURL(prevUrl);
+              if (blob.size > 0) {
+                const objectUrl = URL.createObjectURL(blob);
+                const prevUrl = img.src;
+                img.src = objectUrl;
+                if (prevUrl && prevUrl.startsWith('blob:')) {
+                  URL.revokeObjectURL(prevUrl);
+                }
+                frameCount++;
               }
-
-              frameCount++;
               const now = performance.now();
               if (now - lastSec >= 1000) {
                 dispFps = Math.round((frameCount * 1000) / (now - lastSec));
                 frameCount = 0;
                 lastSec = now;
               }
-
               if (fpsEl) {
                 const badgeColor = status === 'LIVE' ? '#05f187' : '#ffb703';
                 fpsEl.innerHTML = `<span style="color:${badgeColor}">[${status}]</span> ${dispFps} FPS | ${Math.round(ageMs)}ms`;
               }
+            } else {
+              backoffMs = Math.min(2000, backoffMs * 1.5);
             }
-          } catch (e) {
+          } catch (err) {
             clearTimeout(timeoutId);
+            backoffMs = Math.min(2000, backoffMs * 2);
           } finally {
             inFlight = false;
-            const elapsed = performance.now() - t0;
-            const sleepMs = Math.max(10, stream.periodMs - elapsed);
-            setTimeout(fetchFrame, sleepMs);
+            setTimeout(fetchFrame, backoffMs);
           }
         }
 
@@ -1312,86 +1321,93 @@
     function setVisionView(mode) {
       currentVisionMode = mode;
       const tabAll = document.getElementById('tabFeedsAll');
+      const tabUnified = document.getElementById('tabFeedsUnified');
+      const tabHeatmap = document.getElementById('tabFeedsHeatmap');
       const tabPano = document.getElementById('tabFeedsPano');
-      const tabYolo = document.getElementById('tabFeedsYolo');
       const tabChase = document.getElementById('tabFeedsChase');
+      const tabVO = document.getElementById('tabFeedsVO');
+      const tabYolo = document.getElementById('tabFeedsYolo');
       const tabSeg = document.getElementById('tabFeedsSeg');
       if (tabAll) tabAll.classList.toggle('active', mode === 'all');
+      if (tabUnified) tabUnified.classList.toggle('active', mode === 'unified');
+      if (tabHeatmap) tabHeatmap.classList.toggle('active', mode === 'heatmap');
       if (tabPano) tabPano.classList.toggle('active', mode === 'panorama');
-      if (tabYolo) tabYolo.classList.toggle('active', mode === 'yolo');
       if (tabChase) tabChase.classList.toggle('active', mode === 'chase');
+      if (tabVO) tabVO.classList.toggle('active', mode === 'vo');
+      if (tabYolo) tabYolo.classList.toggle('active', mode === 'yolo');
       if (tabSeg) tabSeg.classList.toggle('active', mode === 'seg');
 
-      const boxes = ['boxRaw', 'boxYolo', 'boxSeg', 'boxPercept', 'boxVO', 'boxPanorama', 'boxChase'];
+      const boxes = ['boxUnified', 'boxHeatmap', 'boxPanorama', 'boxVO', 'boxChase', 'boxYolo', 'boxSeg', 'boxPercept'];
       if (mode === 'all') {
         boxes.forEach(b => {
           const el = document.getElementById(b);
           if (el) {
-            el.style.display = '';
-            el.style.gridColumn = (b === 'boxChase') ? 'span 2' : '';
-            el.style.height = (b === 'boxChase') ? '165px' : '';
+            if (b === 'boxYolo' || b === 'boxSeg' || b === 'boxPercept') {
+              el.style.display = 'none';
+            } else {
+              el.style.display = '';
+              el.style.gridColumn = (b === 'boxUnified') ? 'span 2' : '';
+              el.style.height = (b === 'boxUnified') ? '260px' : '';
+            }
           }
         });
-      } else if (mode === 'panorama') {
+      } else {
+        const targetBox = (mode === 'unified') ? 'boxUnified' :
+                          (mode === 'heatmap') ? 'boxHeatmap' :
+                          (mode === 'panorama') ? 'boxPanorama' :
+                          (mode === 'chase') ? 'boxChase' :
+                          (mode === 'vo') ? 'boxVO' :
+                          (mode === 'yolo') ? 'boxYolo' :
+                          (mode === 'seg') ? 'boxSeg' : 'boxUnified';
         boxes.forEach(b => {
           const el = document.getElementById(b);
-          if (el) el.style.display = (b === 'boxPanorama') ? '' : 'none';
+          if (el) el.style.display = (b === targetBox) ? '' : 'none';
         });
-        const p = document.getElementById('boxPanorama');
-        if (p) {
-          p.style.gridColumn = 'span 2';
-          p.style.height = '340px';
-        }
-      } else if (mode === 'yolo') {
-        boxes.forEach(b => {
-          const el = document.getElementById(b);
-          if (el) el.style.display = (b === 'boxYolo') ? '' : 'none';
-        });
-        const y = document.getElementById('boxYolo');
-        if (y) {
-          y.style.gridColumn = 'span 2';
-          y.style.height = '340px';
-        }
-      } else if (mode === 'chase') {
-        boxes.forEach(b => {
-          const el = document.getElementById(b);
-          if (el) el.style.display = (b === 'boxChase') ? '' : 'none';
-        });
-        const c = document.getElementById('boxChase');
-        if (c) {
-          c.style.gridColumn = 'span 2';
-          c.style.height = '340px';
-        }
-      } else if (mode === 'seg') {
-        boxes.forEach(b => {
-          const el = document.getElementById(b);
-          if (el) el.style.display = (b === 'boxSeg') ? '' : 'none';
-        });
-        const s = document.getElementById('boxSeg');
-        if (s) {
-          s.style.gridColumn = 'span 2';
-          s.style.height = '340px';
+        const focusEl = document.getElementById(targetBox);
+        if (focusEl) {
+          focusEl.style.gridColumn = 'span 2';
+          focusEl.style.height = '340px';
         }
       }
     }
 
+    let slamInFlight = false;
     function fetchSlamImage() {
+      if (slamInFlight) return;
+      slamInFlight = true;
       const nextSlam = new Image();
-      nextSlam.src = `/api/map_image?t=${Date.now()}`;
+      const timeout = setTimeout(() => { slamInFlight = false; }, 2500);
       nextSlam.onload = () => {
+        clearTimeout(timeout);
         slamImg.src = nextSlam.src;
         slamLoaded = true;
+        slamInFlight = false;
       };
+      nextSlam.onerror = () => {
+        clearTimeout(timeout);
+        slamInFlight = false;
+      };
+      nextSlam.src = `/api/map_image?t=${Date.now()}`;
     }
 
     /* --------------------------------------------------------------------------
-       Telemetry Polling (10 Hz)
+       Telemetry Polling (Self-Pacing Loop, Zero Request Stacking)
        -------------------------------------------------------------------------- */
+    let telemetryInFlight = false;
+    let telemetryBackoffMs = 100;
+
     async function pollTelemetry() {
+      if (telemetryInFlight) return;
+      telemetryInFlight = true;
       try {
-        const res = await fetch('/api/status');
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 800);
+        const res = await fetch('/api/status', { signal: controller.signal, cache: 'no-store' });
+        clearTimeout(timeout);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         latestTelemetry = data;
+        telemetryBackoffMs = 100;
 
         if (data.map_meta) {
           mapMeta = data.map_meta;
@@ -1497,6 +1513,39 @@
           document.getElementById('vgCanTurn').style.color = canTurn ? '#05f187' : '#ffb703';
         }
 
+        // Dynamic Trajectory Pass/Blocked Status Update
+        const traj = data.trajectory_status || (data.vehicle_diagnostics && data.vehicle_diagnostics.trajectory);
+        const badgeTraj = document.getElementById('badgeTrajectoryPass');
+        if (badgeTraj && traj) {
+          const canPass = traj.can_pass !== false;
+          const status = traj.status || (canPass ? 'PASS' : 'BLOCKED');
+          const clearM = (traj.min_clearance_m !== undefined) ? traj.min_clearance_m.toFixed(2) : '--';
+          badgeTraj.textContent = `TRAJECTORY: ${status} (${clearM}m)`;
+          badgeTraj.style.borderColor = canPass ? 'var(--accent-green)' : 'var(--accent-red)';
+          badgeTraj.style.color = canPass ? 'var(--accent-green)' : 'var(--accent-red)';
+        }
+
+        // LiDAR & Radar Metric Sensing & Collision Guard Badge
+        const badgeLidar = document.getElementById('badgeLidarSensing');
+        if (badgeLidar && data.lidar_telemetry) {
+          const lt = data.lidar_telemetry;
+          const closest = (lt.closest_distance_m !== undefined && lt.closest_distance_m < 50.0) ? lt.closest_distance_m : null;
+          const isCritical = lt.critical_hazard === true;
+          if (isCritical) {
+            badgeLidar.textContent = `LIDAR GUARD: COLLISION SHIELD (HALT)`;
+            badgeLidar.style.borderColor = 'var(--accent-red)';
+            badgeLidar.style.color = 'var(--accent-red)';
+          } else if (closest !== null) {
+            badgeLidar.textContent = `LIDAR GUARD: ACTIVE (${closest.toFixed(2)}m ahead)`;
+            badgeLidar.style.borderColor = closest < 0.65 ? 'var(--accent-orange)' : 'var(--accent-cyan)';
+            badgeLidar.style.color = closest < 0.65 ? 'var(--accent-orange)' : 'var(--accent-cyan)';
+          } else {
+            badgeLidar.textContent = `LIDAR GUARD: CLEAR`;
+            badgeLidar.style.borderColor = 'var(--accent-cyan)';
+            badgeLidar.style.color = 'var(--accent-cyan)';
+          }
+        }
+
         // YOLOv8 Diagnostics Update
         if (data.yolo_diagnostics) {
           const yd = data.yolo_diagnostics;
@@ -1535,7 +1584,10 @@
         // Map Render
         renderMap();
       } catch (err) {
-        console.error("Telemetry update error:", err);
+        telemetryBackoffMs = Math.min(1000, telemetryBackoffMs * 1.5);
+      } finally {
+        telemetryInFlight = false;
+        setTimeout(pollTelemetry, telemetryBackoffMs);
       }
     }
 
@@ -2018,8 +2070,8 @@
       resizeCanvas();
       initCameraStreams();
 
-      // Poll Telemetry at 10 Hz
-      setInterval(pollTelemetry, 100);
+      // Start self-scheduling Telemetry Polling loop
+      pollTelemetry();
 
       // Poll SLAM Occupancy PNG at 1 Hz
       setInterval(fetchSlamImage, 1000);

@@ -106,6 +106,38 @@ def generate_rellis_basemap(
     cv2.fillPoly(img, [corners_t2], trail_color)
     cv2.polylines(img, [corners_t2], True, trail_border, 2)
 
+    # Expanded Multi-Road Network:
+    # 1. North Road Branch (Fork at x=5m climbing to y=+8m ridge)
+    corners_nb1 = get_rotated_box_corners(9.0, 4.2, 11.0, 2.8, 0.65, origin_x, origin_y, resolution, height)
+    cv2.fillPoly(img, [corners_nb1], trail_color)
+    cv2.polylines(img, [corners_nb1], True, trail_border, 2)
+
+    corners_nb2 = get_rotated_box_corners(16.0, 7.8, 10.0, 2.8, 0.18, origin_x, origin_y, resolution, height)
+    cv2.fillPoly(img, [corners_nb2], trail_color)
+    cv2.polylines(img, [corners_nb2], True, trail_border, 2)
+
+    corners_nbl = get_rotated_box_corners(21.5, 4.5, 8.5, 2.8, -0.85, origin_x, origin_y, resolution, height)
+    cv2.fillPoly(img, [corners_nbl], trail_color)
+    cv2.polylines(img, [corners_nbl], True, trail_border, 2)
+
+    # 2. South Road Branch (Fork at x=3.5m descending to y=-7m ridge)
+    corners_sb1 = get_rotated_box_corners(7.5, -4.0, 10.0, 2.8, -0.62, origin_x, origin_y, resolution, height)
+    cv2.fillPoly(img, [corners_sb1], trail_color)
+    cv2.polylines(img, [corners_sb1], True, trail_border, 2)
+
+    corners_sb2 = get_rotated_box_corners(15.0, -6.8, 10.0, 2.8, -0.15, origin_x, origin_y, resolution, height)
+    cv2.fillPoly(img, [corners_sb2], trail_color)
+    cv2.polylines(img, [corners_sb2], True, trail_border, 2)
+
+    corners_sbl = get_rotated_box_corners(21.0, -3.5, 8.5, 2.8, 0.85, origin_x, origin_y, resolution, height)
+    cv2.fillPoly(img, [corners_sbl], trail_color)
+    cv2.polylines(img, [corners_sbl], True, trail_border, 2)
+
+    # 3. Crossroads Connector Road (Linking North and South paths across the clearing)
+    corners_cr = get_rotated_box_corners(14.0, 0.5, 13.0, 2.4, 1.57, origin_x, origin_y, resolution, height)
+    cv2.fillPoly(img, [corners_cr], trail_color)
+    cv2.polylines(img, [corners_cr], True, trail_border, 2)
+
     # Trail Wheel Ruts / Track Lines
     rut_color = (60, 95, 135)
     r1_u1, r1_v1 = world_to_px(-0.8, 0.7, origin_x, origin_y, resolution, height)
@@ -182,6 +214,37 @@ def generate_rellis_basemap(
     # Narrow Gateway Passage Annotation
     gw_u, gw_v = world_to_px(8.5, 0.0, origin_x, origin_y, resolution, height)
     cv2.putText(img, "PASSAGE 0.66m", (gw_u - 35, gw_v + 4), cv2.FONT_HERSHEY_SIMPLEX, 0.28, (5, 241, 135), 1, cv2.LINE_AA)
+
+    # Small Rocks on Expanded Trails
+    small_rocks = [
+        (6.8, 2.8, 0.16),
+        (13.0, 7.0, 0.15),
+        (19.2, 6.5, 0.16),
+        (5.8, -2.8, 0.17),
+        (13.5, -5.8, 0.15),
+        (18.5, -5.2, 0.18),
+        (14.0, -1.8, 0.16),
+    ]
+    for rx, ry, rr in small_rocks:
+        ru, rv = world_to_px(rx, ry, origin_x, origin_y, resolution, height)
+        cv2.circle(img, (ru, rv), max(2, int(rr / resolution)), (130, 130, 135), -1)
+        cv2.circle(img, (ru, rv), max(2, int(rr / resolution)), (90, 90, 95), 1)
+
+    # Orange Survey Posts
+    survey_posts = [(5.2, 2.2), (4.0, -2.2), (14.2, 4.8)]
+    for sx, sy in survey_posts:
+        su, sv = world_to_px(sx, sy, origin_x, origin_y, resolution, height)
+        cv2.circle(img, (su, sv), max(2, int(0.08 / resolution)), (20, 120, 240), -1)  # Orange stake
+
+    # Road Network Labels
+    nr_u, nr_v = world_to_px(11.0, 5.5, origin_x, origin_y, resolution, height)
+    cv2.putText(img, "NORTH RD", (nr_u - 24, nr_v), cv2.FONT_HERSHEY_SIMPLEX, 0.32, (190, 215, 230), 1, cv2.LINE_AA)
+
+    sr_u, sr_v = world_to_px(10.5, -5.5, origin_x, origin_y, resolution, height)
+    cv2.putText(img, "SOUTH RD", (sr_u - 24, sr_v), cv2.FONT_HERSHEY_SIMPLEX, 0.32, (190, 215, 230), 1, cv2.LINE_AA)
+
+    cr_u, cr_v = world_to_px(14.0, 1.2, origin_x, origin_y, resolution, height)
+    cv2.putText(img, "CROSSROAD", (cr_u - 25, cr_v), cv2.FONT_HERSHEY_SIMPLEX, 0.28, (190, 215, 230), 1, cv2.LINE_AA)
 
     # Start marker (X=0, Y=0)
     start_u, start_v = world_to_px(0.0, 0.0, origin_x, origin_y, resolution, height)

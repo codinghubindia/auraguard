@@ -43,6 +43,7 @@ class GlobalPlannerAStar:
         grid: NavigationOccupancyGrid,
         start_world: Tuple[float, float],
         goal_world: Tuple[float, float],
+        allow_tight_passages: bool = False,
     ) -> Optional[List[Tuple[float, float]]]:
         """Compute collision-free, clearance-optimal global path from start to goal in world coordinates."""
         if not grid.is_initialized:
@@ -59,14 +60,15 @@ class GlobalPlannerAStar:
             return [start_world, goal_world]
 
         # If start cell is in inflated obstacle (e.g. robot spawned near wall), find nearest free cell
-        if grid.is_lethal(start_cell[0], start_cell[1]):
-            start_cell = self._find_nearest_free_cell(grid, start_cell, max_radius_cells=20)
+        search_radius = 35 if allow_tight_passages else 20
+        if (grid.is_raw_obstacle(start_cell[0], start_cell[1]) if allow_tight_passages else grid.is_lethal(start_cell[0], start_cell[1])):
+            start_cell = self._find_nearest_free_cell(grid, start_cell, max_radius_cells=search_radius)
             if start_cell is None:
                 return None
 
         # If goal cell is lethal, check if nearby free cell exists within clearance tolerance
-        if grid.is_lethal(goal_cell[0], goal_cell[1]):
-            goal_cell = self._find_nearest_free_cell(grid, goal_cell, max_radius_cells=20)
+        if (grid.is_raw_obstacle(goal_cell[0], goal_cell[1]) if allow_tight_passages else grid.is_lethal(goal_cell[0], goal_cell[1])):
+            goal_cell = self._find_nearest_free_cell(grid, goal_cell, max_radius_cells=search_radius)
             if goal_cell is None:
                 return None
 
@@ -107,13 +109,21 @@ class GlobalPlannerAStar:
                 if neighbor in closed_set:
                     continue
 
-                if grid.is_lethal(nx, ny):
-                    continue
+                if allow_tight_passages:
+                    if grid.is_raw_obstacle(nx, ny) or grid.get_cost(nx, ny) > 96.0:
+                        continue
+                else:
+                    if grid.is_lethal(nx, ny):
+                        continue
 
                 # Diagonal safety: prevent cutting sharp corners through diagonal obstacles
                 if dx != 0 and dy != 0:
-                    if grid.is_lethal(cx + dx, cy) or grid.is_lethal(cx, cy + dy):
-                        continue
+                    if allow_tight_passages:
+                        if grid.is_raw_obstacle(cx + dx, cy) or grid.is_raw_obstacle(cx, cy + dy):
+                            continue
+                    else:
+                        if grid.is_lethal(cx + dx, cy) or grid.is_lethal(cx, cy + dy):
+                            continue
 
                 # 1. Base geometric step distance
                 step_dist = step_mult * grid.resolution
@@ -121,7 +131,7 @@ class GlobalPlannerAStar:
                 # 2. Footprint-derived corridor width feasibility
                 if grid.clearance_grid.size > 0:
                     clr = grid.get_clearance(nx, ny)
-                    min_required_clearance = VehicleGeometry.INSCRIBED_RADIUS_M
+                    min_required_clearance = (VehicleGeometry.TIGHT_PASSAGE_LIMIT_M * 0.35) if allow_tight_passages else VehicleGeometry.INSCRIBED_RADIUS_M
                     # Reject cells where physical vehicle width cannot fit
                     if clr < min_required_clearance and clr > 0.0:
                         continue

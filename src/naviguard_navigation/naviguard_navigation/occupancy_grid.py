@@ -218,10 +218,38 @@ class NavigationOccupancyGrid:
 
     def mark_blocked_region(self, cx: float, cy: float, radius_m: float = 0.45) -> int:
         """Mark a circular patch around (cx, cy) as lethal obstacle cells."""
+        # Deduplicate nearby regions within 0.25m to prevent runaway inflation and redundant recalculations
+        for i, (ex, ey, er) in enumerate(self.persistent_blocked_regions):
+            if math.hypot(cx - ex, cy - ey) < 0.25:
+                if radius_m <= er + 0.02 and math.hypot(cx - ex, cy - ey) < 0.10:
+                    return 0  # Already accurately marked
+                self.persistent_blocked_regions[i] = (float(cx), float(cy), max(float(er), float(radius_m)))
+                self._apply_raw_blockage(cx, cy, max(float(er), float(radius_m)))
+                self._compute_cost_grid()
+                return 1
+
+        # Keep a bounded set of the latest distinct blocked obstacles (max 25)
+        if len(self.persistent_blocked_regions) >= 25:
+            self.persistent_blocked_regions.pop(0)
+
         self.persistent_blocked_regions.append((float(cx), float(cy), float(radius_m)))
         count = self._apply_raw_blockage(cx, cy, radius_m)
         self._compute_cost_grid()
         return count
+
+    def relax_blocked_regions(self, reduction_factor: float = 0.5, min_radius_m: float = 0.20) -> None:
+        """Shrink over-inflated blocked regions back toward physical boundary (min_radius_m).
+        
+        Guarantees that real physical obstacles are never eroded or erased below their
+        physical safety radius, preventing planners from attempting paths through obstacle centers.
+        """
+        new_regions = []
+        for bx, by, br in self.persistent_blocked_regions:
+            new_r = max(min_radius_m, br * reduction_factor)
+            new_regions.append((bx, by, new_r))
+        self.persistent_blocked_regions = new_regions
+        if self.is_initialized and self.base_raw_grid.size > 0:
+            self._compute_cost_grid()
 
     def clear_blocked_regions(self) -> None:
         """Clear all persistent blocked regions and recompute cost grid."""

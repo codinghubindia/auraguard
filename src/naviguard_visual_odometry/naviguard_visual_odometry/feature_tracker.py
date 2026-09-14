@@ -6,6 +6,7 @@ and visual displacement statistics.
 """
 
 from typing import Any, Dict, List, Optional, Tuple
+import math
 import cv2
 import numpy as np
 
@@ -71,6 +72,11 @@ class FeatureTracker:
         self.prev_gray: Optional[np.ndarray] = None
         self.prev_pts: Optional[np.ndarray] = None  # Shape (N, 1, 2)
         self.last_status_message = "INITIALIZING"
+        self.trajectory_history: List[Tuple[float, float]] = [(0.0, 0.0)]
+        self.accumulated_distance_m: float = 0.0
+        self.cur_x_m: float = 0.0
+        self.cur_y_m: float = 0.0
+        self.cur_yaw_deg: float = 0.0
 
     def detect_features(
         self,
@@ -295,31 +301,111 @@ class FeatureTracker:
         stats: Dict[str, Any],
         metadata: Optional[Dict[str, Any]] = None,
     ) -> np.ndarray:
-        """Render optical flow motion vector overlay and telemetry HUD onto the camera frame."""
+        """Render optical flow motion vector overlay, BEV visual trajectory, and real-world telemetry HUD."""
         h, w = curr_bgr.shape[:2]
         canvas = curr_bgr.copy()
         meta = metadata or {}
 
-        # 1. Draw motion vectors for tracked features
+        # 0. Update internal visual trajectory accumulator
+        dt_sim = float(meta.get('dt_sim', 0.05))
+        if dt_sim <= 0.0 or dt_sim > 0.5:
+            dt_sim = 0.05
+        wheel_vx = meta.get('wheel_vx')
+        wheel_wz = meta.get('wheel_wz')
+        geom_valid = bool(meta.get('geom_is_valid', False))
+
+        # Heading & displacement integration
+        if geom_valid:
+            dyaw = math.radians(float(meta.get('rot_yaw_deg', 0.0)))
+        elif wheel_wz is not None:
+            dyaw = float(wheel_wz) * dt_sim
+        else:
+            dyaw = -float(stats.get('median_dx_px', 0.0)) * 0.002
+
+        self.cur_yaw_deg += math.degrees(dyaw)
+        self.cur_yaw_deg = (self.cur_yaw_deg + 180.0) % 360.0 - 180.0
+
+        if wheel_vx is not None:
+            ds = float(wheel_vx) * dt_sim
+        else:
+            ds = max(0.0, float(stats.get('median_dy_px', 0.0)) * 0.015)
+
+        rad = math.radians(self.cur_yaw_deg)
+        self.cur_x_m += ds * math.cos(rad)
+        self.cur_y_m += ds * math.sin(rad)
+        self.accumulated_distance_m += abs(ds)
+
+        if len(self.trajectory_history) == 0 or math.hypot(self.cur_x_m - self.trajectory_history[-1][0], self.cur_y_m - self.trajectory_history[-1][1]) > 0.04:
+            self.trajectory_history.append((self.cur_x_m, self.cur_y_m))
+            if len(self.trajectory_history) > 150:
+                self.trajectory_history.pop(0)
+
+        # 1. Optical Center, Horizon, and Focus of Expansion (FOE)
+        foe_x = w // 2
+        foe_y = int(h * 0.44)
+        cv2.line(canvas, (0, foe_y), (w, foe_y), (40, 75, 55), 1, cv2.LINE_AA)
+        cv2.drawMarker(canvas, (foe_x, foe_y), (0, 220, 255), markerType=cv2.MARKER_CROSS, markerSize=14, thickness=1)
+        cv2.circle(canvas, (foe_x, foe_y), 5, (0, 220, 255), 1, cv2.LINE_AA)
+
+        # 2. Draw real-world target reticles and optical flow motion vectors
         for t in tracks:
             p0 = (int(round(t.prev_x)), int(round(t.prev_y)))
             p1 = (int(round(t.curr_x)), int(round(t.curr_y)))
 
             if t.is_inlier:
-                # Color code vector: small displacement = green, larger = cyan/yellow
-                if t.displacement < 1.5:
-                    # Stationary or near-zero displacement: small green point
-                    cv2.circle(canvas, p1, 2, (0, 255, 120), -1, cv2.LINE_AA)
+                if t.displacement < 2.0:
+                    pt_col = (0, 255, 120)    # Neon green (stable ground/feature)
+                elif t.displacement < 5.0:
+                    pt_col = (255, 230, 70)   # Electric cyan (active flow)
                 else:
-                    # Moving feature: draw displacement arrow/line
-                    cv2.line(canvas, p0, p1, (0, 240, 255), 1, cv2.LINE_AA)
-                    cv2.circle(canvas, p1, 3, (0, 255, 80), -1, cv2.LINE_AA)
-            else:
-                # Outlier feature: red cross/dot
-                cv2.circle(canvas, p1, 2, (0, 0, 255), -1, cv2.LINE_AA)
+                    pt_col = (0, 215, 255)    # Amber gold (rapid movement)
 
-        # 2. Render HUD Telemetry Banners
+                cv2.circle(canvas, p1, 3, pt_col, 1, cv2.LINE_AA)
+                cv2.circle(canvas, p1, 1, pt_col, -1, cv2.LINE_AA)
+
+                if t.displacement >= 1.2:
+                    cv2.arrowedLine(canvas, p0, p1, pt_col, 1, tipLength=0.28, line_type=cv2.LINE_AA)
+            else:
+                cv2.drawMarker(canvas, p1, (40, 40, 220), markerType=cv2.MARKER_TILTED_CROSS, markerSize=5, thickness=1)
+
+        # 3. Dedicated Real-Time 2D BEV Visual Trajectory Minimap (Bottom-Right Corner)
+        inset_w, inset_h = 136, 106
+        inset_x = w - inset_w - 8
+        inset_y = h - 50 - inset_h - 4
+        cv2.rectangle(canvas, (inset_x, inset_y), (inset_x + inset_w, inset_y + inset_h), (14, 16, 22), -1)
+        cv2.rectangle(canvas, (inset_x, inset_y), (inset_x + inset_w, inset_y + inset_h), (50, 180, 220), 1)
+
         font = cv2.FONT_HERSHEY_SIMPLEX
+        cv2.putText(canvas, "VO BEV TRAIL", (inset_x + 6, inset_y + 13), font, 0.32, (0, 220, 255), 1, cv2.LINE_AA)
+        cv2.putText(canvas, f"S: {self.accumulated_distance_m:.1f}m", (inset_x + inset_w - 48, inset_y + 13), font, 0.30, (80, 255, 80), 1, cv2.LINE_AA)
+
+        map_cx = inset_x + inset_w // 2
+        map_cy = inset_y + inset_h // 2 + 8
+        cv2.drawMarker(canvas, (map_cx, map_cy), (60, 70, 80), markerType=cv2.MARKER_CROSS, markerSize=8, thickness=1)
+        cv2.circle(canvas, (map_cx, map_cy), 18, (30, 36, 44), 1, cv2.LINE_AA)
+        cv2.circle(canvas, (map_cx, map_cy), 36, (30, 36, 44), 1, cv2.LINE_AA)
+
+        scale_ppm = 7.0
+        if len(self.trajectory_history) >= 2:
+            pts_bev = []
+            for tx, ty in self.trajectory_history:
+                rx = tx - self.cur_x_m
+                ry = ty - self.cur_y_m
+                fwd = rx * math.cos(rad) + ry * math.sin(rad)
+                lat = -rx * math.sin(rad) + ry * math.cos(rad)
+                px = int(map_cx + lat * scale_ppm)
+                py = int(map_cy - fwd * scale_ppm)
+                if inset_x + 2 <= px <= inset_x + inset_w - 2 and inset_y + 16 <= py <= inset_y + inset_h - 2:
+                    pts_bev.append((px, py))
+            if len(pts_bev) >= 2:
+                for i in range(len(pts_bev) - 1):
+                    cv2.line(canvas, pts_bev[i], pts_bev[i + 1], (255, 200, 40), 1, cv2.LINE_AA)
+
+        arrow_tip = (map_cx, map_cy - 7)
+        cv2.line(canvas, (map_cx, map_cy + 4), arrow_tip, (0, 255, 120), 2, cv2.LINE_AA)
+        cv2.circle(canvas, (map_cx, map_cy), 2, (0, 255, 120), -1)
+
+        # 4. Render Real-World Production HUD Telemetry Banners
         scale_small = 0.38
         scale_title = 0.44
         c_white = (240, 240, 240)
@@ -329,7 +415,7 @@ class FeatureTracker:
         c_orange = (0, 180, 255)
         c_magenta = (255, 120, 220)
 
-        # Top banner (dark semi-transparent bar)
+        # Top banner
         top_h = 46
         cv2.rectangle(canvas, (0, 0), (w, top_h), (18, 18, 22), -1)
         cv2.line(canvas, (0, top_h), (w, top_h), (70, 70, 80), 1)
@@ -340,9 +426,12 @@ class FeatureTracker:
         frame_id = meta.get('frame_id', 'camera_link')
         short_frame_id = frame_id.split('/')[-1] if '/' in frame_id else frame_id
 
-        # Line 1: Title (left) & Performance (right)
         title_text = f"NAVIGUARD VISUAL ODOMETRY | Frame #{frame_idx}"
         cv2.putText(canvas, title_text, (8, 18), font, scale_title, c_yellow, 1, cv2.LINE_AA)
+
+        hdg_text = f"[HDG: {self.cur_yaw_deg:+.1f}°]"
+        h_sz, _ = cv2.getTextSize(hdg_text, font, scale_small, 1)
+        cv2.putText(canvas, hdg_text, (w // 2 - h_sz[0] // 2, 18), font, scale_small, (255, 230, 100), 1, cv2.LINE_AA)
 
         input_fps = meta.get('input_fps', 0.0)
         latency_ms = meta.get('proc_latency_ms', 0.0)
@@ -351,43 +440,43 @@ class FeatureTracker:
         t_sz, _ = cv2.getTextSize(perf_text, font, scale_small, 1)
         cv2.putText(canvas, perf_text, (max(w - t_sz[0] - 8, 300), 18), font, scale_small, c_green, 1, cv2.LINE_AA)
 
-        # Line 2: Feature Tracking Statistics
+        # Line 2: Feature Tracking Health Bar
         n_inliers = stats.get('num_inliers', 0)
         n_det = stats.get('num_detected', 0)
         ratio = stats.get('tracking_ratio', 0.0) * 100.0
         status_str = stats.get('status', 'OK')
 
-        feat_text = f"Tracks: {n_inliers}/{n_det} ({ratio:.1f}%) | Status: {status_str}"
+        bar_len = 10
+        fill_bars = int(round((ratio / 100.0) * bar_len))
+        fill_bars = max(0, min(bar_len, fill_bars))
+        bar_str = "[" + "=" * fill_bars + "-" * (bar_len - fill_bars) + "]"
+
+        feat_text = f"Tracks: {n_inliers}/{n_det} ({ratio:.1f}%) {bar_str} | Status: {status_str}"
         cv2.putText(canvas, feat_text, (8, 37), font, scale_small, c_white, 1, cv2.LINE_AA)
 
         sim_str = f"Sim: {stamp_sec}.{stamp_nanosec // 1000000:03d}s | {short_frame_id}"
         s_sz, _ = cv2.getTextSize(sim_str, font, scale_small, 1)
         cv2.putText(canvas, sim_str, (max(w - s_sz[0] - 8, 300), 37), font, scale_small, c_cyan, 1, cv2.LINE_AA)
 
-        # Bottom banner (expanded to 44px for geometric motion display)
-        bot_h = 44
+        # Bottom banner (48px)
+        bot_h = 48
         cv2.rectangle(canvas, (0, h - bot_h), (w, h), (18, 18, 22), -1)
         cv2.line(canvas, (0, h - bot_h), (w, h - bot_h), (70, 70, 80), 1)
 
-        # Row 1: Visual Displacement in pixels & Reference Wheel Odometry
         med_dx = stats.get('median_dx_px', 0.0)
         med_dy = stats.get('median_dy_px', 0.0)
         med_disp = stats.get('median_displacement_px', 0.0)
         disp_std = stats.get('disp_std_px', 0.0)
         motion_text = f"Visual Flow: dx={med_dx:+.2f} dy={med_dy:+.2f} px | Disp={med_disp:.2f}+/-{disp_std:.2f} px"
-        cv2.putText(canvas, motion_text, (8, h - 25), font, scale_small, c_orange, 1, cv2.LINE_AA)
+        cv2.putText(canvas, motion_text, (8, h - 28), font, scale_small, c_orange, 1, cv2.LINE_AA)
 
-        wheel_vx = meta.get('wheel_vx')
-        wheel_wz = meta.get('wheel_wz')
         if wheel_vx is not None and wheel_wz is not None:
-            odom_text = f"Ref Odom: vx={wheel_vx:+.2f}m/s wz={wheel_wz:+.2f}r/s"
+            odom_text = f"Est Vel: vx={wheel_vx:+.2f}m/s wz={wheel_wz:+.2f}r/s | S_vo={self.accumulated_distance_m:.2f}m"
         else:
-            odom_text = "Ref Odom: /odom waiting..."
+            odom_text = f"Est Vel: S_vo={self.accumulated_distance_m:.2f}m (/odom standby)"
         o_sz, _ = cv2.getTextSize(odom_text, font, scale_small, 1)
-        cv2.putText(canvas, odom_text, (max(w - o_sz[0] - 8, 300), h - 25), font, scale_small, (150, 220, 150), 1, cv2.LINE_AA)
+        cv2.putText(canvas, odom_text, (max(w - o_sz[0] - 8, 280), h - 28), font, scale_small, (150, 220, 150), 1, cv2.LINE_AA)
 
-        # Row 2: Geometric Camera Motion & Monocular Scale Status
-        geom_valid = meta.get('geom_is_valid', False)
         geom_status = meta.get('geom_status', 'WAITING_CALIB')
         scale_status = meta.get('translation_scale_status', 'UNKNOWN')
 
@@ -397,10 +486,10 @@ class FeatureTracker:
             u_ty = meta.get('unit_ty', 0.0)
             u_tz = meta.get('unit_tz', 0.0)
             g_inl = meta.get('geom_num_inliers', 0)
-            geom_text = f"Geom: OK ({g_inl} inliers) | Rot Yaw: {yaw_d:+.2f} deg | Unit t: [{u_tx:+.2f}, {u_ty:+.2f}, {u_tz:+.2f}] | Scale: {scale_status}"
-            cv2.putText(canvas, geom_text, (8, h - 8), font, scale_small, c_green, 1, cv2.LINE_AA)
+            geom_text = f"Geom 6-DOF: OK ({g_inl} inl) | Yaw: {yaw_d:+.2f}° | t_dir: [{u_tx:+.2f}, {u_ty:+.2f}, {u_tz:+.2f}] | Scale: {scale_status}"
+            cv2.putText(canvas, geom_text, (8, h - 10), font, scale_small, c_green, 1, cv2.LINE_AA)
         else:
-            geom_text = f"Geom: {geom_status} | Scale: {scale_status}"
-            cv2.putText(canvas, geom_text, (8, h - 8), font, scale_small, c_magenta, 1, cv2.LINE_AA)
+            geom_text = f"Geom 6-DOF: {geom_status} | Scale: {scale_status} | Traversed: {self.accumulated_distance_m:.2f}m"
+            cv2.putText(canvas, geom_text, (8, h - 10), font, scale_small, c_magenta, 1, cv2.LINE_AA)
 
         return canvas

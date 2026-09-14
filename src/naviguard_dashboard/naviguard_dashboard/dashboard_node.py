@@ -63,20 +63,22 @@ class NaviguardDashboardNode(Node):
         self._counts = {
             'camera': 0, 'chase': 0, 'imu': 0, 'odom': 0, 'percept': 0, 'seg': 0,
             'vo': 0, 'slam': 0, 'state_est': 0, 'decision': 0,
-            'recovery': 0, 'nav': 0, 'replan_diag': 0, 'yolo': 0, 'panorama': 0
+            'recovery': 0, 'nav': 0, 'replan_diag': 0, 'yolo': 0, 'panorama': 0, 'heatmap': 0, 'unified': 0
         }
         self._subsystem_rates = {k: 0.0 for k in self._counts}
         self._last_rate_calc = time.time()
 
         # Stream encode rate limiting (Decouple autonomy from dashboard display rate)
         self._last_encode_time = {
-            'raw': 0.0, 'chase': 0.0, 'perception': 0.0, 'segmentation': 0.0, 'vo': 0.0, 'yolo': 0.0, 'panorama': 0.0
+            'raw': 0.0, 'chase': 0.0, 'perception': 0.0, 'segmentation': 0.0, 'vo': 0.0, 'yolo': 0.0, 'panorama': 0.0, 'heatmap': 0.0, 'unified': 0.0
         }
         self._min_encode_interval = {
             'raw': 1.0 / 15.0,         # 15 FPS display limit
             'chase': 1.0 / 15.0,       # 15 FPS display limit
             'perception': 1.0 / 10.0,  # 10 FPS display limit
             'segmentation': 1.0 / 10.0,# 10 FPS display limit
+            'heatmap': 1.0 / 10.0,     # 10 FPS display limit
+            'unified': 1.0 / 10.0,     # 10 FPS display limit
             'vo': 1.0 / 10.0,          # 10 FPS display limit
             'yolo': 1.0 / 10.0,        # 10 FPS display limit
             'panorama': 1.0 / 15.0,    # 15 FPS display limit
@@ -138,6 +140,8 @@ class NaviguardDashboardNode(Node):
         self.create_subscription(Image, '/camera/chase_image', self._cb_chase_cam, qos_sensor)
         self.create_subscription(Image, '/perception/yolo/debug_image', self._cb_yolo_cam, qos_sensor)
         self.create_subscription(Image, '/camera/panorama_image', self._cb_panorama_cam, qos_sensor)
+        self.create_subscription(Image, '/perception/heatmap', self._cb_heatmap_cam, qos_sensor)
+        self.create_subscription(Image, '/perception/unified_image', self._cb_unified_cam, qos_sensor)
 
         # 2. Sensors & State
         self.create_subscription(Imu, '/imu', self._cb_imu, qos_sensor)
@@ -165,9 +169,13 @@ class NaviguardDashboardNode(Node):
         self.create_subscription(PoseArray, '/navigation/waypoints', self._cb_nav_waypoints, qos_reliable)
         self.create_subscription(String, '/navigation/replan_diagnostics', self._cb_replan_diag, qos_reliable)
         self.create_subscription(String, '/navigation/vehicle_diagnostics', self._cb_vehicle_diag, qos_reliable)
+        self.create_subscription(String, '/navigation/trajectory_status', self._cb_trajectory_status, qos_reliable)
 
         # 8. YOLO Perception Diagnostics
         self.create_subscription(String, '/perception/yolo/diagnostics', self._cb_yolo_diag, qos_reliable)
+
+        # 9. LiDAR & Radar Obstacles Telemetry
+        self.create_subscription(String, '/perception/lidar_obstacles', self._cb_lidar_obstacles, qos_reliable)
 
         # ---------------------------------------------------------------------
         # Publishers (CRITICAL: NEVER publish to /cmd_vel)
@@ -187,6 +195,7 @@ class NaviguardDashboardNode(Node):
 
         # Start HTTP Server thread (allow immediate address re-use)
         ThreadingHTTPServer.allow_reuse_address = True
+        ThreadingHTTPServer.daemon_threads = True
         self.server = ThreadingHTTPServer((self.host, self.port), NaviguardRequestHandler)
         self.server_thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.server_thread.start()
@@ -324,6 +333,42 @@ class NaviguardDashboardNode(Node):
         except Exception:
             pass
 
+    def _cb_heatmap_cam(self, msg: Image):
+        self._counts['heatmap'] = self._counts.get('heatmap', 0) + 1
+        now = time.time()
+        if now - self._last_encode_time.get('heatmap', 0.0) < self._min_encode_interval.get('heatmap', 0.1):
+            return
+        self._last_encode_time['heatmap'] = now
+
+        t0 = time.perf_counter()
+        try:
+            cv_img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+            if cv_img.shape[1] > 640:
+                cv_img = cv2.resize(cv_img, (640, int(640 * cv_img.shape[0] / cv_img.shape[1])))
+            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
+            latency_ms = (time.perf_counter() - t0) * 1000.0
+            self.cache.set_jpeg_frame("heatmap", enc.tobytes(), timestamp=now, encode_latency_ms=latency_ms, source_fps=self._subsystem_rates.get('percept', 10.0))
+        except Exception:
+            pass
+
+    def _cb_unified_cam(self, msg: Image):
+        self._counts['unified'] = self._counts.get('unified', 0) + 1
+        now = time.time()
+        if now - self._last_encode_time.get('unified', 0.0) < self._min_encode_interval.get('unified', 0.1):
+            return
+        self._last_encode_time['unified'] = now
+
+        t0 = time.perf_counter()
+        try:
+            cv_img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+            if cv_img.shape[1] > 640:
+                cv_img = cv2.resize(cv_img, (640, int(640 * cv_img.shape[0] / cv_img.shape[1])))
+            _, enc = cv2.imencode('.jpg', cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
+            latency_ms = (time.perf_counter() - t0) * 1000.0
+            self.cache.set_jpeg_frame("unified", enc.tobytes(), timestamp=now, encode_latency_ms=latency_ms, source_fps=self._subsystem_rates.get('percept', 10.0))
+        except Exception:
+            pass
+
     # -------------------------------------------------------------------------
     # Sensor Callbacks
     # -------------------------------------------------------------------------
@@ -445,12 +490,20 @@ class NaviguardDashboardNode(Node):
         """Extract trusted recovery checkpoints for Layer 10 visualization."""
         ckpts = []
         for m in msg.markers:
-            if m.ns == "checkpoints":
-                ckpts.append({
-                    "x": round(m.pose.position.x, 2),
-                    "y": round(m.pose.position.y, 2),
-                    "id": m.id,
-                })
+            if m.ns in ("recovery_checkpoints", "checkpoints"):
+                if m.points:
+                    for idx, pt in enumerate(m.points):
+                        ckpts.append({
+                            "x": round(float(pt.x), 2),
+                            "y": round(float(pt.y), 2),
+                            "id": idx + 1,
+                        })
+                elif m.pose.position.x != 0.0 or m.pose.position.y != 0.0:
+                    ckpts.append({
+                        "x": round(float(m.pose.position.x), 2),
+                        "y": round(float(m.pose.position.y), 2),
+                        "id": m.id,
+                    })
         if ckpts:
             self.cache.set_checkpoints(ckpts)
 
@@ -549,10 +602,24 @@ class NaviguardDashboardNode(Node):
         except Exception:
             pass
 
+    def _cb_trajectory_status(self, msg: String):
+        try:
+            data = json.loads(msg.data)
+            self.cache.set_trajectory_status(data)
+        except Exception:
+            pass
+
     def _cb_yolo_diag(self, msg: String):
         try:
             data = json.loads(msg.data)
             self.cache.set_yolo_diagnostics(data)
+        except Exception:
+            pass
+
+    def _cb_lidar_obstacles(self, msg: String):
+        try:
+            data = json.loads(msg.data)
+            self.cache.set_lidar_telemetry(data)
         except Exception:
             pass
 

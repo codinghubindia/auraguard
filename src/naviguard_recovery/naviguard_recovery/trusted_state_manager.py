@@ -43,9 +43,9 @@ class TrustedStateManagerConfig:
     max_checkpoints: int = 40
     min_displacement_m: float = 0.25
     min_rotation_rad: float = 0.25
-    min_confidence_overall: float = 0.82
-    min_confidence_loc: float = 0.75
-    min_confidence_vis: float = 0.70
+    min_confidence_overall: float = 0.70
+    min_confidence_loc: float = 0.65
+    min_confidence_vis: float = 0.60
     optimal_backtrack_dist_m: float = 0.80
     max_backtrack_dist_m: float = 3.00
 

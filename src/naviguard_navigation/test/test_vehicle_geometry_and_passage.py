@@ -107,3 +107,202 @@ def test_passage_evaluation_sharp_turn_constraint():
     assert can_fit_wide is True
     assert status_wide == "SAFE"
     assert diag_wide["can_turn"] is True
+
+
+def test_trajectory_adjustment_and_small_gap_centering():
+    """Verify PathFollower dynamically adjusts direction based on trajectory and centers in small gaps."""
+    from naviguard_navigation.path_follower import PathFollower
+    from naviguard_navigation.waypoint_generator import Waypoint
+    from naviguard_navigation.occupancy_grid import NavigationOccupancyGrid
+    from nav_msgs.msg import OccupancyGrid, MapMetaData
+    from geometry_msgs.msg import Pose
+
+    follower = PathFollower(max_linear_velocity=0.25, min_linear_velocity=0.05, max_angular_velocity=0.35)
+
+    # 1. Straight path along x-axis from (0, 0) to (3.0, 0.0)
+    wps = [
+        Waypoint(x=0.0, y=0.0, yaw=0.0, index=0),
+        Waypoint(x=1.0, y=0.0, yaw=0.0, index=1),
+        Waypoint(x=2.0, y=0.0, yaw=0.0, index=2),
+        Waypoint(x=3.0, y=0.0, yaw=0.0, index=3),
+    ]
+
+    # Setup 100x100 grid (5m x 5m, resolution 0.05m, origin -2.5, -2.5)
+    grid_msg = OccupancyGrid()
+    grid_msg.info = MapMetaData(
+        resolution=0.05,
+        width=100,
+        height=100,
+        origin=Pose(),
+    )
+    grid_msg.info.origin.position.x = -2.5
+    grid_msg.info.origin.position.y = -2.5
+    grid_msg.data = [0] * (100 * 100)
+
+    nav_grid = NavigationOccupancyGrid(inflation_radius_m=0.34)
+    nav_grid.update_from_msg(grid_msg)
+
+    # Test 1: Open clear path -> SAFE, can_pass=True, nominal speed
+    vx, wz, look_wp, cross_err, traj_info = follower.compute_commands_with_trajectory_adjustment(
+        robot_x=0.0, robot_y=0.0, robot_yaw=0.0, waypoints=wps, occ_grid=nav_grid
+    )
+    assert traj_info["can_pass"] is True
+    assert traj_info["status"] == "SAFE"
+    assert vx > 0.15
+
+    # Test 2: Obstacle encroaching on left side at x=1.0, y=+0.35 -> should adjust steering to right
+    # Mark obstacle on left
+    nav_grid.mark_blocked_region(1.0, 0.35, radius_m=0.15)
+    vx_adj, wz_adj, _, _, traj_adj = follower.compute_commands_with_trajectory_adjustment(
+        robot_x=0.0, robot_y=0.0, robot_yaw=0.0, waypoints=wps, occ_grid=nav_grid
+    )
+    assert traj_adj["can_pass"] is True
+    # wz should be negative (turning right away from left obstacle)
+    assert wz_adj <= 0.0 or traj_adj["steering_adjustment_rad"] <= 0.0
+
+    # Test 3: Completely blocked forward corridor at x=0.6, y=0.0 -> BLOCKED, vx=0
+    nav_grid.mark_blocked_region(0.6, 0.0, radius_m=0.35)
+    vx_blk, wz_blk, _, _, traj_blk = follower.compute_commands_with_trajectory_adjustment(
+        robot_x=0.0, robot_y=0.0, robot_yaw=0.0, waypoints=wps, occ_grid=nav_grid
+    )
+    assert traj_blk["can_pass"] is False
+    assert traj_blk["status"] == "BLOCKED"
+    assert vx_blk == 0.0
+
+    # Test 4: Distant obstacle at x=1.5m does NOT freeze vehicle at start (can_pass=True, vx > 0.10)
+    nav_grid.clear_blocked_regions()
+    nav_grid.mark_blocked_region(1.5, 0.0, radius_m=0.30)
+    vx_start, wz_start, _, _, traj_start = follower.compute_commands_with_trajectory_adjustment(
+        robot_x=0.0, robot_y=0.0, robot_yaw=0.0, waypoints=wps, occ_grid=nav_grid
+    )
+    assert traj_start["can_pass"] is True
+    assert vx_start > 0.10
+
+
+def test_path_follower_heading_hysteresis_and_arc_turning():
+    """Verify human-like continuous arc turning and in-place turn hysteresis."""
+    from naviguard_navigation.path_follower import PathFollower
+    from naviguard_navigation.waypoint_generator import Waypoint
+
+    follower = PathFollower(
+        max_linear_velocity=0.25,
+        min_linear_velocity=0.05,
+        turn_in_place_angle_threshold=1.30,  # ~75 deg
+        turn_in_place_exit_threshold=0.65,   # ~37 deg
+    )
+
+    wps = [
+        Waypoint(x=0.0, y=0.0, yaw=0.0, index=0),
+        Waypoint(x=2.0, y=0.0, yaw=0.0, index=1),
+    ]
+
+    # 1. Straight heading (yaw=0.0) -> full speed forward
+    vx, wz, _, _ = follower.compute_commands(0.0, 0.0, 0.0, wps)
+    assert vx > 0.20
+    assert not follower.is_turning_in_place
+
+    # 2. Moderate heading error (yaw = -0.80 rad, ~46 deg):
+    # Continuous rolling crawl along arc (vx ~ 0.05 - 0.08 m/s)
+    vx_arc, wz_arc, _, _ = follower.compute_commands(0.0, 0.0, -0.80, wps)
+    assert not follower.is_turning_in_place
+    assert 0.05 <= vx_arc <= 0.10
+    assert wz_arc > 0.0  # Steer back to 0.0
+
+    # 3. Large heading error (yaw = -1.40 rad, ~80 deg > 1.30 rad):
+    # Enters in-place turn (vx = 0.0, is_turning_in_place = True)
+    vx_turn, wz_turn, _, _ = follower.compute_commands(0.0, 0.0, -1.40, wps)
+    assert follower.is_turning_in_place
+    assert vx_turn == 0.0
+    assert wz_turn > 0.0
+
+    # 4. Hysteresis: As robot rotates, heading error reduces to 0.80 rad (~46 deg).
+    # Since 0.80 > 0.65 (exit threshold), it remains in in-place turn without chattering
+    vx_hys, wz_hys, _, _ = follower.compute_commands(0.0, 0.0, -0.80, wps)
+    assert follower.is_turning_in_place
+    assert vx_hys == 0.0
+
+    # 5. Heading error drops below 0.65 rad (yaw = -0.50 rad, ~28 deg):
+    # Exits in-place turn and resumes continuous rolling forward
+    vx_exit, wz_exit, _, _ = follower.compute_commands(0.0, 0.0, -0.50, wps)
+    assert not follower.is_turning_in_place
+    assert vx_exit >= follower.min_linear_velocity
+
+
+def test_path_follower_can_pass_during_in_place_turn():
+    """Verify that during in-place turning, traj_info reports can_pass=True so replanning is not falsely triggered."""
+    from naviguard_navigation.path_follower import PathFollower
+    from naviguard_navigation.waypoint_generator import Waypoint
+
+    follower = PathFollower(
+        turn_in_place_angle_threshold=1.30,
+        turn_in_place_exit_threshold=0.65,
+    )
+
+    wps = [
+        Waypoint(x=0.0, y=0.0, yaw=0.0, index=0),
+        Waypoint(x=2.0, y=0.0, yaw=0.0, index=1),
+    ]
+
+    # Robot facing opposite direction (-pi rad heading error)
+    vx, wz, _, _, traj_info = follower.compute_commands_with_trajectory_adjustment(
+        0.0, 0.0, 3.14, wps
+    )
+    assert vx == 0.0
+    assert traj_info["can_pass"] is True
+    assert traj_info["status"] == "TURNING_IN_PLACE"
+    assert traj_info["reason"] == "ALIGNING_HEADING"
+
+
+def test_preview_horizon_smooth_deceleration_and_anticipation():
+    """Verify anticipatory deceleration and steering without slamming emergency stops."""
+    from naviguard_navigation.path_follower import PathFollower
+    from naviguard_navigation.waypoint_generator import Waypoint
+    from naviguard_navigation.occupancy_grid import NavigationOccupancyGrid
+    from nav_msgs.msg import OccupancyGrid, MapMetaData
+    from geometry_msgs.msg import Pose
+
+    follower = PathFollower(max_linear_velocity=0.25, min_linear_velocity=0.05)
+
+    wps = [
+        Waypoint(x=0.0, y=0.0, yaw=0.0, index=0),
+        Waypoint(x=1.0, y=0.0, yaw=0.0, index=1),
+        Waypoint(x=2.0, y=0.0, yaw=0.0, index=2),
+    ]
+
+    grid_msg = OccupancyGrid()
+    grid_msg.info = MapMetaData(
+        resolution=0.05,
+        width=100,
+        height=100,
+        origin=Pose(),
+    )
+    grid_msg.info.origin.position.x = -2.5
+    grid_msg.info.origin.position.y = -2.5
+    grid_msg.data = [0] * (100 * 100)
+
+    nav_grid = NavigationOccupancyGrid(inflation_radius_m=0.34)
+    nav_grid.update_from_msg(grid_msg)
+
+    # Obstacle placed at x=1.10m, y=0.0m:
+    # Vehicle detects obstacle in preview horizon and adjusts steering around it smoothly
+    nav_grid.mark_blocked_region(1.10, 0.0, radius_m=0.20)
+    vx, wz, _, _, traj = follower.compute_commands_with_trajectory_adjustment(
+        0.0, 0.0, 0.0, wps, occ_grid=nav_grid
+    )
+    assert traj["can_pass"] is True
+    assert abs(traj["steering_adjustment_rad"]) > 0.05  # Actively steered around obstacle
+
+    # Now test progressive deceleration: obstacle placed directly ahead at x=1.0m, y=0.0m with radius 0.25m
+    nav_grid.clear_blocked_regions()
+    nav_grid.mark_blocked_region(1.0, 0.0, radius_m=0.25)
+    vx_slow, wz_slow, _, _, traj_slow = follower.compute_commands_with_trajectory_adjustment(
+        0.0, 0.0, 0.0, wps, occ_grid=nav_grid
+    )
+    # Forward progress constrained: vehicle slows down progressively (0.05 <= vx < 0.25) rather than slamming to 0 or charging full speed
+    assert traj_slow["can_pass"] is True
+    assert 0.05 <= vx_slow < 0.25
+    assert traj_slow["status"] == "TIGHT"
+
+
+
+

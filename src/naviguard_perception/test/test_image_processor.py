@@ -139,3 +139,92 @@ def test_generate_segmentation_view():
     assert seg_diag['confidence_score'] > 0.0
     assert 'corridor_pixels' in seg_diag
     assert seg_diag['corridor_pixels'] > 0
+    assert 'min_clearance_m' in seg_diag
+    assert 'can_pass' in seg_diag
+    assert 'trajectory_status' in seg_diag
+
+
+def test_trajectory_projector():
+    """Verify TrajectoryProjector produces accurate ground-to-pixel projection and clearance."""
+    from naviguard_perception.trajectory_projector import TrajectoryProjector
+
+    proj = TrajectoryProjector(camera_height_m=0.26, camera_pitch_rad=0.05, hfov_deg=80.0)
+
+    # 1. Forward straight projection: (x=1.5m, y=0.0m) should be near center-lower frame
+    pix = proj.project_ground_to_pixel(1.5, 0.0, 640, 480)
+    assert pix is not None
+    assert abs(pix[0] - 320) < 10  # Centered horizontally
+    assert 240 < pix[1] < 480      # In lower ground half
+
+    # 2. Pixel to ground round-trip
+    gx, gy = proj.project_pixel_to_ground(pix[0], pix[1], 640, 480)
+    assert abs(gx - 1.5) < 0.25
+    assert abs(gy - 0.0) < 0.20
+
+    # 3. Dynamic Trajectory Points with non-zero curvature (steering turn)
+    traj = proj.generate_trajectory_points(cmd_vx=0.20, cmd_wz=0.20, max_dist_m=3.0)
+    assert "center" in traj
+    assert "left" in traj
+    assert "right" in traj
+    assert len(traj["center"]) >= 10
+    # Turning left should have positive y offset for center points
+    assert traj["center"][-1][1] > 0.0
+
+    # 4. Clearance check: obstacle directly on path -> BLOCKED
+    obs_blocking = [{"x_m": 1.2, "y_m": 0.0, "radius_m": 0.20}]
+    traj_straight = proj.generate_trajectory_points(cmd_vx=0.20, cmd_wz=0.0, max_dist_m=3.0)
+    eval_blocked = proj.evaluate_trajectory_clearance(traj_straight, obs_blocking)
+    assert eval_blocked["status"] == "BLOCKED"
+    assert eval_blocked["can_pass"] is False
+    assert eval_blocked["collision_dist_m"] is not None
+
+    # 5. Clearance check: obstacle far to side -> SAFE
+    obs_far = [{"x_m": 1.5, "y_m": 1.2, "radius_m": 0.20}]
+    eval_safe = proj.evaluate_trajectory_clearance(traj_straight, obs_far)
+    assert eval_safe["status"] == "SAFE"
+    assert eval_safe["can_pass"] is True
+
+
+def test_generate_heatmap_view():
+    """Verify real-time Distance & Proximity Heatmap generation."""
+    processor = ImageProcessor()
+    h, w = 480, 640
+    test_img = np.full((h, w, 3), 90, dtype=np.uint8)
+
+    metadata = {'input_fps': 20.0, 'cmd_vx': 0.15, 'cmd_wz': 0.05}
+    obstacles = [{'x_m': 1.1, 'y_m': 0.1, 'radius_m': 0.25}]
+
+    heat_img, heat_diag = processor.generate_heatmap_view(test_img, metadata, obstacles)
+
+    assert heat_img is not None
+    assert heat_img.shape == (h, w, 3)
+    assert heat_img.dtype == np.uint8
+    assert 'nearest_obstacle_dist_m' in heat_diag
+    assert 'min_clearance_m' in heat_diag
+    assert 'can_pass' in heat_diag
+    assert 'trajectory_status' in heat_diag
+    assert heat_diag['nearest_obstacle_dist_m'] < 2.0
+
+
+def test_generate_unified_perception_view():
+    """Verify Unified Multi-Spectral Perception view (Segmentation + YOLO + Perception + Trajectory)."""
+    processor = ImageProcessor()
+    h, w = 480, 640
+    test_img = np.full((h, w, 3), 100, dtype=np.uint8)
+
+    metadata = {'input_fps': 25.0, 'cmd_vx': 0.18, 'cmd_wz': -0.05}
+    yolo_dets = [
+        {'class_name': 'person', 'confidence': 0.91, 'bbox': [150, 200, 40, 80], 'traversable': False},
+        {'class_name': 'car', 'confidence': 0.88, 'bbox': [350, 180, 90, 60], 'traversable': False},
+    ]
+
+    unified_img, diag = processor.generate_unified_perception_view(test_img, metadata, yolo_detections=yolo_dets)
+
+    assert unified_img is not None
+    assert unified_img.shape == (h, w, 3)
+    assert unified_img.dtype == np.uint8
+    assert diag['yolo_detections_count'] == 2
+    assert 'min_clearance_m' in diag
+    assert 'can_pass' in diag
+    assert 'trajectory_status' in diag
+
