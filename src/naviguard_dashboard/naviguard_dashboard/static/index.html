@@ -504,6 +504,7 @@
             <button class="btn-toggle active" id="layerPath" onclick="toggleLayer('path')">PATH</button>
             <button class="btn-toggle active" id="layerTraj" onclick="toggleLayer('traj')">TRAJ</button>
             <button class="btn-toggle active" id="layerObst" onclick="toggleLayer('obst')">OBST</button>
+            <button class="btn-toggle active" id="layerYolo" onclick="toggleLayer('yolo')">YOLO</button>
             <button class="btn-toggle active" id="layerCkpt" onclick="toggleLayer('ckpt')">CKPT</button>
             <button class="btn-toggle active" id="layerEvents" onclick="toggleLayer('events')">EVENTS</button>
             <button class="btn-toggle active" id="btnFollow" onclick="toggleFollowRobot()">FOLLOW: ON</button>
@@ -662,13 +663,14 @@
     <!-- ================= RIGHT COLUMN: MULTI-SPECTRAL VISION & HEALTH ================= -->
     <div style="display: flex; flex-direction: column; gap: 10px;">
 
-      <!-- 5-Stream Vision Deck Card with Bounded Latest-Frame Buffer -->
+      <!-- 6-Stream Vision Deck Card with Bounded Latest-Frame Buffer -->
       <div class="gcs-card">
         <div class="gcs-card-header">
           <span>MULTI-SPECTRAL AUTONOMOUS VISION STREAMS</span>
           <div style="display: flex; gap: 4px;">
-            <button class="btn-toggle active" id="tabFeedsAll" onclick="setVisionView('all')">ALL 5 FEEDS</button>
-            <button class="btn-toggle" id="tabFeedsFocus" onclick="setVisionView('chase')">FOCUS CHASE</button>
+            <button class="btn-toggle active" id="tabFeedsAll" onclick="setVisionView('all')">ALL 6 FEEDS</button>
+            <button class="btn-toggle" id="tabFeedsYolo" onclick="setVisionView('yolo')">YOLOv8 DETECTIONS</button>
+            <button class="btn-toggle" id="tabFeedsChase" onclick="setVisionView('chase')">FOCUS CHASE</button>
             <button class="btn-toggle" id="tabFeedsSeg" onclick="setVisionView('seg')">SEGMENTATION</button>
           </div>
         </div>
@@ -683,28 +685,35 @@
               <div class="video-badge-fps" id="fpsRaw">[LIVE] 15 FPS</div>
             </div>
 
-            <!-- Feed 2: Classical OpenCV Segmentation -->
+            <!-- Feed 2: YOLOv8 Deep Vision Object Detections -->
+            <div class="video-box" id="boxYolo">
+              <img id="camYolo" alt="YOLO Detection Stream">
+              <div class="video-badge-title" style="color: var(--accent-amber);">YOLOv8 DETECTIONS (ONNX/CPU)</div>
+              <div class="video-badge-fps" id="fpsYolo">[LIVE] 10 FPS</div>
+            </div>
+
+            <!-- Feed 3: Classical OpenCV Segmentation -->
             <div class="video-box" id="boxSeg">
               <img id="camSeg" alt="Classical Segmentation Stream">
               <div class="video-badge-title" style="color: var(--accent-green);">SEGMENTATION (TRAVERSABILITY)</div>
               <div class="video-badge-fps" id="fpsSeg">[LIVE] 10 FPS</div>
             </div>
 
-            <!-- Feed 3: Perception / Traversability Debug -->
+            <!-- Feed 4: Perception / Traversability Debug -->
             <div class="video-box" id="boxPercept">
               <img id="camPercept" alt="Perception Stream">
               <div class="video-badge-title">PERCEPTION (CORRIDOR/EDGES)</div>
               <div class="video-badge-fps" id="fpsPercept">[LIVE] 10 FPS</div>
             </div>
 
-            <!-- Feed 4: Visual Odometry Optical Flow -->
+            <!-- Feed 5: Visual Odometry Optical Flow -->
             <div class="video-box" id="boxVO">
               <img id="camVO" alt="VO HUD Stream">
               <div class="video-badge-title">VISUAL ODOMETRY (OPTICAL FLOW)</div>
               <div class="video-badge-fps" id="fpsVO">[LIVE] 10 FPS</div>
             </div>
 
-            <!-- Feed 5: Gazebo Harmonic Chase 3D View (Spans 2 columns if in grid) -->
+            <!-- Feed 6: Gazebo Harmonic Chase 3D View (Spans 2 columns if in grid) -->
             <div class="video-box" id="boxChase" style="grid-column: span 2; height: 165px;">
               <img id="camChase" alt="Third-Person Chase Stream">
               <div class="video-badge-title" style="color: var(--accent-cyan);">CHASE 3D VIEW (GAZEBO HARMONIC)</div>
@@ -811,20 +820,20 @@
           <span class="badge badge-green" id="badgeYoloStatus">ONLINE</span>
         </div>
         <div class="gcs-card-body">
-          <!-- Stream Preview + Detection Info -->
-          <div style="display: grid; grid-template-columns: 130px 1fr; gap: 8px; align-items: start;">
-            <div class="video-box" style="height: 100px;">
-              <img id="camYolo" alt="YOLO Detection Stream">
-              <div class="video-badge-title" style="color: var(--accent-amber);">YOLO OVERLAY</div>
-              <div class="video-badge-fps" id="fpsYolo">[LIVE] 10 FPS</div>
-            </div>
+          <!-- Detection Engine Telemetry -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start;">
             <div>
               <div class="metric-grid">
                 <div class="metric-row"><span class="metric-label">Model:</span><span class="metric-val" id="yoloModel" style="font-size: 0.65rem;">yolov8n.onnx</span></div>
                 <div class="metric-row"><span class="metric-label">Hardware Device:</span><span class="badge badge-cyan" id="yoloDevice">CPU</span></div>
                 <div class="metric-row"><span class="metric-label">Backend:</span><span class="metric-val" id="yoloBackend">cv2.dnn</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="metric-grid">
                 <div class="metric-row"><span class="metric-label">Latency / Rate:</span><span class="metric-val" id="yoloLatencyRate">0.0 ms (0.0 FPS)</span></div>
                 <div class="metric-row"><span class="metric-label">Active Detections:</span><span class="metric-val" id="yoloCount" style="color: var(--accent-green); font-weight: bold;">0</span></div>
+                <div class="metric-row"><span class="metric-label">Primary Stream:</span><button class="btn btn-secondary btn-sm" onclick="setVisionView('yolo')" style="padding: 1px 6px; font-size: 0.65rem;">FOCUS YOLO</button></div>
               </div>
             </div>
           </div>
@@ -868,6 +877,7 @@
       path: true,
       traj: true,
       obst: true,
+      yolo: true,
       ckpt: true,
       events: true
     };
@@ -970,14 +980,12 @@
       const screenX = (e.clientX - rect.left) * scaleX;
       const screenY = (e.clientY - rect.top) * scaleY;
 
-      const normX = screenX - (canvas.width / 2 + viewPanX);
-      const normY = screenY - (canvas.height / 2 + viewPanY);
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
 
-      const unscaledX = normX / viewZoom;
-      const unscaledY = normY / viewZoom;
-
-      const u = unscaledX + canvas.width / 2;
-      const v = unscaledY + canvas.height / 2;
+      // Invert camera transform to canonical 600x600 map cell coordinates
+      const u = (screenX - (cx + viewPanX)) / viewZoom + (mapMeta.width / 2);
+      const v = (screenY - (cy + viewPanY)) / viewZoom + (mapMeta.height / 2);
 
       return [u, v];
     }
@@ -1003,8 +1011,9 @@
             btn.textContent = "FOLLOW: OFF";
           }
         }
-        viewPanX += dx;
-        viewPanY += dy;
+        const rect = canvas.getBoundingClientRect();
+        viewPanX += dx * (canvas.width / rect.width);
+        viewPanY += dy * (canvas.height / rect.height);
         mouseDownX = e.clientX;
         mouseDownY = e.clientY;
         renderMap();
@@ -1040,12 +1049,13 @@
     }, { passive: false });
 
     function validateAndSelectTarget(u, v, autoDispatch = false) {
-      fetch(`/api/validate_goal_click?u=${u.toFixed(1)}&v=${v.toFixed(1)}&cw=${canvas.width}&ch=${canvas.height}`)
+      const [wx, wy] = canvasToWorld(u, v);
+      fetch(`/api/validate_goal_click?wx=${wx.toFixed(3)}&wy=${wy.toFixed(3)}&u=${u.toFixed(1)}&v=${v.toFixed(1)}&cw=600&ch=600`)
         .then(res => res.json())
         .then(data => {
           currentTarget = {
-            x: data.x,
-            y: data.y,
+            x: (data.x !== undefined) ? data.x : wx,
+            y: (data.y !== undefined) ? data.y : wy,
             valid: data.valid,
             reason: data.reason
           };
@@ -1056,35 +1066,37 @@
           const bearingText = document.getElementById('targetBearingText');
           const btnDispatch = document.getElementById('btnDispatchGoal');
 
-          const signX = data.x >= 0 ? '+' : '';
-          const signY = data.y >= 0 ? '+' : '';
-          coordsText.textContent = `X: ${signX}${data.x.toFixed(2)} m, Y: ${signY}${data.y.toFixed(2)} m`;
-          document.getElementById('inputCoordX').value = data.x.toFixed(2);
-          document.getElementById('inputCoordY').value = data.y.toFixed(2);
+          const signX = currentTarget.x >= 0 ? '+' : '';
+          const signY = currentTarget.y >= 0 ? '+' : '';
+          coordsText.textContent = `X: ${signX}${currentTarget.x.toFixed(2)} m, Y: ${signY}${currentTarget.y.toFixed(2)} m`;
+          document.getElementById('inputCoordX').value = currentTarget.x.toFixed(2);
+          document.getElementById('inputCoordY').value = currentTarget.y.toFixed(2);
 
           if (latestTelemetry && latestTelemetry.robot_pose) {
             const rx = latestTelemetry.robot_pose.x;
             const ry = latestTelemetry.robot_pose.y;
-            const d = Math.hypot(data.x - rx, data.y - ry);
+            const d = Math.hypot(currentTarget.x - rx, currentTarget.y - ry);
             distText.textContent = `${d.toFixed(2)} m`;
 
-            const angleRad = Math.atan2(data.y - ry, data.x - rx);
+            const angleRad = Math.atan2(currentTarget.y - ry, currentTarget.x - rx);
             const deg = (angleRad * 180 / Math.PI);
             bearingText.textContent = `${deg >= 0 ? '+' : ''}${deg.toFixed(1)}°`;
           }
 
-          if (data.valid) {
+          if (currentTarget.valid) {
             pill.className = "badge badge-green";
             pill.textContent = "SAFE TRAVERSABLE DESTINATION";
             btnDispatch.disabled = false;
             if (autoDispatch) dispatchCurrentGoal();
           } else {
             pill.className = "badge badge-red";
-            pill.textContent = `REJECTED: ${data.reason}`;
+            pill.textContent = `REJECTED: ${currentTarget.reason}`;
             btnDispatch.disabled = true;
           }
 
           renderMap();
+        });
+    }
         })
         .catch(err => console.error("Validation fetch failed:", err));
     }
@@ -1288,27 +1300,55 @@
 
     function setVisionView(mode) {
       currentVisionMode = mode;
-      document.getElementById('tabFeedsAll').classList.toggle('active', mode === 'all');
-      document.getElementById('tabFeedsFocus').classList.toggle('active', mode === 'chase');
-      document.getElementById('tabFeedsSeg').classList.toggle('active', mode === 'seg');
+      const tabAll = document.getElementById('tabFeedsAll');
+      const tabYolo = document.getElementById('tabFeedsYolo');
+      const tabChase = document.getElementById('tabFeedsChase');
+      const tabSeg = document.getElementById('tabFeedsSeg');
+      if (tabAll) tabAll.classList.toggle('active', mode === 'all');
+      if (tabYolo) tabYolo.classList.toggle('active', mode === 'yolo');
+      if (tabChase) tabChase.classList.toggle('active', mode === 'chase');
+      if (tabSeg) tabSeg.classList.toggle('active', mode === 'seg');
 
-      const boxes = ['boxRaw', 'boxSeg', 'boxPercept', 'boxVO', 'boxChase'];
+      const boxes = ['boxRaw', 'boxYolo', 'boxSeg', 'boxPercept', 'boxVO', 'boxChase'];
       if (mode === 'all') {
-        boxes.forEach(b => document.getElementById(b).style.display = '');
-        document.getElementById('boxChase').style.gridColumn = 'span 2';
-        document.getElementById('boxChase').style.height = '165px';
+        boxes.forEach(b => {
+          const el = document.getElementById(b);
+          if (el) {
+            el.style.display = '';
+            el.style.gridColumn = (b === 'boxChase') ? 'span 2' : '';
+            el.style.height = (b === 'boxChase') ? '165px' : '';
+          }
+        });
+      } else if (mode === 'yolo') {
+        boxes.forEach(b => {
+          const el = document.getElementById(b);
+          if (el) el.style.display = (b === 'boxYolo') ? '' : 'none';
+        });
+        const y = document.getElementById('boxYolo');
+        if (y) {
+          y.style.gridColumn = 'span 2';
+          y.style.height = '340px';
+        }
       } else if (mode === 'chase') {
-        boxes.forEach(b => document.getElementById(b).style.display = 'none');
+        boxes.forEach(b => {
+          const el = document.getElementById(b);
+          if (el) el.style.display = (b === 'boxChase') ? '' : 'none';
+        });
         const c = document.getElementById('boxChase');
-        c.style.display = '';
-        c.style.gridColumn = 'span 2';
-        c.style.height = '340px';
+        if (c) {
+          c.style.gridColumn = 'span 2';
+          c.style.height = '340px';
+        }
       } else if (mode === 'seg') {
-        boxes.forEach(b => document.getElementById(b).style.display = 'none');
+        boxes.forEach(b => {
+          const el = document.getElementById(b);
+          if (el) el.style.display = (b === 'boxSeg') ? '' : 'none';
+        });
         const s = document.getElementById('boxSeg');
-        s.style.display = '';
-        s.style.gridColumn = 'span 2';
-        s.style.height = '340px';
+        if (s) {
+          s.style.gridColumn = 'span 2';
+          s.style.height = '340px';
+        }
       }
     }
 
@@ -1633,7 +1673,7 @@
        -------------------------------------------------------------------------- */
     function drawProceduralBasemap() {
       ctx.fillStyle = '#1e331c';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, mapMeta.width, mapMeta.height);
 
       ctx.strokeStyle = '#2d4c2a';
       ctx.lineWidth = 1;
@@ -1643,7 +1683,7 @@
         const [u1, v1] = worldToCanvas(x, -15);
         const [u2, v2] = worldToCanvas(x, 15);
         ctx.beginPath(); ctx.moveTo(u1, v1); ctx.lineTo(u2, v2); ctx.stroke();
-        ctx.fillText(`${x >= 0 ? '+' : ''}${x}m`, u1 + 2, canvas.height - 4);
+        ctx.fillText(`${x >= 0 ? '+' : ''}${x}m`, u1 + 2, mapMeta.height - 4);
       }
 
       for (let y = -15; y <= 15; y += 5) {
@@ -1664,29 +1704,32 @@
 
         ctx.save();
 
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+
         if (followRobot && latestTelemetry && latestTelemetry.robot_pose) {
           const p = latestTelemetry.robot_pose;
           const [ru, rv] = worldToCanvas(p.x, p.y);
-          viewPanX = canvas.width / 2 - ru;
-          viewPanY = canvas.height / 2 - rv;
+          viewPanX = (mapMeta.width / 2 - ru) * viewZoom;
+          viewPanY = (mapMeta.height / 2 - rv) * viewZoom;
         }
 
-        ctx.translate(canvas.width / 2 + viewPanX, canvas.height / 2 + viewPanY);
+        ctx.translate(cx + viewPanX, cy + viewPanY);
         ctx.scale(viewZoom, viewZoom);
-        ctx.translate(-canvas.width / 2, -canvas.height / 2);
+        ctx.translate(-mapMeta.width / 2, -mapMeta.height / 2);
 
         // Layer 1 — RELLIS / Terrain Base
         if (layers.base) {
           if (basemapLoaded && basemapImg.width > 0) {
-            ctx.drawImage(basemapImg, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(basemapImg, 0, 0, mapMeta.width, mapMeta.height);
           } else {
             drawProceduralBasemap();
           }
-          // Truthful synthetic labeling watermark
+          // Real-world terrain watermark
           ctx.save();
           ctx.font = '10px monospace';
           ctx.fillStyle = 'rgba(255, 183, 3, 0.65)';
-          ctx.fillText("RELLIS-INSPIRED SYNTHETIC", 14, canvas.height - 14);
+          ctx.fillText("RELLIS-3D REAL-WORLD TERRAIN", 14, mapMeta.height - 14);
           ctx.restore();
         }
 
@@ -1694,7 +1737,7 @@
         if (layers.slam && slamLoaded && slamImg.width > 0) {
           ctx.save();
           ctx.globalAlpha = 0.55;
-          ctx.drawImage(slamImg, 0, 0, canvas.width, canvas.height);
+          ctx.drawImage(slamImg, 0, 0, mapMeta.width, mapMeta.height);
           ctx.restore();
         }
 
@@ -1772,6 +1815,30 @@
               ctx.fillStyle = '#ffffff';
               ctx.font = 'bold 9px monospace';
               ctx.fillText("BLOCK", ou - 14, ov + 3);
+            });
+            ctx.restore();
+          }
+
+          // Layer 9b — YOLOv8 Detected Object Projections
+          if (layers.yolo && latestTelemetry.yolo_diagnostics && latestTelemetry.yolo_diagnostics.detections) {
+            ctx.save();
+            const yoloDets = latestTelemetry.yolo_diagnostics.detections;
+            yoloDets.forEach(yd => {
+              if (yd.x_base !== undefined && yd.y_base !== undefined && latestTelemetry.robot_pose) {
+                const rp = latestTelemetry.robot_pose;
+                const cosY = Math.cos(rp.yaw || 0);
+                const sinY = Math.sin(rp.yaw || 0);
+                const wx = rp.x + yd.x_base * cosY - yd.y_base * sinY;
+                const wy = rp.y + yd.x_base * sinY + yd.y_base * cosY;
+                const [yu, yv] = worldToCanvas(wx, wy);
+                ctx.fillStyle = 'rgba(245, 158, 11, 0.4)';
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 2.0;
+                ctx.beginPath(); ctx.arc(yu, yv, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = '#fef08a';
+                ctx.font = 'bold 9px monospace';
+                ctx.fillText(`YOLO:${(yd.class || 'obj').toUpperCase()}`, yu + 10, yv + 3);
+              }
             });
             ctx.restore();
           }

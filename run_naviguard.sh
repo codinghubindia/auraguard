@@ -34,7 +34,7 @@ ENABLE_RVIZ="false"
 DO_BUILD="false"
 VERBOSE="false"
 INTERACTIVE="auto"
-WORLD_PATH=""
+WORLD_PATH="$WS_ROOT/install/naviguard_description/share/naviguard_description/worlds/rellis_outdoor_world.sdf"
 
 # Print Kali-Style Banner
 print_banner() {
@@ -462,7 +462,8 @@ except Exception as e:
         ;;
       q|quit|exit)
         echo -e "${C_YELLOW}Initiating shutdown...${C_RESET}"
-        break
+        cleanup
+        exit 0
         ;;
       "")
         ;;
@@ -472,6 +473,7 @@ except Exception as e:
     esac
   done
 
-  # Wait for launch process to finish cleanup
-  wait "$LAUNCH_PID" 2>/dev/null || true
+  # If loop exited (e.g. EOF or process died), perform full cleanup
+  cleanup
+  exit 0
 fi

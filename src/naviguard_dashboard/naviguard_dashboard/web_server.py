@@ -170,16 +170,21 @@ class NaviguardRequestHandler(BaseHTTPRequestHandler):
         # 5. Goal Coordinate Conversion & Safety Validation
         elif path == '/api/validate_goal_click':
             try:
-                u = float(query.get('u', [0])[0])
-                v = float(query.get('v', [0])[0])
-                cw = float(query.get('cw', [600])[0])
-                ch = float(query.get('ch', [600])[0])
+                # Direct world coordinates if provided by client
+                if 'wx' in query and 'wy' in query:
+                    world_x = float(query['wx'][0])
+                    world_y = float(query['wy'][0])
+                else:
+                    u = float(query.get('u', [0])[0])
+                    v = float(query.get('v', [0])[0])
+                    cw = float(query.get('cw', [600])[0])
+                    ch = float(query.get('ch', [600])[0])
 
-                # Update canvas dimensions in converter
-                self.coord_converter.canvas_width = int(cw)
-                self.coord_converter.canvas_height = int(ch)
+                    # Update canvas dimensions in converter
+                    self.coord_converter.canvas_width = int(cw)
+                    self.coord_converter.canvas_height = int(ch)
 
-                world_x, world_y = self.coord_converter.canvas_to_world(u, v)
+                    world_x, world_y = self.coord_converter.canvas_to_world(u, v)
 
                 snap = self.state_cache.get_snapshot()
                 rec_state = snap.get('recovery_state', 'NORMAL')

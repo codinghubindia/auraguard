@@ -29,8 +29,8 @@ NAVIGUARD features a unified, interactive terminal launcher with a Kali-style cy
 
 ```bash
 # Clone the repository
-git clone git@github.com:codinghubindia/naviguard.git
-cd naviguard
+git clone git@github.com:codinghubindia/auraguard.git
+cd auraguard
 
 # Run the interactive Kali-style launcher
 ./run_naviguard.sh
