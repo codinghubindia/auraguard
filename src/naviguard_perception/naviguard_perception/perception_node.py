@@ -157,12 +157,12 @@ class NaviguardPerceptionNode(Node):
         self.yolo_detections_pub = self.create_publisher(
             String,
             '/perception/yolo/detections',
-            qos_profile=sensor_qos,
+            qos_profile=10,
         )
         self.yolo_diag_pub = self.create_publisher(
             String,
             '/perception/yolo/diagnostics',
-            qos_profile=sensor_qos,
+            qos_profile=10,
         )
         self.fused_image_pub = self.create_publisher(
             Image,
@@ -172,12 +172,12 @@ class NaviguardPerceptionNode(Node):
         self.fused_obstacles_pub = self.create_publisher(
             String,
             '/perception/fused_obstacles',
-            qos_profile=sensor_qos,
+            qos_profile=10,
         )
         self.confidence_pub = self.create_publisher(
             String,
             '/perception/confidence',
-            qos_profile=sensor_qos,
+            qos_profile=10,
         )
 
         # ------------------- Diagnostic Timer -------------------

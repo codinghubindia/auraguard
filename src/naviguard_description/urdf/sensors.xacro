@@ -307,6 +307,7 @@
           <near>0.05</near>
           <far>100.0</far>
         </clip>
+        <camera_info_topic>/camera/panorama_camera_info</camera_info_topic>
       </camera>
       <always_on>1</always_on>
       <update_rate>20</update_rate>

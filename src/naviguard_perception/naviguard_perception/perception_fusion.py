@@ -304,8 +304,9 @@ class PerceptionFusion:
         if classical_mask is not None and classical_mask.shape[:2] == bgr_image.shape[:2]:
             green_tint = np.zeros_like(vis)
             green_tint[:, :] = (0, 180, 0)
+            blended = cv2.addWeighted(vis, 0.70, green_tint, 0.30, 0)
             free_indices = classical_mask > 128
-            vis[free_indices] = cv2.addWeighted(vis[free_indices], 0.70, green_tint[free_indices], 0.30, 0)
+            vis = np.where(free_indices[..., None], blended, vis)
 
         # Overlay tracked obstacles
         for track in tracks.values():
