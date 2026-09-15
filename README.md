@@ -1,4 +1,4 @@
-# AURANAV / NAVIGUARD
+# AURANAV
 ### Vision-Based Autonomous Navigation for Outdoor UGV
 **Smart India Hackathon (SIH) 2026 — Problem Statement SIH26126**  
 **Organization:** Bharat Electronics Limited (BEL) | **Theme:** Smart Automation / Robotics | **Category:** Software  
