@@ -32,6 +32,11 @@ NAVIGUARD features a unified, interactive terminal launcher with a Kali-style cy
 git clone git@github.com:codinghubindia/auraguard.git
 cd auraguard
 
+# Install Python dependencies (creates .venv preserving ROS 2 Jazzy links)
+./install_python_deps.sh
+# Or audit installed packages:
+./install_python_deps.sh --check
+
 # Run the interactive Kali-style launcher
 ./run_naviguard.sh
 ```
@@ -43,6 +48,7 @@ cd auraguard
 ./run_naviguard.sh --headless       # Fast headless simulation for WSL2/Linux
 ./run_naviguard.sh --rviz           # Launch RViz2 alongside operator dashboard
 ./run_naviguard.sh --build          # Clean workspace build with colcon before launch
+./run_naviguard.sh --deps           # Audit Python dependencies against requirements.txt
 ./run_naviguard.sh --verbose        # Stream raw ROS 2 launch logs to terminal
 ```
 

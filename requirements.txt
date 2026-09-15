@@ -1,0 +1,48 @@
+# ==============================================================================
+# NAVIGUARD: Vision-Based Autonomous Navigation for Outdoor UGV
+# Smart India Hackathon (SIH) 2026 — Problem Statement 26126
+# Python Dependencies Specification
+# Target Python Version: >= 3.10, <= 3.12 (Ubuntu 24.04 LTS / ROS 2 Jazzy)
+# ==============================================================================
+
+# --- Core Mathematics, Scientific Computing & Optimization ---
+# Required for 11-layer costmaps, EKF state estimation, and spatial transforms
+numpy>=1.24.0,<2.0.0
+scipy>=1.10.0
+
+# --- Computer Vision & Image Processing ---
+# OpenCV DNN inference, feature tracking, optical flow, ground segmentation
+opencv-python>=4.6.0
+pillow>=9.5.0
+
+# --- Deep Learning & Neural Perception (YOLOv8 & ONNX) ---
+# Outdoor obstacle detection ontology, model export and CPU/GPU inference
+onnx>=1.14.0
+onnxruntime>=1.15.0
+ultralytics>=8.0.0
+
+# --- Configuration, Manifests & Web Dashboard ---
+# YAML configuration parsing, HTTP API requests, and telemetry streaming
+pyyaml>=6.0.1
+requests>=2.28.0
+
+# --- System Telemetry & Terminal UI ---
+# Live hardware monitoring (CPU/RAM/GPU) and Kali-style console tables
+psutil>=5.9.0
+rich>=13.0.0
+
+# --- Visualization & Metric Analysis ---
+# Trajectory error curves (ATE / RPE), benchmark evaluations, and HUD plots
+matplotlib>=3.7.0
+
+# --- Testing, Verification & Code Quality ---
+# Full 244-test regression suite, coverage analysis, and PEP8 enforcement
+pytest>=7.4.0
+pytest-cov>=4.1.0
+flake8>=6.0.0
+
+# --- Packaging, Distribution & ROS 2 Multi-Package Build ---
+# Python package setup, wheel generation, and colcon build tooling
+setuptools>=65.0.0
+wheel>=0.40.0
+colcon-common-extensions>=0.3.0

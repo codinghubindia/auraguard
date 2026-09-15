@@ -103,6 +103,10 @@ while [[ $# -gt 0 ]]; do
       WORLD_PATH="$2"
       shift 2
       ;;
+    --deps|-d)
+      bash "$WS_ROOT/install_python_deps.sh" "${2:---check}"
+      exit 0
+      ;;
     --help)
       print_banner
       echo -e "${C_BOLD}Usage:${C_RESET} ./run_naviguard.sh [OPTIONS]"
@@ -113,6 +117,7 @@ while [[ $# -gt 0 ]]; do
       echo -e "  ${C_CYAN}--gui, -g${C_RESET}            Run with Gazebo Harmonic 3D desktop GUI window"
       echo -e "  ${C_CYAN}--rviz, -r${C_RESET}           Launch RViz2 3D visualization display"
       echo -e "  ${C_CYAN}--build, -b${C_RESET}          Rebuild workspace before launching"
+      echo -e "  ${C_CYAN}--deps                     Verify/audit Python dependencies"
       echo -e "  ${C_CYAN}--verbose, -v${C_RESET}        Show all raw ROS 2 launch logs in terminal"
       echo -e "  ${C_CYAN}--world, -w PATH${C_RESET}     Specify custom SDF world file"
       echo -e "  ${C_CYAN}--help${C_RESET}               Show this help message"
@@ -122,6 +127,7 @@ while [[ $# -gt 0 ]]; do
       echo "  ./run_naviguard.sh --gui             # Launch directly with Gazebo 3D GUI"
       echo "  ./run_naviguard.sh --headless        # Launch directly in headless background"
       echo "  ./run_naviguard.sh --build           # Rebuild all 11 packages and launch"
+      echo "  ./run_naviguard.sh --deps            # Audit Python dependencies"
       exit 0
       ;;
     *)
@@ -140,6 +146,7 @@ if [ "$INTERACTIVE" = "auto" ] && [ -t 0 ]; then
   echo -e "   ${C_GREEN}[3]${C_RESET} ${C_BOLD}Full Stack + RViz2 + Web Dashboard${C_RESET} ${C_DIM}(Comprehensive visual inspection)${C_RESET}"
   echo -e "   ${C_GREEN}[4]${C_RESET} ${C_BOLD}Clean Rebuild & Launch${C_RESET} ${C_DIM}(Runs colcon build --symlink-install first)${C_RESET}"
   echo -e "   ${C_GREEN}[5]${C_RESET} ${C_BOLD}Run Full Regression Test Suite${C_RESET} ${C_DIM}(Executes all 244 unit/integration tests)${C_RESET}"
+  echo -e "   ${C_GREEN}[6]${C_RESET} ${C_BOLD}Verify Python Dependencies${C_RESET} ${C_DIM}(Runs install_python_deps.sh audit)${C_RESET}"
   echo -e "   ${C_RED}[q]${C_RESET} ${C_BOLD}Exit${C_RESET}"
   echo ""
   read -r -p "   naviguard-init > " CHOICE
@@ -166,6 +173,10 @@ if [ "$INTERACTIVE" = "auto" ] && [ -t 0 ]; then
       source /opt/ros/jazzy/setup.bash 2>/dev/null || true
       source install/setup.bash 2>/dev/null || true
       colcon test --event-handlers console_direct+ --packages-select naviguard_navigation naviguard_dashboard naviguard_perception naviguard_confidence naviguard_recovery naviguard_slam naviguard_sensor_sync naviguard_state_estimation naviguard_visual_odometry naviguard_rellis
+      exit 0
+      ;;
+    6)
+      bash "$WS_ROOT/install_python_deps.sh" --check
       exit 0
       ;;
     q|Q|exit)

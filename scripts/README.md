@@ -58,6 +58,7 @@ To cleanly terminate all ROS nodes, simulation processes, bridges, and backgroun
 | `./scripts/naviguard_topics.sh` | Echoes topic list and publication rates. |
 | `./scripts/inject_fault.sh` | Injects controlled recovery faults (`--trigger`, `--reset`, `--status`). |
 | `./scripts/send_navigation_goal.sh <X> <Y> [Yaw]` | Dispatches goals from CLI without the browser. |
+| `./scripts/install_python_deps.sh` | Automated Python dependency installation and audit (`--check`, `--venv`, `--system`). |
 | `./scripts/view_raw_camera.sh` | Displays `/camera/image_raw` using standalone viewer. |
 | `./scripts/view_perception.sh` | Displays `/perception/debug_image`. |
 | `./scripts/view_visual_odometry.sh` | Displays `/visual_odometry/debug_image`. |
