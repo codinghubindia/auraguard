@@ -1,4 +1,4 @@
-# NAVIGUARD
+# AURANAV
 ### Vision-Based Autonomous Navigation for Outdoor UGV
 **Smart India Hackathon (SIH) 2026 — Problem Statement 26126**
 
@@ -11,26 +11,26 @@
 ---
 
 ```
- ███╗   ██╗ █████╗ ██╗   ██╗██╗ ██████╗ ██╗   ██╗ █████╗ ██████╗ ██████╗ 
- ████╗  ██║██╔══██╗██║   ██║██║██╔════╝ ██║   ██║██╔══██╗██╔══██╗██╔══██╗
- ██╔██╗ ██║███████║██║   ██║██║██║  ███╗██║   ██║███████║██████╔╝██║  ██║
- ██║╚██╗██║██╔══██║╚██╗ ██╔╝██║██║   ██║██║   ██║██╔══██║██╔══██╗██║  ██║
- ██║ ╚████║██║  ██║ ╚████╔╝ ██║╚██████╔╝╚██████╔╝██║  ██║██║  ██║██████╔╝
- ╚═╝  ╚═══╝╚═╝  ╚═╝  ╚═══╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ 
+  █████╗ ██╗   ██╗██████╗  █████╗ ███╗   ██╗ █████╗ ██╗   ██╗
+ ██╔══██╗██║   ██║██╔══██╗██╔══██╗████╗  ██║██╔══██╗██║   ██║
+ ███████║██║   ██║██████╔╝███████║██╔██╗ ██║███████║██║   ██║
+ ██╔══██║██║   ██║██╔══██╗██╔══██║██║╚██╗██║██╔══██║╚██╗ ██╔╝
+ ██║  ██║╚██████╔╝██║  ██║██║  ██║██║ ╚████║██║  ██║ ╚████╔╝ 
+ ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝  ╚═══╝  
 ```
 
-**NAVIGUARD** is an outdoor autonomous ground vehicle (UGV) navigation stack engineered for difficult, unstructured, and GPS-denied environments. Built on **ROS 2 Jazzy** and **Gazebo Harmonic**, NAVIGUARD couples an exact physical vehicle footprint ($0.56\,\text{m} \times 0.48\,\text{m}$) with a physics-grounded **11-Layer Spatial Map Architecture**, a **YOLOv8 + Classical OpenCV Perception Fusion Engine**, and an **Autonomous Recovery State Machine**.
+**AURANAV** is an outdoor autonomous ground vehicle (UGV) navigation stack engineered for difficult, unstructured, and GPS-denied environments. Built on **ROS 2 Jazzy** and **Gazebo Harmonic**, AURANAV couples an exact physical vehicle footprint ($0.56\,\text{m} \times 0.48\,\text{m}$) with a physics-grounded **11-Layer Spatial Map Architecture**, a **YOLOv8 + Classical OpenCV Perception Fusion Engine**, and an **Autonomous Recovery State Machine**.
 
 ---
 
 ## ⚡ Quick Start & Kali-Style Interactive Launcher
 
-NAVIGUARD features a unified, interactive terminal launcher with a Kali-style cyber console:
+AURANAV features a unified, interactive terminal launcher with a Kali-style cyber console:
 
 ```bash
 # Clone the repository
-git clone git@github.com:codinghubindia/auraguard.git
-cd auraguard
+git clone git@github.com:codinghubindia/auranav.git
+cd auranav
 
 # Install Python dependencies (creates .venv preserving ROS 2 Jazzy links)
 ./install_python_deps.sh
@@ -38,24 +38,24 @@ cd auraguard
 ./install_python_deps.sh --check
 
 # Run the interactive Kali-style launcher
-./run_naviguard.sh
+./run_auranav.sh
 ```
 
 ### Launcher CLI Options:
 ```bash
-./run_naviguard.sh                  # Interactive menu & live control console
-./run_naviguard.sh --gui            # Launch with Gazebo Harmonic 3D desktop GUI
-./run_naviguard.sh --headless       # Fast headless simulation for WSL2/Linux
-./run_naviguard.sh --rviz           # Launch RViz2 alongside operator dashboard
-./run_naviguard.sh --build          # Clean workspace build with colcon before launch
-./run_naviguard.sh --deps           # Audit Python dependencies against requirements.txt
-./run_naviguard.sh --verbose        # Stream raw ROS 2 launch logs to terminal
+./run_auranav.sh                  # Interactive menu & live control console
+./run_auranav.sh --gui            # Launch with Gazebo Harmonic 3D desktop GUI
+./run_auranav.sh --headless       # Fast headless simulation for WSL2/Linux
+./run_auranav.sh --rviz           # Launch RViz2 alongside operator dashboard
+./run_auranav.sh --build          # Clean workspace build with colcon before launch
+./run_auranav.sh --deps           # Audit Python dependencies against requirements.txt
+./run_auranav.sh --verbose        # Stream raw ROS 2 launch logs to terminal
 ```
 
 ### Interactive Control Shell Commands:
 While the stack is running, the terminal provides a live interactive shell:
 ```
-┌──(naviguard㉿ugv)-[~/autonomous-stack]
+┌──(auranav㉿ugv)-[~/auranav]
 └─$ [command]
 ```
 - `s`, `status`: Live vehicle pose, corridor clearance, active detections, and subsystem health.

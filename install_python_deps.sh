@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# NAVIGUARD — Automated Python Dependency Installer
+# AURANAV — Automated Python Dependency Installer
 # SIH 2026 Vision-Based Autonomous Navigation for Outdoor UGV
 # ==============================================================================
 
@@ -33,16 +33,16 @@ EXTRA_PIP_FLAGS=()
 print_banner() {
   echo -e "${C_CYAN}"
   cat << "EOF"
- ███╗   ██╗ █████╗ ██╗   ██╗██╗ ██████╗ ██╗   ██╗ █████╗ ██████╗ ██████╗ 
- ████╗  ██║██╔══██╗██║   ██║██║██╔════╝ ██║   ██║██╔══██╗██╔══██╗██╔══██╗
- ██╔██╗ ██║███████║██║   ██║██║██║  ███╗██║   ██║███████║██████╔╝██║  ██║
- ██║╚██╗██║██╔══██║╚██╗ ██╔╝██║██║   ██║██║   ██║██╔══██║██╔══██╗██║  ██║
- ██║ ╚████║██║  ██║ ╚████╔╝ ██║╚██████╔╝╚██████╔╝██║  ██║██║  ██║██████╔╝
- ╚═╝  ╚═══╝╚═╝  ╚═╝  ╚═══╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ 
+  █████╗ ██╗   ██╗██████╗  █████╗ ███╗   ██╗ █████╗ ██╗   ██╗
+ ██╔══██╗██║   ██║██╔══██╗██╔══██╗████╗  ██║██╔══██╗██║   ██║
+ ███████║██║   ██║██████╔╝███████║██╔██╗ ██║███████║██║   ██║
+ ██╔══██║██║   ██║██╔══██╗██╔══██║██║╚██╗██║██╔══██║╚██╗ ██╔╝
+ ██║  ██║╚██████╔╝██║  ██║██║  ██║██║ ╚████║██║  ██║ ╚████╔╝ 
+ ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝  ╚═══╝  
 EOF
   echo -e "${C_RESET}"
   echo -e "${C_BOLD}${C_WHITE}   ╔══════════════════════════════════════════════════════════════════╗${C_RESET}"
-  echo -e "${C_BOLD}${C_WHITE}   ║ ${C_CYAN}NAVIGUARD ${C_WHITE}— Python Dependency Installation & Verification       ║${C_RESET}"
+  echo -e "${C_BOLD}${C_WHITE}   ║ ${C_CYAN}AURANAV   ${C_WHITE}— Python Dependency Installation & Verification       ║${C_RESET}"
   echo -e "${C_BOLD}${C_WHITE}   ║ ${C_YELLOW}SIH 2026 Problem Statement 26126 ${C_WHITE}• Outdoor UGV Autonomy Stack    ║${C_RESET}"
   echo -e "${C_BOLD}${C_WHITE}   ╚══════════════════════════════════════════════════════════════════╝${C_RESET}"
   echo ""
@@ -273,7 +273,7 @@ fi
 
 # Step 6: Upgrade pip and install requirements
 echo ""
-echo -e "${C_BOLD}${C_CYAN}Installing NAVIGUARD Python dependencies...${C_RESET}"
+echo -e "${C_BOLD}${C_CYAN}Installing AURANAV Python dependencies...${C_RESET}"
 echo -e "  ${C_DIM}Target Python : $TARGET_PY${C_RESET}"
 echo -e "  ${C_DIM}Target Pip    : $TARGET_PIP${C_RESET}"
 
@@ -295,7 +295,7 @@ echo -e "${C_GREEN}${C_BOLD}[✓] Package installation process finished successf
 render_audit "$TARGET_PY"
 
 echo -e "${C_BOLD}${C_WHITE}══════════════════════════════════════════════════════════════════════${C_RESET}"
-echo -e "  ${C_GREEN}[✓] NAVIGUARD Python environment is fully configured and ready.${C_RESET}"
+echo -e "  ${C_GREEN}[✓] AURANAV Python environment is fully configured and ready.${C_RESET}"
 if [ -d "$VENV_DIR" ] && [ -f "$VENV_DIR/bin/activate" ]; then
   echo ""
   echo -e "  ${C_BOLD}To activate this environment in your current shell:${C_RESET}"

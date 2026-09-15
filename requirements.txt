@@ -1,5 +1,5 @@
 # ==============================================================================
-# NAVIGUARD: Vision-Based Autonomous Navigation for Outdoor UGV
+# AURANAV: Vision-Based Autonomous Navigation for Outdoor UGV
 # Smart India Hackathon (SIH) 2026 — Problem Statement 26126
 # Python Dependencies Specification
 # Target Python Version: >= 3.10, <= 3.12 (Ubuntu 24.04 LTS / ROS 2 Jazzy)

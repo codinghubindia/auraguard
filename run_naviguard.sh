@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# NAVIGUARD — All-In-One Unified Interactive Shell & Launch System
+# AURANAV — All-In-One Unified Interactive Shell & Launch System
 # SIH 2026 Vision-Based Autonomous Navigation for Outdoor UGV
 # ==============================================================================
 
@@ -41,16 +41,16 @@ print_banner() {
   clear 2>/dev/null || true
   echo -e "${C_CYAN}"
   cat << "EOF"
- ███╗   ██╗ █████╗ ██╗   ██╗██╗ ██████╗ ██╗   ██╗ █████╗ ██████╗ ██████╗ 
- ████╗  ██║██╔══██╗██║   ██║██║██╔════╝ ██║   ██║██╔══██╗██╔══██╗██╔══██╗
- ██╔██╗ ██║███████║██║   ██║██║██║  ███╗██║   ██║███████║██████╔╝██║  ██║
- ██║╚██╗██║██╔══██║╚██╗ ██╔╝██║██║   ██║██║   ██║██╔══██║██╔══██╗██║  ██║
- ██║ ╚████║██║  ██║ ╚████╔╝ ██║╚██████╔╝╚██████╔╝██║  ██║██║  ██║██████╔╝
- ╚═╝  ╚═══╝╚═╝  ╚═╝  ╚═══╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ 
+  █████╗ ██╗   ██╗██████╗  █████╗ ███╗   ██╗ █████╗ ██╗   ██╗
+ ██╔══██╗██║   ██║██╔══██╗██╔══██╗████╗  ██║██╔══██╗██║   ██║
+ ███████║██║   ██║██████╔╝███████║██╔██╗ ██║███████║██║   ██║
+ ██╔══██║██║   ██║██╔══██╗██╔══██║██║╚██╗██║██╔══██║╚██╗ ██╔╝
+ ██║  ██║╚██████╔╝██║  ██║██║  ██║██║ ╚████║██║  ██║ ╚████╔╝ 
+ ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝  ╚═══╝  
 EOF
   echo -e "${C_RESET}"
   echo -e "${C_BOLD}${C_WHITE}   ╔══════════════════════════════════════════════════════════════════╗${C_RESET}"
-  echo -e "${C_BOLD}${C_WHITE}   ║ ${C_CYAN}NAVIGUARD ${C_WHITE}— Vision-Based Autonomous Navigation for Outdoor UGV    ║${C_RESET}"
+  echo -e "${C_BOLD}${C_WHITE}   ║ ${C_CYAN}AURANAV   ${C_WHITE}— Vision-Based Autonomous Navigation for Outdoor UGV    ║${C_RESET}"
   echo -e "${C_BOLD}${C_WHITE}   ║ ${C_YELLOW}SIH 2026 Problem Statement 26126 ${C_WHITE}• High-Assurance Field Autonomy  ║${C_RESET}"
   echo -e "${C_BOLD}${C_WHITE}   ╚══════════════════════════════════════════════════════════════════╝${C_RESET}"
   echo ""
@@ -149,7 +149,7 @@ if [ "$INTERACTIVE" = "auto" ] && [ -t 0 ]; then
   echo -e "   ${C_GREEN}[6]${C_RESET} ${C_BOLD}Verify Python Dependencies${C_RESET} ${C_DIM}(Runs install_python_deps.sh audit)${C_RESET}"
   echo -e "   ${C_RED}[q]${C_RESET} ${C_BOLD}Exit${C_RESET}"
   echo ""
-  read -r -p "   naviguard-init > " CHOICE
+  read -r -p "   auranav-init > " CHOICE
   case "$CHOICE" in
     1|"")
       HEADLESS="true"
@@ -169,7 +169,7 @@ if [ "$INTERACTIVE" = "auto" ] && [ -t 0 ]; then
       ;;
     5)
       echo ""
-      echo -e "${C_CYAN}Executing NAVIGUARD Regression Test Suite...${C_RESET}"
+      echo -e "${C_CYAN}Executing AURANAV Regression Test Suite...${C_RESET}"
       source /opt/ros/jazzy/setup.bash 2>/dev/null || true
       source install/setup.bash 2>/dev/null || true
       colcon test --event-handlers console_direct+ --packages-select naviguard_navigation naviguard_dashboard naviguard_perception naviguard_confidence naviguard_recovery naviguard_slam naviguard_sensor_sync naviguard_state_estimation naviguard_visual_odometry naviguard_rellis
@@ -180,7 +180,7 @@ if [ "$INTERACTIVE" = "auto" ] && [ -t 0 ]; then
       exit 0
       ;;
     q|Q|exit)
-      echo -e "${C_YELLOW}Exiting NAVIGUARD.${C_RESET}"
+      echo -e "${C_YELLOW}Exiting AURANAV.${C_RESET}"
       exit 0
       ;;
     *)
@@ -195,7 +195,7 @@ cleanup() {
   trap - SIGINT SIGTERM EXIT
   echo ""
   echo -e "${C_YELLOW}======================================================================${C_RESET}"
-  echo -e "  ${C_BOLD}${C_RED}[!] Shutting down NAVIGUARD Autonomy Stack and Simulation...${C_RESET}"
+  echo -e "  ${C_BOLD}${C_RED}[!] Shutting down AURANAV Autonomy Stack and Simulation...${C_RESET}"
   echo -e "${C_YELLOW}======================================================================${C_RESET}"
   if [ -n "${LAUNCH_PID:-}" ]; then
     kill -2 "$LAUNCH_PID" 2>/dev/null || true
@@ -362,13 +362,13 @@ except Exception:
   echo ""
 
   while kill -0 "$LAUNCH_PID" 2>/dev/null; do
-    echo -ne "${C_BOLD}${C_RED}┌──(${C_CYAN}naviguard㉿ugv${C_RED})-[${C_WHITE}~/autonomous-stack${C_RED}]\n└─${C_CYAN}\$ ${C_RESET}"
+    echo -ne "${C_BOLD}${C_RED}┌──(${C_CYAN}auranav㉿ugv${C_RED})-[${C_WHITE}~/auranav${C_RED}]\n└─${C_CYAN}\$ ${C_RESET}"
     read -r CMD ARGS || break
 
     case "$CMD" in
       h|help|\?)
         echo ""
-        echo -e "${C_BOLD}${C_WHITE}NAVIGUARD Interactive Commands:${C_RESET}"
+        echo -e "${C_BOLD}${C_WHITE}AURANAV Interactive Commands:${C_RESET}"
         echo -e "  ${C_CYAN}s, status${C_RESET}       Display live vehicle pose, corridor clearance, & subsystem health"
         echo -e "  ${C_CYAN}g, geo, geometry${C_RESET} Display audited physical geometry and passage thresholds"
         echo -e "  ${C_CYAN}y, yolo${C_RESET}         Query live YOLOv8 detector diagnostics & outdoor classes"
